@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kategorie>
+    <titel>Allgemeine visuelle Aspekte</titel>
+    <metrik>
+        <titel>Einheitlichkeit des Layouts</titel>
+    </metrik>
+    <metrik>
+        <titel>Vertikales Gleichgewicht</titel>
+    </metrik>
+    <metrik>
+        <titel>Gesamtdichte</titel>
+    </metrik>
+    <metrik>
+        <titel>Ränder (Margins)</titel>
+    </metrik>
+</kategorie>
+<kategorie>
+    <titel>Farben</titel>
+    <metrik>
+        <titel>Farbkontrast</titel>
+    </metrik>
+    <metrik>
+        <titel>Farbkonsistenz</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+</kategorie>
+<kategorie>
+    <titel>Schriften</titel>
+    <metrik>
+        <titel>Schriftkonsistenz</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Schriftart</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Schriftgröße</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+</kategorie>
+<kategorie>
+    <titel>Startseite (Homepage)</titel>
+    <metrik>
+        <titel>Verweis auf Startseite</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Prosatext Startseite</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Länge Startseite</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+</kategorie>
+<kategorie>
+    <titel>Navigation</titel>
+    <metrik>
+        <titel>Einheitliche Navigation</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Verwaiste Seiten</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Darstellung Navigationselemente</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+</kategorie>
+<kategorie>
+    <titel>Interaktionselemente</titel>
+    <metrik>
+        <titel>Größe grafischer Links</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Genutzte Links</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Radio-Buttons</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Horizontales Scrolling</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+</kategorie>
+<kategorie>
+    <titel>Bilder und Grafiken</titel>
+    <metrik>
+        <titel>Große Bilder oberhalb der Pfalz</titel>
+        <information></information>
+        <regel></regel>
+        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+</kategorie>
