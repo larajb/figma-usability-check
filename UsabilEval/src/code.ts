@@ -12,4 +12,4 @@ switch(figma.command) {
         figma.showUI(__uiFiles__.dyneval);
         break;
 }
-figma.ui.resize(300, 400);
+figma.ui.resize(400, 550);
