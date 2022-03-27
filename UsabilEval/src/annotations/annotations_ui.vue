@@ -9,16 +9,10 @@
 		<div class="annotation-add">
 			<select id="annotation-type-select" class="select-menu">
 				<option value="button">Button</option>
-				<!-- <option value="footer">Footer</option> -->
 				<option value="form">Form</option>
-				<!-- <option value="header">Header</option> -->
 				<option value="homepage">Homepage</option>
 				<option value="input">Input</option>
 				<option value="link">Link</option>
-				<!-- <option value="main">Main</option> -->
-				<!-- <option value="menu">Menu</option> -->
-				<!-- <option value="nav">Nav</option> -->
-				<!-- <option value="section">Section</option> -->
 			</select>
 			<button class="button button--primary" @click="sendSelection()">
 				Hinzufügen
@@ -61,6 +55,20 @@ export default {
 		handleEvent('annotationAdded', info => {
 			this.addAnnotationsToScreen(info);
 		});
+
+		// Verschiedene Fehlermeldungen für verschiedene Fehler
+		handleEvent('annotationCannotBeAdded', errorCode => {
+			var message = 'Annotation konnte nicht hinzugefügt werden. ';
+			switch(errorCode) {
+				case 0:
+					message += 'Es wurde kein Knoten ausgewählt.';
+					break;
+				case 1:
+					message += 'Es wurden mehrere Knoten ausgewählt.';
+					break;
+			}
+			alert(message);
+		});
 	},
 	destroyed() {
         selectMenu.destroy();
@@ -71,7 +79,6 @@ export default {
 			dispatch('selection', select.value);
 		},
 		addAnnotationsToScreen(info) {
-			console.log('info', info);
 			var annotations = document.getElementById('annotations');
 			var element = null;
 			if (document.getElementById('annotation-' + info.type) == null) {
@@ -86,7 +93,7 @@ export default {
 				title.classList.add('annotation-list-entry');
 				title.classList.add('type--pos-medium-normal');
 
-				// create color quare for title
+				// create color square for title
 				var colorSquare = document.createElement('div');
 				colorSquare.classList.add('annotation-list-entry-colorsquare');
 				colorSquare.style.backgroundColor = this.getColor(info.type);
@@ -148,16 +155,10 @@ export default {
 		getColor(type) {
 			var colors = {
 				'button': 'rgb(255, 255, 0)',
-				// 'footer': 'rgb(255, 168, 0)',
 				'form': 'rgb(158, 0, 196)',
-				// 'header': 'rgb(2555, 168, 0)',
 				'homepage': 'rgb(64, 224, 209)',
 				'input': 'rgb(0, 0, 255)',
 				'link': 'rgb(255, 255, 0)',
-				// 'main': 'rgb(0, 0, 0)',
-				// 'menu': 'rgb(128, 255, 255)',
-				'nav': 'rgb(0, 255, 0)',
-				// 'section': 'rgb(0, 0, 0)'
 			};
 			return colors[type];
 		}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <kategorie>
-    <titel>Allgemeine visuelle Aspekte</titel>
+    <titel>Organisation des Inhalts</titel>
     <metrik>
         <titel>Einheitlichkeit des Layouts</titel>
     </metrik>
@@ -8,120 +8,75 @@
         <titel>Vertikales Gleichgewicht</titel>
     </metrik>
     <metrik>
+        <titel>Gleichgewicht</titel>
+    </metrik>
+    <metrik>
         <titel>Gesamtdichte</titel>
     </metrik>
     <metrik>
-        <titel>Ränder (Margins)</titel>
+        <titel>Ränder</titel>
+    </metrik>
+    <metrik>
+        <titel>Wirtschaftlichkeit</titel>
+    </metrik>
+    <metrik>
+        <titel>Maß für die Regelmäßigkeit</titel>
     </metrik>
 </kategorie>
 <kategorie>
-    <titel>Farben</titel>
+    <titel>Barrierefreiheit</titel>
     <metrik>
-        <titel>Farbkontrast</titel>
+        <titel>Farbkontrast (Inhalt und Schrift)</titel>
     </metrik>
+    <metrik>
+        <titel>FRE-Wert</titel>
+    </metrik>
+    <metrik>
+        <titel>Farbinformation Alternative</titel>
+    </metrik>
+</kategorie>
+<kategorie>
+    <titel>Konsistenz</titel>
     <metrik>
         <titel>Farbkonsistenz</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
     </metrik>
-</kategorie>
-<kategorie>
-    <titel>Schriften</titel>
     <metrik>
         <titel>Schriftkonsistenz</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
     </metrik>
     <metrik>
-        <titel>Schriftart</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
-    </metrik>
-    <metrik>
-        <titel>Schriftgröße</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
-    </metrik>
-</kategorie>
-<kategorie>
-    <titel>Startseite (Homepage)</titel>
-    <metrik>
-        <titel>Verweis auf Startseite</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
-    </metrik>
-    <metrik>
-        <titel>Prosatext Startseite</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
-    </metrik>
-    <metrik>
-        <titel>Länge Startseite</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
+        <titel>Linkkonsistenz</titel>
     </metrik>
 </kategorie>
 <kategorie>
     <titel>Navigation</titel>
     <metrik>
         <titel>Einheitliche Navigation</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
+    </metrik>
+    <metrik>
+        <titel>Verweis auf Startseite</titel>
     </metrik>
     <metrik>
         <titel>Verwaiste Seiten</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
     </metrik>
     <metrik>
-        <titel>Darstellung Navigationselemente</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
+        <titel>Navigationsmöglichkeiten</titel>
     </metrik>
 </kategorie>
 <kategorie>
-    <titel>Interaktionselemente</titel>
+    <titel>Bildschirmgestützte Kontrollen</titel>
     <metrik>
         <titel>Größe grafischer Links</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
     </metrik>
     <metrik>
-        <titel>Genutzte Links</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
+        <titel>Länge Text-Links</titel>
     </metrik>
     <metrik>
-        <titel>Radio-Buttons</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
+        <titel>Interaktionszielgröße</titel>
     </metrik>
     <metrik>
-        <titel>Horizontales Scrolling</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
+        <titel>Benutzte Links</titel>
     </metrik>
-</kategorie>
-<kategorie>
-    <titel>Bilder und Grafiken</titel>
     <metrik>
-        <titel>Große Bilder oberhalb der Pfalz</titel>
-        <information></information>
-        <regel></regel>
-        <korrekturhilfe></korrekturhilfe>
+        <titel>Horizontales Scrollen</titel>
     </metrik>
 </kategorie>

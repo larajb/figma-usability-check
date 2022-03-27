@@ -1,21 +1,30 @@
 export const metricsArray = [
     {
-        category: 'Barrierefreiheit',
-        metrics: [
-            'Farbkontrast',
-            'Schriftgröße',
-        ]
-    },
-    {
         category: 'Organisation des Inhalts',
         metrics: [
             'Einheitlichkeit des Layouts',
             'Vertikales Gleichgewicht',
+            'Gleichgewicht',
             'Gesamtdichte',
             'Ränder',
-            'Farbkonsistenz',
             'Wirtschaftlichkeit',
-            'Positionierung großer Bilder'
+            'Maß für die Regelmäßigkeit'
+        ]
+    },
+    {
+        category: 'Barrierefreiheit',
+        metrics: [
+            'Farbkontrast (Inhalt und Schrift)',
+            'FRE-Wert',
+            'Farbinformation Alternative'
+        ]
+    },
+    {
+        category: 'Konsistenz',
+        metrics: [
+            'Farbkonsistenz',
+            'Schriftkonsistenz',
+            'Linkkonsistenz'
         ]
     },
     {
@@ -23,24 +32,18 @@ export const metricsArray = [
         metrics: [
             'Einheitliche Navigation',
             'Verweis auf Startseite',
-            'Verwaiste Seiten'
+            'Verwaiste Seiten',
+            'Navigationsmöglichkeiten'
         ]
     },
     {
         category: 'Bildschirmgestützte Kontrollen',
         metrics: [
-            'Navigationselemente',
-            'Radio-Buttons',
-            'Horizontales Scrollen'
-        ]
-    },
-    {
-        category: 'Seitenelemente',
-        metrics: [
-            'Schriftkonsistenz',
-            'Schriftarten',
             'Größe grafischer Links',
-            'Benutzte Links'
+            'Länge Text-Links',
+            'Interaktionszielgröße',
+            'Benutzte Links',
+            'Horizontales Scrollen'
         ]
     },
 ];
