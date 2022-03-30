@@ -3,13 +3,14 @@
 		"target": "es6",
 		"lib": ["es6", "dom"],
 		"types": [
-			"webpack-env"
+			"webpack-env",
+			"node"
 		],
 		"typeRoots": [
 			"node_modules/@types",
 			"node_modules/@types/node"
 		],
 		"module": "es6",
-		"moduleResolution": "node"
+		"moduleResolution": "node",
 	}
 }
