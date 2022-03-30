@@ -8,8 +8,8 @@
 		<p class="type--pos-large-bold">
 			DynEval
 		</p>
-		<task-definition v-show="showTasks" @clicked="handleClickSetTasks" />
-		<evaluation v-show="showEvaluation" @clickedDefine="handleClickSetTasks" />
+		<task-definition v-show="showTasks" @clicked="handleClickSetTasks" @updated="taskAdded($event)" />
+		<evaluation v-show="showEvaluation" @clickedDefine="handleClickSetTasks" :tasks="tasks" />
 		<results v-show="showResults" @clicked="handleClickSetResults" />
 	</div>
 </template>
@@ -36,6 +36,7 @@ export default {
 			showTasks: false,
 			showEvaluation: false,
 			showResults: false,
+			tasks: [],
 		};
 	},
 	watch: {
@@ -87,6 +88,9 @@ export default {
 			this.showTasks = false;
 			this.showEvaluation = false;
 			this.showResults = true;
+		},
+		taskAdded(tasks) {
+			this.tasks = tasks;
 		},
 	},
 };

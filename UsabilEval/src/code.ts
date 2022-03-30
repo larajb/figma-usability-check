@@ -1,4 +1,5 @@
 import { annotationsView } from './annotations/annotationHandler';
+import { dynevalView } from './dyneval/dynevalHandler';
 
 switch(figma.command) {
     case 'annotations':
@@ -10,6 +11,7 @@ switch(figma.command) {
         break;
     case 'dyneval':
         figma.showUI(__uiFiles__.dyneval);
+        dynevalView();
         break;
 }
 figma.ui.resize(400, 550);
