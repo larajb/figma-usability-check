@@ -8,19 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { dispatch, handleEvent } from '../codeMessageHandler';
-var annotationsArray = [];
-// const fs = require('fs');
-// fs.readFile('./annotationsArray.json', 'utf-8', (err, jsonString) => {
-//     if (err) {
-//         console.log('Fehler beim Öffnen einer Datei.');
-//     } else {
-//         try {
-//             annotationsArray = JSON.parse(jsonString);
-//         } catch (err) {
-//             console.log('Fehler beim Öffnen einer Datei.');
-//         }
-//     }
-// })
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('../data/typeAnnotations.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err)
+        return console.error(err.message);
+    console.log('connection successful');
+});
 export const annotationsView = () => {
     handleEvent('getAnnotations', () => {
         getAnnotations();
@@ -55,6 +48,9 @@ const createAnnotation = (type) => {
             }
             if ('relativeTransform' in node) {
                 var selectionRelTransform = node.relativeTransform;
+            }
+            if ('parent' in node) {
+                var selectionParent = node.parent;
             }
         }
         // create Rectangle that is used as border
@@ -93,14 +89,19 @@ const createAnnotation = (type) => {
         //     }
         // })
         // TODO: check if element and annotation group bereits vorhanden
-        const elementAndAnnotationGroupNode = [];
-        elementAndAnnotationGroupNode.push(group);
-        var elementAndAnnotationGroup = figma.group(elementAndAnnotationGroupNode, figma.currentPage);
-        for (const node of figma.currentPage.selection) {
-            var parent = node.parent;
-            elementAndAnnotationGroup.name = node.name + ' + Annotation';
-            elementAndAnnotationGroup.insertChild(0, node);
-            parent.appendChild(elementAndAnnotationGroup);
+        if (selectionParent.name.endsWith('Annotation')) {
+            selectionParent.insertChild(selectionParent.children.length - 1, group);
+        }
+        else {
+            const elementAndAnnotationGroupNode = [];
+            elementAndAnnotationGroupNode.push(group);
+            var elementAndAnnotationGroup = figma.group(elementAndAnnotationGroupNode, figma.currentPage);
+            for (const node of figma.currentPage.selection) {
+                var parent = node.parent;
+                elementAndAnnotationGroup.name = node.name + ' + Annotation';
+                elementAndAnnotationGroup.insertChild(0, node);
+                parent.appendChild(elementAndAnnotationGroup);
+            }
         }
         dispatch('annotationAdded', { type: type, id: group.id });
     }

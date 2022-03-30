@@ -6,7 +6,7 @@
 		<p class="type--pos-medium-normal">
 			Wähle einen Annotationstypen und füge eine Annotation hinzu.
 		</p>
-		<div class="annotation-add">
+		<div class="annotations__selection">
 			<select id="annotation-type-select" class="select-menu">
 				<option value="button">Button</option>
 				<option value="form">Form</option>
@@ -23,6 +23,7 @@
 			Deine Annotationen
 		</p>
 		<div id="annotations" class="type--pos-medium-normal">
+			<annotation-list-entry v-for="(annotation, index) in annotations" :key="index" :annotation-type="annotation.type" :annotations="annotation.annotations" @delete="deletedAnnotation($event)" />
 		</div>
 	</div>
 </template>
@@ -33,24 +34,23 @@ import { dispatch, handleEvent } from '../uiMessageHandler';
 import '../figma-ui/js/selectMenu';
 import '../figma-ui/js/iconInput';
 import '../figma-ui/js/disclosure';
+import AnnotationListEntry from './components/AnnotationListEntry.vue';
 
 export default {
 	data() {
 		return {
-		};
+			annotations: [],
+		}
+	},
+	components: {
+		AnnotationListEntry,
 	},
 	mounted() {
 		window.selectMenu.init();
     	window.iconInput.init();
     	window.disclosure.init();
 
-		dispatch('getAnnotations');
-
-		handleEvent('currentAnnotations', annotations => {
-			for (let i = 0; i < annotations.length; i++) {
-				this.addAnnotationsToScreen(annotations[i]);
-			}
-		});
+		this.getAnnotationStorage();
 
 		handleEvent('annotationAdded', info => {
 			this.addAnnotationsToScreen(info);
@@ -79,120 +79,61 @@ export default {
 			dispatch('selection', select.value);
 		},
 		addAnnotationsToScreen(info) {
-			var annotations = document.getElementById('annotations');
-			var element = null;
-			if (document.getElementById('annotation-' + info.type) == null) {
-
-				// create element for annotation type entry
-				element = document.createElement('div');
-				element.id = 'annotation-' + info.type;
-
-				// create title element for color square and type title
-				var title = document.createElement('div');
-				title.id = 'annotation-title-' + info.type;
-				title.classList.add('annotation-list-entry');
-				title.classList.add('type--pos-medium-normal');
-
-				// create color square for title
-				var colorSquare = document.createElement('div');
-				colorSquare.classList.add('annotation-list-entry-colorsquare');
-				colorSquare.style.backgroundColor = this.getColor(info.type);
-				title.appendChild(colorSquare);
-
-				// create text content for title
-				var textContent = document.createTextNode(info.type);
-
-				// add elements as child to each other
-				title.appendChild(textContent);
-				element.appendChild(title);
-			} else {
-				element = document.getElementById('annotation-' + info.type);
-			}
-
-			// create entry for type
-			var entry = document.createElement('div');
-			entry.id = 'annoation-entry-' + info.id;
-			entry.classList.add('annotation-entry' + info.type);
-			entry.classList.add('type--pos-medium-normal');
-			entry.classList.add('annotation-list-entry-element');
-
-			// create entry title
-			var entryTitle = document.createTextNode(info.id);
-
-			// create entry symbols for edit and delete
-			var entrySymbols = document.createElement('div');
-			entrySymbols.classList.add('annotation-list-entry-element-symbols');
-			// var settingsSymbol = document.createElement('div');
-			// settingsSymbol.classList.add('icon');
-			// settingsSymbol.classList.add('icon--settings');
-			// entrySymbols.appendChild(settingsSymbol);
-			var trashSymbol = document.createElement('div');
-			trashSymbol.id = 'delete-' + info.id;
-			trashSymbol.classList.add('icon');
-			trashSymbol.classList.add('icon--trash');
-			trashSymbol.onclick = function() {
-				dispatch('deleteAnnotation', info.id);
-				var element = document.getElementById('annoation-entry-' + info.id);
-				element.parentNode.removeChild(element);
-				var entries = document.getElementsByClassName('annotation-entry' + info.type);
-				if (entries.length === 0) {
-					element = document.getElementById('annotation-' + info.type);
-					element.parentNode.removeChild(element);
+			if (this.annotations.length > 0) {
+				var myIndex = null;
+				var found = this.annotations.find(function(element, index) {
+					if(element.type === info.type) {
+						myIndex = index;
+						return true;
+					} else {
+						return false;
+					}
+				});
+				if (found) {
+					this.annotations[myIndex].annotations.push(info.id);
+				} else {
+					this.annotations.push({ type: info.type, annotations: [info.id] });
 				}
-			};
-			entrySymbols.appendChild(trashSymbol);
-
-			// add title and symbols as child to entry
-			entry.appendChild(entryTitle);
-			entry.appendChild(entrySymbols);
-
-			// add entry to element
-			element.appendChild(entry);
-
-			// add element to annotations list
-			annotations.appendChild(element);
+			} else {
+				this.annotations.push({ type: info.type, annotations: [info.id] });
+			}
+			this.setAnnotationStorage();
 		},
-		getColor(type) {
-			var colors = {
-				'button': 'rgb(255, 255, 0)',
-				'form': 'rgb(158, 0, 196)',
-				'homepage': 'rgb(64, 224, 209)',
-				'input': 'rgb(0, 0, 255)',
-				'link': 'rgb(255, 255, 0)',
-			};
-			return colors[type];
+		deletedAnnotation(args) {
+			for (let i = 0; i < this.annotations.length; i++) {
+				if (this.annotations[i].type === args.type) {
+					for (let j = 0; j < this.annotations[i].annotations.length; j++) {
+						if (this.annotations[i].annotations[j] === args.id) {
+							if (this.annotations[i].annotations.length === 1) {
+								this.annotations.splice(i, 1);
+							} else if (this.annotations[i].annotations.length > 1) {
+								this.annotations[i].annotations.splice(j, 1);
+							}
+						}
+					}
+				}
+			}
+			this.setAnnotationStorage();
+        },
+		getAnnotationStorage() {
+			dispatch('getAnnotationStorage');
+			handleEvent('currentAnnotationStorage', annotations => {
+				if (annotations !== undefined) {
+					this.annotations = annotations;
+				}
+			});
+		},
+		setAnnotationStorage() {
+			dispatch('setAnnotationStorage', this.annotations);
 		}
-	}
+	},
 };
 </script>
 
 <style lang='scss'>
 	@import "../figma-ui/figma-plugin-ds";
 
-	.annotation-add {
-		display: flex;
-	}
-
-	.annotation-list-entry {
-		display: flex;
-		margin-bottom: 20px;
-	}
-
-	.annotation-list-entry-colorsquare {
-		width: 15px;
-		height: 15px;
-		margin-right: 15px;
-		border-radius: 10px;
-	}
-
-	.annotation-list-entry-element {
-		width: 80%;
-		margin-left: 15%;
-		display: flex;
-		justify-content: space-between;
-	}
-
-	.annotation-list-entry-element-symbols {
+	.annotations__selection {
 		display: flex;
 	}
 

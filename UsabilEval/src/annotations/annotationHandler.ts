@@ -1,41 +1,21 @@
 import { dispatch, handleEvent } from '../codeMessageHandler';
 
-var annotationsArray = [];
-
-// const fs = require('fs');
-// fs.readFile('./annotationsArray.json', 'utf-8', (err, jsonString) => {
-//     if (err) {
-//         console.log('Fehler beim Öffnen einer Datei.');
-//     } else {
-//         try {
-//             annotationsArray = JSON.parse(jsonString);
-//         } catch (err) {
-//             console.log('Fehler beim Öffnen einer Datei.');
-//         }
-//     }
-// })
-
 export const annotationsView = () => {
-    handleEvent('getAnnotations', () => {
-        getAnnotations();
-    });
     handleEvent('selection', (value) => {
         createAnnotation(value);
     });
     handleEvent('deleteAnnotation', (id) => {
         deleteAnnotation(id);
-    })
-};
+    });
 
-const getAnnotations = () => {
-    const annotations = [];
-    // annotationsArray.forEach(a => {
-    //     const node = figma.getNodeById(a);
-    //     let nameSplitted = node.name.split(' - ');
-    //     annotations.push({ type: nameSplitted[1], id: a });
-    // })
-    dispatch('currentAnnotations', annotations);
-}
+    handleEvent('getAnnotationStorage', async () => {
+        var annotations = await figma.clientStorage.getAsync('annotations');
+        dispatch('currentAnnotationStorage', annotations);
+    });
+    handleEvent('setAnnotationStorage', async (annotations) => {
+        await figma.clientStorage.setAsync('annotations', annotations);
+    });
+};
 
 const createAnnotation = (type) => {
     const groupNode: SceneNode[] = [];
@@ -53,6 +33,9 @@ const createAnnotation = (type) => {
             }
             if ('relativeTransform' in node) {
                 var selectionRelTransform = node.relativeTransform;
+            }
+            if ('parent' in node) {
+                var selectionParent = node.parent;
             }
         }
 
@@ -89,23 +72,18 @@ const createAnnotation = (type) => {
         var group = figma.group(groupNode, figma.currentPage);
         group.name = 'Annotation - ' + type + ' - ' + group.id;
 
-        // annotationsArray.push(group.id);
-        // fs.writeFile('./annotationsArray.json', JSON.stringify(annotationsArray, null, 2), err => {
-        //     if (err) {
-        //         console.log('Fehler beim Schreiben einer Datei.');
-        //     }
-        // })
-
-        // TODO: check if element and annotation group bereits vorhanden
-        const elementAndAnnotationGroupNode: SceneNode[] = [];
-        elementAndAnnotationGroupNode.push(group);
-        var elementAndAnnotationGroup = figma.group(elementAndAnnotationGroupNode, figma.currentPage);
-        
-        for (const node of figma.currentPage.selection) {
-            var parent = node.parent;
-            elementAndAnnotationGroup.name = node.name + ' + Annotation';
-            elementAndAnnotationGroup.insertChild(0, node);
-            parent.appendChild(elementAndAnnotationGroup);
+        if (selectionParent.name.endsWith('Annotation')) {
+            selectionParent.insertChild(selectionParent.children.length - 1, group);
+        } else {
+            const elementAndAnnotationGroupNode: SceneNode[] = [];
+            elementAndAnnotationGroupNode.push(group);
+            var elementAndAnnotationGroup = figma.group(elementAndAnnotationGroupNode, figma.currentPage);
+            for (const node of figma.currentPage.selection) {
+                var parent = node.parent;
+                elementAndAnnotationGroup.name = node.name + ' + Annotation';
+                elementAndAnnotationGroup.insertChild(0, node);
+                parent.appendChild(elementAndAnnotationGroup);
+            }
         }
 
         dispatch('annotationAdded', { type: type, id: group.id});
@@ -131,9 +109,6 @@ const deleteAnnotation = (id) => {
         }
         parentsParent.insertChild(index, node);
     }
-    // var annotationsArrayTemp = annotationsArray.filter(function(value, index, arr){ 
-    //     return value !== id;
-    // });
 }
 
 const loadingFont = async () => {
