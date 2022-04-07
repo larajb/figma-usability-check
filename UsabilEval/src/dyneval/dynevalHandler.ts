@@ -1,7 +1,15 @@
 import { dispatch, handleEvent } from '../codeMessageHandler';
+import { checkButtonValidity,
+    checkInputValidity,
+    checkLinkValidity,
+    checkValidity } from './utils/validityUtils';
+import { calculateTimeForTask } from './utils/gomsUtils';
 
 export const dynevalView = () => {
     handleEvent('addTaskStep', (args) => {
+        if (args.type === 'input') {
+            createExampletext(args.input, args.taskname);
+        }
         createAnnotation(args);
     });
     handleEvent('deleteSteps', (args) => {
@@ -15,17 +23,34 @@ export const dynevalView = () => {
     handleEvent('updateStepNumbers', (tasks) => {
         for (let i = 0; i < tasks.length; i++) {
             for (let j = 0; j < tasks[i].steps.length; j++) {
-                updateAnnotation(tasks[i].steps[j], j+1);
+                updateAnnotation(tasks[i].steps[j].id, j+1);
             }
         }
     })
+    handleEvent('calculateGoms', (task) => {
+        calculateTimeForTask(task);
+    })
+
     handleEvent('checkStepValidityBefore', async (args) => {
-        var validity = await checkValidityBefore(args);
+        var validity = await checkValidity(args);
         dispatch('validityBefore', validity);
     });
     handleEvent('checkStepValidityAfter', async (args) => {
-        var validity = await checkValidityAfter(args);
+        var validity = await checkValidity(args);
         dispatch('validityAfter', validity);
+    });
+    handleEvent('checkButtonValidity', async () => {
+        var validity = await checkButtonValidity();
+        dispatch('buttonValidity', validity);
+    });
+    handleEvent('checkInputValidity', async (input) => {
+        var validity = await checkInputValidity(input);
+        dispatch('inputValidity', validity);
+    });
+    handleEvent('checkLinkValidity', async () => {
+        console.log('check link validity');
+        var validity = await checkLinkValidity();
+        dispatch('linkValidity', validity);
     });
 
     handleEvent('getTaskStorage', async () => {
@@ -38,10 +63,10 @@ export const dynevalView = () => {
 };
 
 const createAnnotation = (args) => {
-    // args.numSteps, args.color
     // create annotation with number in colored circle (text white with black stroke)
     var stepNumber = String(args.numSteps + 1);
     var color = convertColor(args.color);
+    // var typeAnnotation = null;
 
     const groupNode: SceneNode[] = [];
 
@@ -59,20 +84,20 @@ const createAnnotation = (args) => {
     // create Ellipse for annotation
     let ellipse = figma.createEllipse();
     ellipse.name = 'Annotation - ' + args.taskname + ' - ' + stepNumber;
-    ellipse.resize(20, 20);
+    ellipse.resize(24, 24);
     if (selectionParent.name.endsWith('Annotation')) {
-        ellipse.x = selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 10);
+        ellipse.x = selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12);
     } else {
-        ellipse.x = selectionRelTransform[0][2] - 10;
+        ellipse.x = selectionRelTransform[0][2] - 12;
     }
-    ellipse.y = selectionRelTransform[1][2] - 10;
+    ellipse.y = selectionRelTransform[1][2] - 12;
     ellipse.fills = [{ type: 'SOLID', color: color }];
 
     // create annotations text
     var text = figma.createText();
     text.name = 'Annotation - ' + args.taskname + ' - ' + stepNumber + ' - Text';
     if (selectionParent.name.endsWith('Annotation')) {
-        text.x = selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 10) - 3;
+        text.x = selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 12) - 3;
     } else {
         text.x = selectionRelTransform[0][2] - 3;
     }
@@ -107,8 +132,51 @@ const createAnnotation = (args) => {
     dispatch('taskStepAdded', { taskname: args.taskname, id: group.id});
 }
 
+const createExampletext = (input, taskname) => {
+    // get relativeTransform of selection
+    if (figma.currentPage.selection.length === 1) {
+        for (const node of figma.currentPage.selection) {
+            if ('relativeTransform' in node) {
+                var selectionRelTransform = node.relativeTransform;
+            }
+            if ('height' in node) {
+                var selectionHeight = node.height;
+            }
+            if ('parent' in node) {
+                var selectionParent = node.parent;
+            }
+        }
+    }
+
+    // create text field for example
+    var text = figma.createText();
+    text.name = 'Annotation - ' + taskname + ' - Eingabebeispiel ';
+    text.x = selectionRelTransform[0][2] + 10;
+    loadingFont().then(() => {
+        text.fontName = { family: 'Roboto', style: 'Regular' };
+        text.fontSize = 16;
+        text.fills = [{ type: 'SOLID', color: {r: 0, g: 0, b: 1} }];
+        text.characters = input;
+    })
+    text.y = selectionRelTransform[1][2] + selectionHeight / 2 - text.height / 2;
+
+    if (selectionParent.name.endsWith('Annotation')) {
+        selectionParent.insertChild(selectionParent.children.length, text);
+    } else {
+        const elementAndAnnotationGroupNode: SceneNode[] = [];
+        elementAndAnnotationGroupNode.push(text);
+        var elementAndAnnotationGroup = figma.group(elementAndAnnotationGroupNode, figma.currentPage);
+        for (const node of figma.currentPage.selection) {
+            var parent = node.parent;
+            elementAndAnnotationGroup.name = node.name + ' + Annotation';
+            elementAndAnnotationGroup.insertChild(0, node);
+            parent.appendChild(elementAndAnnotationGroup);
+        }
+    }
+}
+
 const deleteAnnotation = (args) => {
-    var group = figma.getNodeById(args.step);
+    var group = figma.getNodeById(args.step.id);
     var parent = group.parent;
     group.remove();
     if (parent.children.length === 1) {
@@ -142,7 +210,7 @@ const updateAnnotation = (id, number) => {
     var group = figma.getNodeById(id);
     if (group.type === 'GROUP') {
         for (let i = 0; i < group.children.length; i++) {
-            if (group.children[i].type === 'TEXT') {
+            if(group.children[i].type === 'TEXT') {
                 loadingFont().then(() => {
                     group.children[i].fontName = { family: 'Roboto', style: 'Regular' };
                     group.children[i].fills = [{ type: 'SOLID', color: {r: 1, g: 1, b: 1} }];
@@ -153,106 +221,6 @@ const updateAnnotation = (id, number) => {
             }
         }
     }
-}
-
-const checkValidityBefore = (args) => {
-    var validity = false;
-
-    // get frame of current selection
-    var currentNode = null;
-    var currentFrame = null;
-    if (args.current === null) {
-        if (figma.currentPage.selection.length === 1) {
-            for (const node of figma.currentPage.selection) {
-                currentNode = node;
-                while (currentNode.type !== 'FRAME') {
-                    currentNode = currentNode.parent;
-                }
-            }
-            currentFrame = currentNode;
-        }
-    } else {
-        currentNode = figma.getNodeById(args.current);
-        var temp = currentNode.parent;
-        while (temp.type !== 'FRAME') {
-            temp = temp.parent;
-        }
-        currentFrame = temp;
-    }
-    // get frame of step before
-    var beforeNode = figma.getNodeById(args.before);
-    var beforeFrame = null;
-    var beforeParent = beforeNode.parent;
-    while (beforeParent.type !== 'FRAME') {
-        beforeParent = beforeParent.parent;
-    }
-    beforeFrame = beforeParent;
-
-    // compare frames
-    if (currentFrame.id !== beforeFrame.id) {
-        // get interaction of before step
-        var beforeNodeParent = beforeNode.parent;
-        var element = beforeNodeParent.children[0];
-        for (let i = 0; i < element.reactions.length; i++) {
-            if (element.reactions[i].action.destinationId === currentFrame.id) {
-                validity = true;
-            }
-        }
-    } else {
-        validity = true;
-    }
-
-    return validity;
-}
-
-const checkValidityAfter = (args) => {
-    var validity = false;
-
-    // get frame of current selection
-    var currentNode = null;
-    var currentFrame = null;
-    if (args.current === null) {
-        if (figma.currentPage.selection.length === 1) {
-            for (const node of figma.currentPage.selection) {
-                currentNode = node;
-                while (currentNode.type !== 'FRAME') {
-                    currentNode = currentNode.parent;
-                }
-            }
-            currentFrame = currentNode;
-        }
-    } else {
-        currentNode = figma.getNodeById(args.current);
-        var temp = currentNode.parent;
-        while (temp.type !== 'FRAME') {
-            temp = temp.parent;
-        }
-        currentFrame = temp;
-    }
-    // get frame of step after
-    var afterNode = figma.getNodeById(args.after);
-    var afterFrame = null;
-    var afterParent = afterNode.parent;
-    while (afterParent.type !== 'FRAME') {
-        afterParent = afterParent.parent;
-    }
-    afterFrame = afterParent;
-
-    // compare frames
-    if (currentFrame.id !== afterFrame.id) {
-        // get interaction of before step
-        var currentNodeParent = currentNode.parent;
-        var element = currentNodeParent.children[0];
-        for (let i = 0; i < element.reactions.length; i++) {
-            if (element.reactions[i].action.destinationId === afterFrame.id) {
-                validity = true;
-            }
-        }
-    } else {
-        validity = true;
-    }
-
-    return validity;
 }
 
 const convertColor = (color) => {
