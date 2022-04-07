@@ -13,12 +13,12 @@
                 <div v-for="(step, index) in steps" :key="index" :id="'step-' + step" class="task-step">
                     <div style="display: flex;">
                         <div class="numberCircle" :style="{ border: `3px solid ${color}`, color: color }">{{ index + 1 }}</div>
-                        <p class="type--pos-medium-normal">{{ step }}</p>
+                        <p class="type--pos-medium-normal">{{ step.type }} ({{ step.id }})</p>
                     </div>
                      <div class="task-step-settings">
                         <div :id="'delete-' + step" class="icon icon--trash" @click="deleteStep(step)"></div>
-                        <div class="icon icon--chevron-up" :class="{ 'disabled-button': index === 0 }" style="margin-top: 5px" @click="moveUp(taskname, step)"></div>
-                        <div class="icon icon--chevron-down" :class="{ 'disabled-button': index === steps.length-1 }" style="margin-top: 5px" @click="moveDown(taskname, step)"></div>
+                        <div class="icon icon--chevron-up" :class="{ 'disabled-button': index === 0 }" style="margin-top: 5px" @click="moveUp(taskname, step.id)"></div>
+                        <div class="icon icon--chevron-down" :class="{ 'disabled-button': index === steps.length-1 }" style="margin-top: 5px" @click="moveDown(taskname, step.id)"></div>
                     </div>
                 </div>
             </div>
@@ -60,37 +60,41 @@ export default {
         deleteStep(step) {
             var followingSteps = [];
             for (let i = 0; i < this.steps.length; i++) {
-                if (this.steps[i] === step) {
+                if (this.steps[i].id === step.id) {
                     // check if new before and new current fit
                     var newBefore = this.steps[i-1];
                     var newCurrent = this.steps[i+1];
                     if (newBefore !== undefined && newCurrent !== undefined) {
-                        dispatch('checkStepValidityBefore', { before: newBefore, current: newCurrent })
+                        dispatch('checkStepValidityBefore', { before: newBefore.id, current: newCurrent.id })
                         handleEvent('validityBefore', validityBefore => {
                             if (validityBefore) {
                                 followingSteps = this.steps.slice(i+1);
                                 dispatch('deleteStep', { taskname: this.taskname, step: step, followingSteps: followingSteps });
-                                this.$emit('deletedStep', { taskname: this.taskname, id: step });
+                                this.$emit('deletedStep', { taskname: this.taskname, id: step.id });
                             } else {
                                 alert('Dieser Schritt kann nicht gelöscht werden, da vom vorherigen der nachfolgende nicht erreicht werden kann.');
                             }
                         });
+                    } else {
+                        followingSteps = this.steps.slice(i+1);
+                        dispatch('deleteStep', { taskname: this.taskname, step: step, followingSteps: followingSteps });
+                        this.$emit('deletedStep', { taskname: this.taskname, id: step.id });
                     }
                 }
             }
         },
-        moveUp(taskname, step) {
-            this.$emit('moveUp', { taskname: taskname, id: step });
+        moveUp(taskname, id) {
+            this.$emit('moveUp', { taskname: taskname, id: id });
         },
-        moveDown(taskname, step) {
-            this.$emit('moveDown', { taskname: taskname, id: step });
+        moveDown(taskname, id) {
+            this.$emit('moveDown', { taskname: taskname, id: id });
         },
     },
 }
 </script>
 
 <style lang='scss'>
-	@import "../../figma-ui/figma-plugin-ds";
+    @import "../../figma-ui/figma-plugin-ds";
 
     .task-definition__annotation-header {
 		width: 80%;
