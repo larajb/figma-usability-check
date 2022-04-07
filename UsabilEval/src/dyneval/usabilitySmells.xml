@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<smell>
+    <titel>Too Many Layers</titel>
+    <regel>numFrames >= 4</regel>
+</smell>
+<smell>
+    <titel>High Website Element Distance</titel>
+    <regel>elementDistance >></regel>
+</smell>
+<smell>
+    <titel>Laborious Task</titel>
+    <regel>numSteps >></regel>
+</smell>
+<smell>
+    <titel>Cyclic Task</titel>
+    <regel>numEqualSteps >></regel>
+</smell>
+<smell>
+    <titel>Distant Content</titel>
+    <regel>frameChange between every step</regel>
+</smell>
