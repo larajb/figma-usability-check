@@ -1,5 +1,5 @@
 <template>
-  	<div class="base">
+  	<div class="stateval-ui">
 		<div style="display: flex; margin-bottom: 20px;">
 			<div id="select-metriken" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetMetrics">Metriken</div>
 			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetResults">Ergebnisse</div>
@@ -15,9 +15,7 @@
 <script>
 import { dispatch, handleEvent } from '../uiMessageHandler';
 
-import '../figma-ui/js/selectMenu';
-import '../figma-ui/js/iconInput';
-import '../figma-ui/js/disclosure';
+import { selectMenu, iconInput, disclosure } from 'figma-plugin-ds';
 
 import { metricsArray } from './metrics.js';
 import MetricSelection from './components/MetricSelection.vue';
@@ -52,10 +50,15 @@ export default {
 		},
 	},
 	mounted() {
-		window.selectMenu.init();
-    	window.iconInput.init();
-    	window.disclosure.init();
+		selectMenu.init();
+    	// window.iconInput.init();
+    	// window.disclosure.init();
 		this.showMetrics = true;
+
+		dispatch('loadMetrics');
+	},
+	destroyed() {
+		selectMenu.destroy();
 	},
 	methods: {
 		handleClickSetMetrics() {
@@ -71,5 +74,9 @@ export default {
 </script>
 
 <style lang='scss'>
-	@import "../figma-ui/figma-plugin-ds";
+	@import "../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
+
+	.stateval-ui {
+		padding: 10px;
+	}
 </style>

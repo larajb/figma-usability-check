@@ -1,5 +1,5 @@
 <template>
-  	<div class="base">
+  	<div class="dyneval-ui">
 		<div style="display: flex; margin-bottom: 20px;">
 			<div id="select-aufgaben" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetTasks">Aufgaben</div>
 			<div id="select-evaluation" style="margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetEvaluation">Evaluation</div>
@@ -17,9 +17,7 @@
 <script>
 import { dispatch, handleEvent } from '../uiMessageHandler';
 
-import '../figma-ui/js/selectMenu';
-import '../figma-ui/js/iconInput';
-import '../figma-ui/js/disclosure';
+import { selectMenu, iconInput, disclosure } from 'figma-plugin-ds';
 
 import TaskDefinition from './components/TaskDefinition.vue';
 import Evaluation from './components/Evaluation.vue';
@@ -63,15 +61,15 @@ export default {
 		},
 	},
 	mounted() {
-		window.selectMenu.init();
-    	window.iconInput.init();
-    	window.disclosure.init();
+		selectMenu.init();
+    	// window.iconInput.init();
+    	// window.disclosure.init();
 		this.showTasks = true;
 	},
 	destroyed() {
-		window.selectMenu.destroy();
-		window.iconInput.destroy();
-		window.disclosure.destroy();
+		selectMenu.destroy();
+		// window.iconInput.destroy();
+		// window.disclosure.destroy();
 	},
 	methods: {
 		handleClickSetTasks() {
@@ -97,5 +95,9 @@ export default {
 </script>
 
 <style lang='scss'>
-	@import "../figma-ui/figma-plugin-ds";
+	@import "../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
+
+	.dyneval-ui {
+		padding: 10px;
+	}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  	<div>
+  	<div class="annotations-ui">
 		<p class="type--pos-large-bold">
 			Annotationen
 		</p>
@@ -31,9 +31,8 @@
 <script>
 import { dispatch, handleEvent } from '../uiMessageHandler';
 
-import '../figma-ui/js/selectMenu';
-import '../figma-ui/js/iconInput';
-import '../figma-ui/js/disclosure';
+import { selectMenu, iconInput, disclosure } from 'figma-plugin-ds';
+
 import AnnotationListEntry from './components/AnnotationListEntry.vue';
 
 export default {
@@ -46,9 +45,9 @@ export default {
 		AnnotationListEntry,
 	},
 	mounted() {
-		window.selectMenu.init();
-    	window.iconInput.init();
-    	window.disclosure.init();
+		selectMenu.init();
+    	// window.iconInput.init();
+    	// window.disclosure.init();
 
 		this.getAnnotationStorage();
 
@@ -131,7 +130,11 @@ export default {
 </script>
 
 <style lang='scss'>
-	@import "../figma-ui/figma-plugin-ds";
+	@import "../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
+
+	.annotations-ui {
+		padding: 10px;
+	}
 
 	.annotations__selection {
 		display: flex;
