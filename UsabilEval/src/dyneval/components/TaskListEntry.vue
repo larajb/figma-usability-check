@@ -16,9 +16,15 @@
                         <p class="type--pos-medium-normal">{{ step.type }} ({{ step.id }})</p>
                     </div>
                      <div class="task-step-settings">
-                        <div :id="'delete-' + step" class="icon icon--trash" @click="deleteStep(step)"></div>
-                        <div class="icon icon--chevron-up" :class="{ 'disabled-button': index === 0 }" style="margin-top: 5px" @click="moveUp(taskname, step.id)"></div>
-                        <div class="icon icon--chevron-down" :class="{ 'disabled-button': index === steps.length-1 }" style="margin-top: 5px" @click="moveDown(taskname, step.id)"></div>
+                        <div :id="'delete-' + step" class="icon-button" @click="deleteStep(step)">
+                            <div class="icon icon--trash"></div>
+                        </div>
+                        <div class="icon-button" :class="{ 'disabled-button': index === 0 }" style="margin-top: 5px" @click="moveUp(taskname, step.id)">
+                            <div class="icon icon--chevron-up"></div>
+                        </div>
+                        <div class="icon-button" :class="{ 'disabled-button': index === steps.length-1 }" style="margin-top: 5px" @click="moveDown(taskname, step.id)">
+                            <div class="icon icon--chevron-down"></div>
+                        </div>
                     </div>
                 </div>
             </div>

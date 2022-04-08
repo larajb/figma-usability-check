@@ -6,9 +6,9 @@
 			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetResults">Ergebnisse</div>
 		</div>
 		<p class="type--pos-large-bold">
-			DynEval
+			Dynamische Evaluation
 		</p>
-		<task-definition v-show="showTasks" @clicked="handleClickSetTasks" @updated="taskAdded($event)" />
+		<task-definition v-show="showTasks" @clicked="handleClickSetTasks" @updated="tasksUpdated($event)" />
 		<evaluation v-show="showEvaluation" @clickedDefine="handleClickSetTasks" :tasks="tasks" />
 		<results v-show="showResults" @clicked="handleClickSetResults" />
 	</div>
@@ -87,7 +87,7 @@ export default {
 			this.showEvaluation = false;
 			this.showResults = true;
 		},
-		taskAdded(tasks) {
+		tasksUpdated(tasks) {
 			this.tasks = tasks;
 		},
 	},

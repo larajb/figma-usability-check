@@ -5,7 +5,7 @@
 			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetResults">Ergebnisse</div>
 		</div>
 		<p class="type--pos-large-bold">
-			StatEval
+			Statische Evaluation
 		</p>
 		<metric-selection v-show="showMetrics" @clicked="handleClickSetMetrics" :metrics="metrics" />
 		<results v-show="showResults" @clicked="handleClickSetResults" />
@@ -17,7 +17,7 @@ import { dispatch, handleEvent } from '../uiMessageHandler';
 
 import { selectMenu, iconInput, disclosure } from 'figma-plugin-ds';
 
-import { metricsArray } from './metrics.js';
+import { metricsArray } from './metrics/metricsArray.js';
 import MetricSelection from './components/MetricSelection.vue';
 import Results from './components/Results.vue';
 
