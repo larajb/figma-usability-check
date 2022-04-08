@@ -10,8 +10,8 @@
 	"editorType": ["figma"],
 	"menu": [
 		{"name": "Annotationen", "command": "annotations"},
-		{"name": "StatEval", "command": "stateval"},
-		{"name": "DynEval", "command": "dyneval"}
+		{"name": "Statische Evaluation", "command": "stateval"},
+		{"name": "Dynamische Evaluation", "command": "dyneval"}
 	],
-	"id": "Fudrqfk3xj4uZ4nnyBSrNd"
+	"id": "1094202341925042367"
 }
