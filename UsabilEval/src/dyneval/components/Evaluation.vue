@@ -18,6 +18,7 @@
 <script>
 import { dispatch, handleEvent } from '../../uiMessageHandler';
 import { Select } from 'figma-plugin-ds-vue';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
     name: 'Evaluation',
@@ -36,7 +37,42 @@ export default {
             secondTask: '',
             itemsFirst: [],
             itemsSecond: [],
+            evaluationHistory: [],
         }
+    },
+    mounted() {
+        this.getEvaluationHistory();
+
+        handleEvent('currentEvaluationStorage', storage => {
+            if (storage !== undefined) {
+                this.evaluationHistory = storage;
+            }
+        });
+
+        handleEvent('usabilitySmellsResult', result => {
+            if (result !== undefined) {
+                const index = this.evaluationHistory.findIndex((history) => history.taskname === firstTask);
+                this.evaluationHistory[index].usabilitySmells.push(result);     // result = { foundSmells: [ { title: ..., value: ... }, ...], timestamp: Date.now() }
+            }
+        });
+
+        handleEvent('calculatedGomsTime', time => {
+            if (this.evaluationHistory)
+                var trend = '';         // consistent || increasing || decreasing
+                const index = this.evaluationHistory.findIndex((history) => history.taskname === firstTask);
+                if (index !== undefined) {
+                    var task = this.evaluationHistory[index];
+                    var lastGomsTime = task.goms[-1].gomsTime;
+                    if (lastGomsTime === time) {
+                        trend = 'consistent';
+                    } else if (lastGomsTime < time) {
+                        trend = 'increasing';
+                    } else if (lastGomsTime > time) {
+                        trend = 'decreasing';
+                    }
+                }
+            this.setEvaluationHistory('goms', { gomsTime: time, trend: trend, timestamp: Date.now() });
+        });
     },
     watch: {
         tasks() {
@@ -79,13 +115,30 @@ export default {
             var selectedTaskname = document.getElementById('first-task-select').value;
             return selectedTaskname !== taskname;
         },
-        startEvaluation() {
-            var task = {};
-            for (let i = 0; i < this.tasks.length; i++) {
-                if (this.tasks[i].taskname === this.firstTask) {
-                    task = this.tasks[i];
+        getEvaluationHistory() {
+            dispatch('getEvaluationStorage');
+        },
+        setEvaluationHistory(type, result) {            // type = 'goms', 'usabilitySmells'
+            if (this.evaluationHistory.length === 0) {
+                this.evaluationHistory.push({
+                    id: uuidv4(),
+                    taskname: firstTask,
+                    goms: type === 'goms' ? [ result ] : [],            // { gomsTime: ..., trend: ..., timestamp: Date.now()  }
+                    usabilitySmells: type === 'usabilitySmells' ? [ result ] : []           // [ { title: ..., value: ...}, ..., timestamp: Date.now() ]
+                });
+            } else {
+                for (let i = 0; i < this.evaluationHistory.length; i++) {
+                    if (this.evaluationHistory.taskname === taskname) {
+                        this.evaluationHistory[type].push(result);
+                    }
                 }
             }
+            dispatch('setEvaluationStorage', this.evaluationHistory);
+        },
+        startEvaluation() {
+            const index = this.evaluationHistory.findIndex((history) => history.taskname === firstTask);
+            var task = this.evaluationHistory[index];
+            dispatch('checkUsabilitySmells', task);
             dispatch('calculateGoms', task);
         },
     },
