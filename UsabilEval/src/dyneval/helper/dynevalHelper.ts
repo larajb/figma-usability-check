@@ -3,6 +3,7 @@ import { addAnnotationToFile, getCurrentSelection, getNode } from "../../figmaAc
 import { createEllipseNode, createGroupNode, createTextNode } from "../../figmaAccess/nodeCreator";
 import { getHeight, getParent, getRelativeTransform, getType, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
 import { distantContent, laboriousTask, tooManyLayers } from "./usabilitySmellsHelper";
+import { checkInputExample } from "./validityHelper";
 
 /**
  * This is a function to create an example text for an input field.
@@ -11,16 +12,19 @@ import { distantContent, laboriousTask, tooManyLayers } from "./usabilitySmellsH
  * @returns text
  */
 export const createExampletext = (input, taskname) => {
-    var currentSelection = getCurrentSelection();
-    var selectionRelTransform = getRelativeTransform(currentSelection.id);
-    var selectionHeight = getHeight(currentSelection.id);
+    var result = checkInputExample();
+    if (result === null) {
+        var currentSelection = getCurrentSelection();
+        var selectionRelTransform = getRelativeTransform(currentSelection.id);
+        var selectionHeight = getHeight(currentSelection.id);
 
-    var text = createTextNode('Annotation - ' + taskname + ' - Eingabebeispiel ', {r: 0, g: 0, b: 1}, null, input)
-    setRelativeTransform(text, selectionRelTransform[0][2] + 10, selectionRelTransform[1][2] + selectionHeight / 2 - text.height / 2)
+        var text = createTextNode('Annotation - ' + taskname + ' - Eingabebeispiel', {r: 0, g: 0, b: 1}, null, input)
+        setRelativeTransform(text, selectionRelTransform[0][2] + 10, selectionRelTransform[1][2] + selectionHeight / 2 - text.height / 2)
 
-    addAnnotationToFile(currentSelection, text);
+        addAnnotationToFile(currentSelection, text);
+    }
 
-    return text;
+    return true;
 }
 
 /**
@@ -39,12 +43,28 @@ export const createTaskAnnotation = (taskname, numSteps, color) => {
 
     var ellipse = createEllipseNode('Annotation - ' + taskname + ' - ' + stepNumber, 24, 24, convertedColor);
     var text = createTextNode('Annotation - ' + taskname + ' - ' + stepNumber + ' - Text', {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, stepNumber)
-    if (selectionParent.name.endsWith('Annotation')) {
-        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12), selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 12) - 3, selectionRelTransform[1][2] - 7);
-    } else {
+    var containsExample = false;
+    var containsJustExample = false;
+    for (let i = 0; i < selectionParent.children.length; i++) {
+        if (selectionParent.children[i].name.endsWith('Eingabebeispiel')) {
+            containsExample = true;
+            if (selectionParent.children.length === 2) {
+                containsJustExample = true;
+            }
+        }
+    }
+    if (selectionParent.name.endsWith('Annotation') === false) {
         setRelativeTransform(ellipse, selectionRelTransform[0][2] - 12, selectionRelTransform[1][2] - 12);
         setRelativeTransform(text, selectionRelTransform[0][2] - 3, selectionRelTransform[1][2] - 7);
+    } else if (containsJustExample === true) {
+        setRelativeTransform(ellipse, selectionRelTransform[0][2] - 12, selectionRelTransform[1][2] - 12);
+        setRelativeTransform(text, selectionRelTransform[0][2] - 3, selectionRelTransform[1][2] - 7);
+    } else if (containsExample === true) {
+        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 3) * 12), selectionRelTransform[1][2] - 12);
+        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12) - 3, selectionRelTransform[1][2] - 7);
+    } else if (containsExample === false) {
+        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12), selectionRelTransform[1][2] - 12);
+        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 12) - 3, selectionRelTransform[1][2] - 7);
     }
 
     var annotation = createGroupNode('Annotation - ' + taskname + ' - ' + stepNumber + ' - ', [ellipse, text]);
@@ -64,7 +84,7 @@ export const deleteStepAnnotation = (step, followingSteps) => {
     var annotationInput = step.input;
     var parent = getParent(step.id);
     stepAnnotation.remove();
-    if (annotationInput !== '') {
+    if (annotationInput !== '' && parent.children.length === 2) {
         for (let i = 0; i < parent.children.length; i++) {
             if (getType(parent.children[i].id) === 'TEXT' && parent.children[i].characters === annotationInput) {
                 parent.children[i].remove();
@@ -89,7 +109,7 @@ export const deleteStepAnnotation = (step, followingSteps) => {
                 for (let i = 0; i < stepNode.children.length; i++) {
                     if (getType(stepNode.children[i].id) === 'TEXT') {
                         var current = parseInt(stepNode.children[i].characters);
-                        stepNode.children[i].characters = String(current - 1);
+                        setText(stepNode.children[i], {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, String(current - 1));
                     }
                 }
             }

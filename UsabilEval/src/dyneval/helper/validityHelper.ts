@@ -31,8 +31,6 @@ export const checkValidity = (args) => {
         afterFrame = getFrame(args.after);
     }
 
-    console.log(beforeNode.name, beforeFrame.name, afterNode.name, afterFrame.name);
-
     // compare frames
     if (beforeFrame.id !== afterFrame.id) {
         var beforeNodeParent = getParent(beforeNode.id);
@@ -60,6 +58,22 @@ export const checkButtonValidity = () => {
     var height = getHeight(currentSelection.id);
     validity = (width >= 44) && (height >= 44);
     return validity;
+}
+
+/**
+ * This is a function to check if the selected element already contains an example.
+ */
+export const checkInputExample = () => {
+    var currentSelection = getCurrentSelection();
+    var selectionParent = getParent(currentSelection.id);
+    if (selectionParent.name.endsWith('Annotation')) {
+        for (let i = 0; i < selectionParent.children.length; i++) {
+            if (selectionParent.children[i].name.endsWith('Eingabebeispiel')) {
+                return selectionParent.children[i].characters;
+            }
+        }
+    }
+    return null;
 }
 
 /**
