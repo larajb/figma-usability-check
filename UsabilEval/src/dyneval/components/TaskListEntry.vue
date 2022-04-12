@@ -6,7 +6,16 @@
                     <div class="task-definition__annotation-header-title-colorsquare" :style="myStyle"></div>
                     <p class="type--pos-medium-normal">{{ taskname }}</p>
                 </div>
-                <div :id="'delete-' + taskname" class="icon icon--trash" @click="deleteTask">
+                <div style="display: flex">
+                    <div class="icon-button" :id="'delete-' + taskname" @click="deleteTask">
+                        <div class="icon icon--trash"></div>
+                    </div>
+                    <div class="switch">
+                        <input class="switch__toggle" type="checkbox" id="edit-switch" v-model="switchValue">
+                        <label class="switch__label" for="edit-switch">
+                            <div class="icon icon--settings"></div>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div id="temp">
@@ -55,8 +64,15 @@ export default {
         return {
             myStyle:{
                 backgroundColor: this.color,
-            }
+            },
+            switchValue: false,
         }
+    },
+    watch: {
+        switchValue() {
+            console.log(this.switchValue);
+            this.$emit('edit', this.switchValue);
+        },
     },
     methods: {
         deleteTask() {
@@ -103,7 +119,7 @@ export default {
     @import "../../figma-ui/figma-plugin-ds";
 
     .task-definition__annotation-header {
-		width: 80%;
+		width: 100%;
         margin-top: 20px;
 		margin-bottom: 20px;
 		display: flex;

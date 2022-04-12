@@ -33,7 +33,8 @@
                 @deletedTask="deletedTask($event)"
                 @deletedStep="deletedStep($event)"
                 @moveUp="moveStepUp($event)"
-                @moveDown="moveStepDown($event)" />
+                @moveDown="moveStepDown($event)"
+                @edit="setEditMode" />
         </div>
     </div>
 </template>
@@ -55,6 +56,8 @@ export default {
             type: '',
             showError: false,
             errorMessage: '',
+            alreadySet: false,
+            editMode: false,
         }
     },
     components: {
@@ -81,6 +84,12 @@ export default {
             }
             this.addValidTaskStep();
         });
+        handleEvent('inputExampleCheck', result => {
+            if (result !== null) {
+                this.alreadySet = true;
+                this.exampleInput = result;
+            }
+        });
         handleEvent('inputValidity', validity => {
             if (!validity) {
                 this.showError = true;
@@ -96,6 +105,14 @@ export default {
             this.addValidTaskStep();
         });
     },
+    watch: {
+        type() {
+            if (this.type === 'input') {
+                // check if selection already has an example
+                dispatch('checkInputExample');
+            }
+        }
+    },
     methods: {
         addTask() {
 			// wenn taskname leer Fehler zurückgeben
@@ -109,31 +126,37 @@ export default {
             if (!isUsed) {
                 this.tasks.push({ taskname: this.tasknameInput, platform: this.platform, color: this.getRandomColor(), steps: [] });
             } else {
-                alert('Es existiert bereits eine Aufgabe mit diesem Namen. Füge dieser Aufgabe weitere Bearbeitungsschritte hinzu oder wähle einen anderen Namen.')
+                this.showError = true;
+                this.errorMessage = 'Es existiert bereits eine Aufgabe mit diesem Namen. Füge dieser Aufgabe weitere Bearbeitungsschritte hinzu oder wähle einen anderen Namen.'
             }
             
             this.setTaskStorage();
             this.$emit('updated', this.tasks);
-            console.log(this.tasks);
 		},
         addTaskStep() {
-            switch(this.type) {
-                case 'button':
-                    // check if button is valid
-                    dispatch('checkButtonValidity');
-                    break;
-                case 'input':
-                    // check if input is valid
-                    if (this.exampleInput !== '') {
-                        dispatch('checkInputValidity', this.exampleInput);
-                    } else {
-                        alert('Es wurde kein Beispiel für die Eingabe angegeben. Bitte trage ein Beispiel ein.');
-                    }
-                    break;
-                case 'link':
-                    // check if link is valid
-                    dispatch('checkLinkValidity');
-                    break;
+            console.log('edit mode', this.editMode);
+            if (this.editMode === false) {
+                switch(this.type) {
+                    case 'button':
+                        // check if button is valid
+                        dispatch('checkButtonValidity');
+                        break;
+                    case 'input':
+                        
+                        if (this.exampleInput !== '') {
+                            dispatch('checkInputValidity', this.exampleInput);
+                        } else {
+                            this.showError = true;
+                            this.errorMessage = 'Es wurde kein Beispiel für die Eingabe angegeben. Bitte trage ein Beispiel ein.';
+                        }
+                        break;
+                    case 'link':
+                        // check if link is valid
+                        dispatch('checkLinkValidity');
+                        break;
+                }
+            } else {
+                this.addValidTaskStep();
             }
         },
         addValidTaskStep() {
@@ -154,7 +177,8 @@ export default {
                         dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.type, numSteps: numSteps, color: color, input: this.exampleInput });
                         return;
                     } else {
-                        alert('Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum voherigen Schritt bzw. zu der vorherigen Seite besteht.');
+                        this.showError = true;
+                        this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum voherigen Schritt bzw. zu der vorherigen Seite besteht.';
                     }
                 });
             } else {
@@ -170,6 +194,7 @@ export default {
             }
             this.setTaskStorage();
             this.exampleInput = '';
+            this.type = '';
         },
         deletedTask(taskname) {
             this.tasks = this.tasks.filter(function(item) {
@@ -214,7 +239,8 @@ export default {
                                                 dispatch('updateStepNumbers', this.tasks);
                                                 this.setTaskStorage();
                                             } else {
-                                                alert('Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem vorangehenden (nach Verschieben) Schritt.');
+                                                this.showError = true;
+                                                this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem vorangehenden (nach Verschieben) Schritt.';
                                             }
                                         });
                                     } else {
@@ -224,7 +250,8 @@ export default {
                                         this.setTaskStorage();
                                     }
                                 } else {
-                                    alert('Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem darauffolgenden (nach Verschieben) Schritt.');
+                                    this.showError = true;
+                                    this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem darauffolgenden (nach Verschieben) Schritt.';
                                 }
                             });
                         }
@@ -255,7 +282,8 @@ export default {
                                                 dispatch('updateStepNumbers', this.tasks);
                                                 this.setTaskStorage();
                                             } else {
-                                                alert('Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem vorangehenden (nach Verschieben) Schritt.');
+                                                this.showError = true;
+                                                this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem vorangehenden (nach Verschieben) Schritt.';
                                             }
                                         });
                                     } else {
@@ -265,7 +293,8 @@ export default {
                                         this.setTaskStorage();
                                     }
                                 } else {
-                                    alert('Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem darauffolgenden (nach Verschieben) Schritt.');
+                                    this.showError = true;
+                                    this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem darauffolgenden (nach Verschieben) Schritt.';
                                 }
                             });
                             break;
@@ -289,7 +318,10 @@ export default {
         closeError() {
             this.showError = false;
             this.errorMessage = '';
-        }
+        },
+        setEditMode(editMode) {
+            this.editMode = editMode;
+        },
     },
 }
 </script>
