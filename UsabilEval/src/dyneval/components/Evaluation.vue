@@ -41,6 +41,7 @@ export default {
         }
     },
     mounted() {
+        // dispatch('setEvaluationStorage', this.evaluationHistory);
         this.getEvaluationHistory();
 
         handleEvent('currentEvaluationStorage', storage => {
@@ -49,33 +50,54 @@ export default {
             }
         });
 
-        handleEvent('usabilitySmellsResult', result => {
-            if (result !== undefined) {
-                const index = this.evaluationHistory.findIndex((history) => history.taskname === firstTask);
-                this.evaluationHistory[index].usabilitySmells.push(result);     // result = { foundSmells: [ { title: ..., value: ... }, ...], timestamp: Date.now() }
+        handleEvent('evaluationResult', result => {
+            if (result.usabilitySmells !== undefined) {
+                this.setEvaluationHistory('usabilitySmells', result.usabilitySmells);
             }
-        });
 
-        handleEvent('calculatedGomsTime', time => {
-            if (this.evaluationHistory)
+            if (this.evaluationHistory) {
                 var trend = '';         // consistent || increasing || decreasing
-                const index = this.evaluationHistory.findIndex((history) => history.taskname === firstTask);
+                const index = this.evaluationHistory.findIndex((history) => history.taskname === this.firstTask);
                 if (index !== undefined) {
                     var task = this.evaluationHistory[index];
-                    var lastGomsTime = task.goms[-1].gomsTime;
-                    if (lastGomsTime === time) {
-                        trend = 'consistent';
-                    } else if (lastGomsTime < time) {
-                        trend = 'increasing';
-                    } else if (lastGomsTime > time) {
-                        trend = 'decreasing';
+                    if (task.evaluationRuns.length > 1) {
+                        var lastGomsTime = task.evaluationRuns[1].goms.gomsTime;
+                        if (lastGomsTime === result.goms.time) {
+                            trend = 'consistent';
+                        } else if (lastGomsTime < result.goms.time) {
+                            trend = 'increasing';
+                        } else if (lastGomsTime > result.goms.time) {
+                            trend = 'decreasing';
+                        }
                     }
                 }
-            this.setEvaluationHistory('goms', { gomsTime: time, trend: trend, timestamp: Date.now() });
-        });
+            }
+            this.setEvaluationHistory('goms', { gomsTime: result.goms.time, trend: trend, avgPointingTime: result.goms.avgPointingTime, avgHomingNum: result.goms.avgHomingNum });
+        })
+
+        handleEvent('calculatedGomsComparisonTime', time => {
+            this.setComparison(time);
+        })
     },
     watch: {
         tasks() {
+            this.setTasks();
+        },
+        firstTask() {
+            this.setTasks();
+            const result = this.itemsSecond.filter(item => item.label !== this.firstTask);
+            this.itemsSecond = result;
+            this.$emit('tasknameSet', this.firstTask);
+        },
+        // evaluationHistory() {
+        //     this.$emit('historyUpdated', this.evaluationHistory);
+        // },
+    },
+    methods: {
+        handleClick() {
+            this.$emit('clickedDefine')
+        },
+        setTasks() {
             this.itemsFirst = [];
             this.itemsSecond = [];
             this.tasks.forEach(task => {
@@ -83,33 +105,11 @@ export default {
                     label: task.taskname,
                     key: task.taskname,
                 })
+                this.itemsSecond.push({
+                    label: task.taskname,
+                    key: task.taskname,
+                })
             })
-            this.itemsSecond = this.itemsFirst;
-        },
-        // firstTask() {
-        //     console.log('first task changed', this.firstTask);
-        //     for(let i = 0; i < this.itemsSecond.length; i++) {
-        //         if (this.itemsSecond[i].key === this.firstTask) {
-        //             this.itemsSecond[i].disabled = true;
-        //         } else {
-        //             this.itemsSecond[i].disabled = false;
-        //         }
-        //     }
-        // },
-        // secondTask() {
-        //     console.log('second task changed', this.secondTask);
-        //     for(let i = 0; i < this.itemsFirst.length; i++) {
-        //         if (this.itemsFirst[i].key === this.secondTask) {
-        //             this.itemsFirst[i].disabled = true;
-        //         } else {
-        //             this.itemsFirst[i].disabled = false;
-        //         }
-        //     }
-        // },
-    },
-    methods: {
-        handleClick() {
-            this.$emit('clickedDefine')
         },
         checkTasknameOnSecond(taskname) {
             var selectedTaskname = document.getElementById('first-task-select').value;
@@ -118,28 +118,69 @@ export default {
         getEvaluationHistory() {
             dispatch('getEvaluationStorage');
         },
-        setEvaluationHistory(type, result) {            // type = 'goms', 'usabilitySmells'
-            if (this.evaluationHistory.length === 0) {
-                this.evaluationHistory.push({
-                    id: uuidv4(),
-                    taskname: firstTask,
-                    goms: type === 'goms' ? [ result ] : [],            // { gomsTime: ..., trend: ..., timestamp: Date.now()  }
-                    usabilitySmells: type === 'usabilitySmells' ? [ result ] : []           // [ { title: ..., value: ...}, ..., timestamp: Date.now() ]
-                });
-            } else {
-                for (let i = 0; i < this.evaluationHistory.length; i++) {
-                    if (this.evaluationHistory.taskname === taskname) {
-                        this.evaluationHistory[type].push(result);
-                    }
-                }
+        setEvaluationHistory(type, result) {
+            const index = this.evaluationHistory.findIndex((history) => history.taskname === this.firstTask);
+            this.evaluationHistory[index].evaluationRuns[0][type] = result;
+            dispatch('setEvaluationStorage', this.evaluationHistory);
+            if (type === 'goms') {
+                this.$emit('historyUpdated', this.evaluationHistory);
             }
+        },
+        setComparison(time) {
+            const index = this.evaluationHistory.findIndex((history) => history.taskname === this.firstTask);
+            this.evaluationHistory[index].evaluationRuns[0].comparison = {
+                taskname: this.secondTask,
+                gomsTime: time
+            };
             dispatch('setEvaluationStorage', this.evaluationHistory);
         },
         startEvaluation() {
-            const index = this.evaluationHistory.findIndex((history) => history.taskname === firstTask);
-            var task = this.evaluationHistory[index];
-            dispatch('checkUsabilitySmells', task);
-            dispatch('calculateGoms', task);
+            const evaluationIndex = this.evaluationHistory.findIndex((task) => task.taskname === this.firstTask);
+            const taskIndex = this.tasks.findIndex((task) => task.taskname === this.firstTask);
+            if (evaluationIndex < 0) {
+                this.evaluationHistory.push({
+                    id: uuidv4(),
+                    taskname: this.firstTask,
+                    color: this.tasks[taskIndex].color,
+                    evaluationRuns: [
+                        {
+                            timestamp: Date.now(),
+                            steps: this.tasks[taskIndex].steps,
+                            goms: null,
+                            usabilitySmells: null,
+                            comparison: this.secondTask !== '' ? {
+                                taskname: this.secondTask,
+                                gomsTime: null,
+                            } : null
+                        }
+                    ]
+                });
+            } else {
+                this.evaluationHistory[evaluationIndex].evaluationRuns.unshift({
+                    timestamp: Date.now(),
+                    steps: this.tasks[taskIndex].steps,
+                    goms: null,
+                    usabilitySmells: null,
+                    comparison: this.secondTask !== '' ? {
+                        taskname: this.secondTask,
+                        gomsTime: null,
+                    } : null
+                })
+            }
+
+            if (this.secondTask !== '') {
+                const indexSecond = this.tasks.findIndex((task) => task.taskname === this.secondTask);
+                var secondTask = this.tasks[indexSecond];
+                dispatch('calculateGomsComparison', secondTask);
+            }
+            var task = this.tasks[taskIndex];
+            dispatch('evaluateTask', task);
+        },
+        setPointingTime(avgPointingTime) {
+            // dispatch('setPointingTimeStorage', avgPointingTime);
+        },
+        setHomingNum(avgHomingNum) {
+            // dispatch('setHomingNumStorage', avgHomingNum);
         },
     },
 }

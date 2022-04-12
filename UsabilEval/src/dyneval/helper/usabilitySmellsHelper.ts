@@ -31,8 +31,10 @@ export const tooManyLayers = (task) => {
  */
 export const laboriousTask = (history, task) => {
     var result = { isFound: false, value: 0 };
-    var avgTime = calculateAverageTime(history);
-    var avgStepsNum = calculateAverageStepNum(history);
+    if (history !== undefined) {
+        var avgTime = calculateAverageTime(history);
+        var avgStepsNum = calculateAverageStepNum(history);
+    }
     return result;
 }
 
@@ -50,10 +52,44 @@ export const cyclicTask = (task) => {
  */
 export const distantContent = (task) => {
     var result = { isFound: false, value: 0 };
-    for (let i = 0; i < task.steps.length-1; i++) {
-        if (getFrame(task.steps[i-1].id).id !== getFrame(task.steps[i].id).id !== getFrame(task.steps[i+1].id).id) {
+    for (let i = 1; i < task.steps.length - 1; i++) {
+        if (getFrame(task.steps[i-1].id).id !== getFrame(task.steps[i].id).id && getFrame(task.steps[i].id).id !== getFrame(task.steps[i+1].id).id) {
             result.isFound = true
             result.value++;
+        }
+    }
+    return result;
+}
+
+/**
+ * This is a function to check if a task contains pointing times much bigger (1.5 times) than the average pointing time.
+ * @param pointingTimes 
+ * @param avgPointingTime 
+ * @returns result
+ */
+export const longP = (pointingTimes, avgPointingTime) => {
+    var result = { isFound: false, value: [] };
+    for (let i = 0; i < pointingTimes.length; i++) {
+        if (pointingTimes[i] > (avgPointingTime * 1.5)) {
+            result.isFound = true;
+            result.value.push(i);
+        }
+    }
+    return result;
+}
+
+/**
+ * This is a function to check if a task contains steps with homing numbers much bigger (1.5 times) than the average homging number.
+ * @param homingNums 
+ * @param avgHomingNum 
+ * @returns result
+ */
+export const manyH = (homingNums, avgHomingNum) => {
+    var result = { isFound: false, value: [] };
+    for (let i = 0; i < homingNums.length; i++) {
+        if (homingNums[i] > (avgHomingNum * 1.5)) {
+            result.isFound = true;
+            result.value.push(i);
         }
     }
     return result;
@@ -69,13 +105,17 @@ export const distantContent = (task) => {
 const calculateAverageTime = (history) => {
     var overallTime = 0;
     var numEvaluations = 0;
-    history.forEach(task => {
-        task.goms.forEach(goms => {
-            overallTime += goms.gomsTime;
-            numEvaluations++;
+    var avgTime = 0;
+    if (history.length > 1) {
+        history.forEach(task => {
+            task.evaluationRuns.forEach(run => {
+                overallTime += run.goms.gomsTime;
+                numEvaluations++;
+            });
         });
-    });
-    return overallTime / numEvaluations;
+        avgTime = overallTime / numEvaluations;
+    }
+    return avgTime;
 }
 
 /**
@@ -85,11 +125,15 @@ const calculateAverageTime = (history) => {
 const calculateAverageStepNum = (history) => {
     var overallNumSteps = 0;
     var numEvaluations = 0;
-    history.forEach(task => {
-        overallNumSteps += task.steps.length;
-        task.goms.forEach(goms => {
-            numEvaluations++;
+    var avgNum = 0;
+    if (history.length > 1) {
+        history.forEach(task => {
+            task.evaluationRuns.forEach(run => {
+                overallNumSteps += run.steps.length;
+                numEvaluations++;
+            });
         });
-    });
-    return overallNumSteps / numEvaluations;
+        avgNum = overallNumSteps / numEvaluations;
+    }
+    return avgNum;
 }

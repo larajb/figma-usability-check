@@ -2,15 +2,15 @@
   	<div class="dyneval-ui">
 		<div style="display: flex; margin-bottom: 20px;">
 			<div id="select-aufgaben" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetTasks">Aufgaben</div>
-			<div id="select-evaluation" style="margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetEvaluation">Evaluation</div>
-			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetResults">Ergebnisse</div>
+			<div id="select-evaluation" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': tasks.length === 0}" @click="handleClickSetEvaluation">Evaluation</div>
+			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': evaluationHistory.length === 0}" @click="handleClickSetResults">Ergebnisse</div>
 		</div>
 		<p class="type--pos-large-bold">
 			Dynamische Evaluation
 		</p>
 		<task-definition v-show="showTasks" @clicked="handleClickSetTasks" @updated="tasksUpdated($event)" />
-		<evaluation v-show="showEvaluation" @clickedDefine="handleClickSetTasks" :tasks="tasks" />
-		<results v-show="showResults" @clicked="handleClickSetResults" />
+		<evaluation v-show="showEvaluation" @clickedDefine="handleClickSetTasks" :tasks="tasks" @historyUpdated="setHistory" @tasknameSet="updateTaskname" />
+		<results v-show="showResults" @clicked="handleClickSetResults" :evaluation-history="evaluationHistory" :taskname="currentTaskname" />
 	</div>
 </template>
 
@@ -35,6 +35,8 @@ export default {
 			showEvaluation: false,
 			showResults: false,
 			tasks: [],
+			evaluationHistory: [],
+			currentTaskname: '',
 		};
 	},
 	watch: {
@@ -90,6 +92,12 @@ export default {
 		tasksUpdated(tasks) {
 			this.tasks = tasks;
 		},
+		setHistory(history) {
+			this.evaluationHistory = history;
+		},
+		updateTaskname(taskname) {
+			this.currentTaskname = taskname;
+		}
 	},
 };
 </script>
@@ -99,5 +107,10 @@ export default {
 
 	.dyneval-ui {
 		padding: 10px;
+	}
+
+	.disabled {
+		pointer-events: none;
+		opacity: 0.4;
 	}
 </style>
