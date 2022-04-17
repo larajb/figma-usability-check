@@ -1,3 +1,0 @@
-class TaskEvaluationHistory extends EvaluationHistory {
-    
-}

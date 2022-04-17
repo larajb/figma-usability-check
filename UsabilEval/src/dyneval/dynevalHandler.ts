@@ -14,7 +14,11 @@ export const dynevalView = () => {
         if (args.type === 'input') {
             var isAdded = createExampletext(args.input, args.taskname);
         }
-        var taskAnnotation = createTaskAnnotation(args.taskname, args.numSteps, args.color);
+        if (args.index !== undefined) {
+            var taskAnnotation = createTaskAnnotation(args.taskname, args.numSteps, args.color, args.index);
+        } else {
+            var taskAnnotation = createTaskAnnotation(args.taskname, args.numSteps, args.color);
+        }
         dispatch('taskStepAdded', { taskname: args.taskname, id: taskAnnotation.id});
     });
 
@@ -24,7 +28,7 @@ export const dynevalView = () => {
 
     handleEvent('deleteSteps', (args) => {
         for (let i = 0; i < args.steps.length; i++) {
-            deleteStepAnnotation(args.steps[i], args.steps.slice(i+1));
+            deleteStepAnnotation(args.steps[i], undefined);
         }
     });
 
@@ -44,33 +48,38 @@ export const dynevalView = () => {
         dispatch('validityBefore', validity);
     });
 
+    handleEvent('checkValidityBefore', async (args) => {
+        var validity = await checkValidity(args);
+        dispatch('validityBefore', validity);
+    });
+
     handleEvent('checkStepValidityAfter', async (args) => {
         var validity = await checkValidity(args);
         dispatch('validityAfter', validity);
     });
 
-    handleEvent('checkButtonValidity', async () => {
-        var validity = await checkButtonValidity();
+    handleEvent('checkButtonValidity', async (platform) => {
+        var validity = await checkButtonValidity(platform);
         dispatch('buttonValidity', validity);
     });
 
-    handleEvent('checkInputExample', async () => {
-        var result = await checkInputExample();
+    handleEvent('checkInputExample', async (platform) => {
+        var result = await checkInputExample(platform);
         dispatch('inputExampleCheck', result);
     });
 
-    handleEvent('checkInputValidity', async (input) => {
+    handleEvent('checkInputValidity', async (args) => {
         var validity = false;
-        if (input !== null) {
-            validity = await checkInputValidity(input);
+        if (args.input !== null) {
+            validity = await checkInputValidity(args.input, args.platform);
         } else {
             validity = true;
         }
         dispatch('inputValidity', validity);
     });
 
-    handleEvent('checkLinkValidity', async () => {
-        var validity = await checkLinkValidity();
+    handleEvent('checkLinkValidity', async (platform) => {
+        var validity = await checkLinkValidity(platform);
         dispatch('linkValidity', validity);
     });
 
@@ -86,11 +95,11 @@ export const dynevalView = () => {
         var time = model.useGomsModel(task);
         var pointingTimeSmell = longP(model.pointingTimes, avgPointingTime);
         if (pointingTimeSmell.isFound) {
-            smells.push({ title: 'Long P', value: pointingTimeSmell.value });
+            smells.push({ title: 'Long P', values: pointingTimeSmell.values, steps: pointingTimeSmell.values });
         }
         var homingNumSmell = manyH(model.homingNums, avgHomingNum);
         if (homingNumSmell.isFound) {
-            smells.push({ title: 'Many H', value: homingNumSmell.value });
+            smells.push({ title: 'Many H', values: homingNumSmell.values, steps: homingNumSmell.steps });
         }
         dispatch('evaluationResult', { goms: { time: time, avgPointingTime: model.avgPointingTime, avgHomingNum: model.avgHomingNum }, usabilitySmells: smells});
     })
@@ -106,7 +115,10 @@ export const dynevalView = () => {
      */
     handleEvent('getTaskStorage', async () => {
         // var tasks = await getStorage('tasks');
-        var tasks = await figma.clientStorage.getAsync('tasks');
+        var tasks = undefined;
+        await figma.clientStorage.getAsync('tasks').then((value) => {
+            tasks = value;
+        });
         dispatch('currentTaskStorage', tasks);
     });
 
@@ -115,9 +127,24 @@ export const dynevalView = () => {
         await figma.clientStorage.setAsync('tasks', tasks);
     })
 
+    handleEvent('getScenarioStorage', async () => {
+        var scenarios = undefined;
+        await figma.clientStorage.getAsync('scenarios').then((value) => {
+            scenarios = value;
+        });
+        dispatch('currentScenarioStorage', scenarios);
+    });
+
+    handleEvent('setScenarioStorage', async (scenarios) => {
+        await figma.clientStorage.setAsync('scenarios', scenarios);
+    })
+
     handleEvent('getEvaluationStorage', async () => {
-        var EvaluationStorage = await figma.clientStorage.getAsync('taskEvaluation');
-        dispatch('currentEvaluationStorage', EvaluationStorage);
+        var evaluationStorage = undefined;
+        await figma.clientStorage.getAsync('taskEvaluation').then((value) => {
+            evaluationStorage = value;
+        });
+        dispatch('currentEvaluationStorage', evaluationStorage);
     });
 
     handleEvent('setEvaluationStorage', async (storage) => {
@@ -125,7 +152,10 @@ export const dynevalView = () => {
     });
 
     handleEvent('getPointingTimeStorage', async () => {
-        var storage = await figma.clientStorage.getAsync('pointingTime');
+        var storage = undefined;
+        await figma.clientStorage.getAsync('pointingTime').then((value) => {
+            storage = value;
+        });
         dispatch('pointingTimeStorage', storage);
     });
 
@@ -136,7 +166,10 @@ export const dynevalView = () => {
     });
 
     handleEvent('getHomingNumStorage', async () => {
-        var storage = await figma.clientStorage.getAsync('homingNum');
+        var storage = undefined;
+        await figma.clientStorage.getAsync('homingNum').then((value) => {
+            storage = value;
+        });
         dispatch('homingNumStorage', storage);
     });
 

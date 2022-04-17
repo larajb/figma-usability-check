@@ -1,103 +1,85 @@
 <template>
   	<div class="dyneval-ui">
 		<div style="display: flex; margin-bottom: 20px;">
-			<div id="select-aufgaben" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="handleClickSetTasks">Aufgaben</div>
-			<div id="select-evaluation" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': tasks.length === 0}" @click="handleClickSetEvaluation">Evaluation</div>
-			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': evaluationHistory.length === 0}" @click="handleClickSetResults">Ergebnisse</div>
+			<div id="select-aufgaben" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('TaskDefinition')">Aufgaben</div>
+			<div id="select-szenarien" style="margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('ScenarioDefinition')">Szenarien</div>
+			<div id="select-evaluation" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': (tasks.length === 0) && (scenarios.length === 0)}" @click="setCurrentPage('Evaluation')">Evaluation</div>
+			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': $store.getters.currentEvaluation === undefined}" @click="setCurrentPage('Results')">Ergebnisse</div>
 		</div>
 		<p class="type--pos-large-bold">
 			Dynamische Evaluation
 		</p>
-		<task-definition v-show="showTasks" @clicked="handleClickSetTasks" @updated="tasksUpdated($event)" />
-		<evaluation v-show="showEvaluation" @clickedDefine="handleClickSetTasks" :tasks="tasks" @historyUpdated="setHistory" @tasknameSet="updateTaskname" />
-		<results v-show="showResults" @clicked="handleClickSetResults" :evaluation-history="evaluationHistory" :taskname="currentTaskname" />
+		<task-definition v-show="currentPage === 'TaskDefinition'" />
+		<scenario-definition v-show="currentPage === 'ScenarioDefinition'" />
+		<evaluation v-show="currentPage === 'Evaluation'" />
+		<results v-show="currentPage === 'Results'" />
 	</div>
 </template>
 
 <script>
-import { dispatch, handleEvent } from '../uiMessageHandler';
 
-import { selectMenu, iconInput, disclosure } from 'figma-plugin-ds';
+import { selectMenu } from 'figma-plugin-ds';
+
+import { mapState } from 'vuex'
 
 import TaskDefinition from './components/TaskDefinition.vue';
+import ScenarioDefinition from './components/ScenarioDefinition.vue';
 import Evaluation from './components/Evaluation.vue';
 import Results from './components/Results.vue';
 
 export default {
 	components: {
 		TaskDefinition,
+		ScenarioDefinition,
 		Evaluation,
 		Results
 	},
 	data() {
 		return {
-			showTasks: false,
-			showEvaluation: false,
-			showResults: false,
-			tasks: [],
-			evaluationHistory: [],
-			currentTaskname: '',
+			storage: '',
 		};
 	},
+	computed: {
+		...mapState(['tasks', 'scenarios', 'evaluationHistory', 'currentPage', 'currentTaskname']),
+	},
 	watch: {
-		showTasks(newValue, oldValue) {
-			if (newValue) {
-				document.getElementById('select-aufgaben').style.borderBottom = '2px solid black';
-			} else {
-				document.getElementById('select-aufgaben').style.borderBottom = '';
+		currentPage() {
+			var taskDefinitionValue ='';
+			var selectionDefinitionValue = '';
+			var evaluationValue ='';
+			var resultsValue = '';
+			switch(this.currentPage) {
+				case 'TaskDefinition':
+					taskDefinitionValue ='2px solid black';
+					break;
+				case 'ScenarioDefinition':
+					selectionDefinitionValue ='2px solid black';
+					break;
+				case 'Evaluation':
+					evaluationValue ='2px solid black';
+					break;
+				case 'Results':
+					resultsValue ='2px solid black';
+					break;
 			}
-		},
-		showEvaluation(newValue, oldValue) {
-			if (newValue) {
-				document.getElementById('select-evaluation').style.borderBottom = '2px solid black';
-			} else {
-				document.getElementById('select-evaluation').style.borderBottom = '';
-			}
-		},
-		showResults(newValue, oldValue) {
-			if (newValue) {
-				document.getElementById('select-ergebnisse').style.borderBottom = '2px solid black';
-			} else {
-				document.getElementById('select-ergebnisse').style.borderBottom = '';
-			}
+			document.getElementById('select-aufgaben').style.borderBottom = taskDefinitionValue;
+			document.getElementById('select-szenarien').style.borderBottom = selectionDefinitionValue;
+			document.getElementById('select-evaluation').style.borderBottom = evaluationValue;
+			document.getElementById('select-ergebnisse').style.borderBottom = resultsValue;
 		},
 	},
 	mounted() {
 		selectMenu.init();
-    	// window.iconInput.init();
-    	// window.disclosure.init();
 		this.showTasks = true;
+		document.getElementById('select-aufgaben').style.borderBottom = '2px solid black';
 	},
 	destroyed() {
 		selectMenu.destroy();
-		// window.iconInput.destroy();
-		// window.disclosure.destroy();
 	},
 	methods: {
-		handleClickSetTasks() {
-			this.showTasks = true;
-			this.showEvaluation = false;
-			this.showResults = false;
+		setCurrentPage(page) {
+			this.$store.commit('currentPage', page);
 		},
-		handleClickSetEvaluation() {
-			this.showTasks = false;
-			this.showEvaluation = true;
-			this.showResults = false;
-		},
-		handleClickSetResults() {
-			this.showTasks = false;
-			this.showEvaluation = false;
-			this.showResults = true;
-		},
-		tasksUpdated(tasks) {
-			this.tasks = tasks;
-		},
-		setHistory(history) {
-			this.evaluationHistory = history;
-		},
-		updateTaskname(taskname) {
-			this.currentTaskname = taskname;
-		}
 	},
 };
 </script>

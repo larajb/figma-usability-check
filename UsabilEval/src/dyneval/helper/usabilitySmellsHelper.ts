@@ -5,14 +5,16 @@ import { getFrame } from "../../figmaAccess/nodeProperties";
  * @param task 
  */
 export const tooManyLayers = (task) => {
-    var result = { isFound: false, value: 0 };
+    var result = { isFound: false, values: [], steps: [] };
+    var count = 0;
     for (let i = 1; i < task.steps.length; i++) {
         if (getFrame(task.steps[i].id).id !== getFrame(task.steps[i-1].id).id) {
-            result.value++;
+            count++;
         }
     }
-    if (result.value >= 5) {
+    if (count >= 5) {
         result.isFound = true;
+        result.values.push(count);
     }
     return result;
 }
@@ -30,7 +32,7 @@ export const tooManyLayers = (task) => {
  * @param task 
  */
 export const laboriousTask = (history, task) => {
-    var result = { isFound: false, value: 0 };
+    var result = { isFound: false, values: [], steps: [] };
     if (history !== undefined) {
         var avgTime = calculateAverageTime(history);
         var avgStepsNum = calculateAverageStepNum(history);
@@ -51,13 +53,16 @@ export const cyclicTask = (task) => {
  * @param task 
  */
 export const distantContent = (task) => {
-    var result = { isFound: false, value: 0 };
+    var result = { isFound: false, values: [], steps: [] };
+    var count = 0;
     for (let i = 1; i < task.steps.length - 1; i++) {
         if (getFrame(task.steps[i-1].id).id !== getFrame(task.steps[i].id).id && getFrame(task.steps[i].id).id !== getFrame(task.steps[i+1].id).id) {
             result.isFound = true
-            result.value++;
+            count++;
+            result.steps.push(i+1);
         }
     }
+    result.values.push(count);
     return result;
 }
 
@@ -68,11 +73,12 @@ export const distantContent = (task) => {
  * @returns result
  */
 export const longP = (pointingTimes, avgPointingTime) => {
-    var result = { isFound: false, value: [] };
+    var result = { isFound: false, values: [], steps: [] };
     for (let i = 0; i < pointingTimes.length; i++) {
         if (pointingTimes[i] > (avgPointingTime * 1.5)) {
             result.isFound = true;
-            result.value.push(i);
+            result.values.push(pointingTimes[i]);
+            result.steps.push(i+1);
         }
     }
     return result;
@@ -85,11 +91,12 @@ export const longP = (pointingTimes, avgPointingTime) => {
  * @returns result
  */
 export const manyH = (homingNums, avgHomingNum) => {
-    var result = { isFound: false, value: [] };
+    var result = { isFound: false, values: [], steps: [] };
     for (let i = 0; i < homingNums.length; i++) {
         if (homingNums[i] > (avgHomingNum * 1.5)) {
             result.isFound = true;
-            result.value.push(i);
+            result.values.push(homingNums[i]);
+            result.steps.push(i+1);
         }
     }
     return result;

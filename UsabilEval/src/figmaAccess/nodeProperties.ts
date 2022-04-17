@@ -150,10 +150,8 @@ export const getCenterOfNode = (nodeId) => {
  * @param node 
  */
 export const setText = (text, fillsColor, strokeColor, textContent) => {
-    var family = 'Roboto';
-    var style = 'Regular';
-    loadingFont(family, style).then(() => {
-        text.fontName = { family: family, style: style };
+    loadingFont().then(() => {
+        text.fontName = { family: 'Roboto', style: 'Regular' };
         text.fontSize = 16;
         text.fills = [{ type: 'SOLID', color: fillsColor }];
         if (strokeColor !== null) {
@@ -161,12 +159,14 @@ export const setText = (text, fillsColor, strokeColor, textContent) => {
             text.strokes = [stroke];
         }
         text.characters = textContent;
-    })
+    }).catch((err) => {
+        console.log(err);
+    });
 }
 
 /**
  * This is a function to load a font.
  */
-const loadingFont = async (family, style) => {
-    await figma.loadFontAsync({ family: family, style: style });
+const loadingFont = async () => {
+    await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
 }
