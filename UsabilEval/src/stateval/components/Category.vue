@@ -1,13 +1,13 @@
 <template>
     <div>
         <div class="checkbox">
-            <input :id="item.category" type="checkbox" class="checkbox__box" @click="handleClick(item)">
+            <input :id="item.category" type="checkbox" class="checkbox__box" @click="handleClick(item)" :disabled="item.category !== 'Navigation'">
             <label :for="item.category" class="checkbox__label">{{ item.category }}</label>
             <img width='20px' height='20px' :src="isOpened ? chevronRight : chevronDown" @click="isOpened = !isOpened" />
         </div>
         <div v-show="isOpened">
             <div v-for="(metric, index2) in item.metrics" :key="index2" class="checkbox-level2">
-                <metric :metric="metric" :item="item" />
+                <metric :metric="metric" :item="item" :disabled="item.category !== 'Navigation'" />
             </div>
         </div>
     </div>
@@ -25,7 +25,7 @@ export default {
         item: {
             type: Object,
             default: null,
-        }
+        },
     },
     components: {
         Metric,

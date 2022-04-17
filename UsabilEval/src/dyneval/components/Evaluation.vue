@@ -17,17 +17,12 @@
 
 <script>
 import { dispatch, handleEvent } from '../../uiMessageHandler';
-import { Select } from 'figma-plugin-ds-vue';
 import { v4 as uuidv4 } from 'uuid';
+import { Select } from 'figma-plugin-ds-vue';
+import { mapState } from 'vuex';
 
 export default {
     name: 'Evaluation',
-    props: {
-        tasks: {
-            type: Array,
-            default: null,
-        },
-    },
     components: {
         Select,
     },
@@ -40,6 +35,20 @@ export default {
             evaluationHistory: [],
         }
     },
+    computed: {
+        ...mapState(['tasks']),
+    },
+    watch: {
+        tasks() {
+            this.setTasks();
+        },
+        firstTask() {
+            this.setTasks();
+            const result = this.itemsSecond.filter(item => item.label !== this.firstTask);
+            this.itemsSecond = result;
+            this.$store.commit('currentTaskname', this.firstTask);
+        },
+    },
     mounted() {
         // dispatch('setEvaluationStorage', this.evaluationHistory);
         this.getEvaluationHistory();
@@ -47,14 +56,11 @@ export default {
         handleEvent('currentEvaluationStorage', storage => {
             if (storage !== undefined) {
                 this.evaluationHistory = storage;
+                this.$store.commit('evaluationHistory', this.evaluationHistory);
             }
         });
 
         handleEvent('evaluationResult', result => {
-            if (result.usabilitySmells !== undefined) {
-                this.setEvaluationHistory('usabilitySmells', result.usabilitySmells);
-            }
-
             if (this.evaluationHistory) {
                 var trend = '';         // consistent || increasing || decreasing
                 const index = this.evaluationHistory.findIndex((history) => history.taskname === this.firstTask);
@@ -72,34 +78,20 @@ export default {
                     }
                 }
             }
-            this.setEvaluationHistory('goms', { gomsTime: result.goms.time, trend: trend, avgPointingTime: result.goms.avgPointingTime, avgHomingNum: result.goms.avgHomingNum });
+            this.setEvaluationHistory({ gomsTime: result.goms.time, trend: trend, avgPointingTime: result.goms.avgPointingTime, avgHomingNum: result.goms.avgHomingNum }, result.usabilitySmells);
         })
 
         handleEvent('calculatedGomsComparisonTime', time => {
             this.setComparison(time);
         })
     },
-    watch: {
-        tasks() {
-            this.setTasks();
-        },
-        firstTask() {
-            this.setTasks();
-            const result = this.itemsSecond.filter(item => item.label !== this.firstTask);
-            this.itemsSecond = result;
-            this.$emit('tasknameSet', this.firstTask);
-        },
-        // evaluationHistory() {
-        //     this.$emit('historyUpdated', this.evaluationHistory);
-        // },
-    },
     methods: {
         handleClick() {
-            this.$emit('clickedDefine')
+            this.$store.commit('currentPage', 'TaskDefinition');
         },
         setTasks() {
-            this.itemsFirst = [];
-            this.itemsSecond = [];
+            this.itemsFirst = [{ label: '', key: '' }];
+            this.itemsSecond = [{ label: '', key: '' }];
             this.tasks.forEach(task => {
                 this.itemsFirst.push({
                     label: task.taskname,
@@ -118,13 +110,12 @@ export default {
         getEvaluationHistory() {
             dispatch('getEvaluationStorage');
         },
-        setEvaluationHistory(type, result) {
+        setEvaluationHistory(gomsResult, usabilitySmellsResult) {
             const index = this.evaluationHistory.findIndex((history) => history.taskname === this.firstTask);
-            this.evaluationHistory[index].evaluationRuns[0][type] = result;
+            this.evaluationHistory[index].evaluationRuns[0].goms = gomsResult;
+            this.evaluationHistory[index].evaluationRuns[0].usabilitySmells = usabilitySmellsResult;
             dispatch('setEvaluationStorage', this.evaluationHistory);
-            if (type === 'goms') {
-                this.$emit('historyUpdated', this.evaluationHistory);
-            }
+            this.$store.commit('evaluationHistory', this.evaluationHistory);
         },
         setComparison(time) {
             const index = this.evaluationHistory.findIndex((history) => history.taskname === this.firstTask);
@@ -133,6 +124,7 @@ export default {
                 gomsTime: time
             };
             dispatch('setEvaluationStorage', this.evaluationHistory);
+            this.$store.commit('evaluationHistory', this.evaluationHistory);
         },
         startEvaluation() {
             const evaluationIndex = this.evaluationHistory.findIndex((task) => task.taskname === this.firstTask);
@@ -176,17 +168,12 @@ export default {
             var task = this.tasks[taskIndex];
             dispatch('evaluateTask', task);
         },
-        setPointingTime(avgPointingTime) {
-            // dispatch('setPointingTimeStorage', avgPointingTime);
-        },
-        setHomingNum(avgHomingNum) {
-            // dispatch('setHomingNumStorage', avgHomingNum);
-        },
     },
 }
 </script>
 
 <style lang='scss'>
+    @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
     @import "../../../node_modules/figma-plugin-ds-vue/dist/figma-plugin-ds-vue.css";
 
     .button--link-look {

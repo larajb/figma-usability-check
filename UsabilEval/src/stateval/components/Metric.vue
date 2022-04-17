@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="checkbox">
-            <input :id="metric" type="checkbox" class="checkbox__box" @click="handleClick(metric, item)">
+            <input :id="metric" type="checkbox" class="checkbox__box" @click="handleClick(metric, item)" :disabled="disabled">
             <label :for="metric" class="checkbox__label">{{ metric }}</label>
             <img width='20px' height='20px' :src="isClicked ? chevronRight : chevronDown" @click="isClicked = !isClicked" />
         </div>
@@ -25,6 +25,10 @@ export default {
         item: {
             type: Object,
             default: null,
+        },
+        disabled: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {

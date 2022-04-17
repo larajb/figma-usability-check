@@ -7,7 +7,7 @@
                     { label: 'Desktop', key: 'desktop' },
                     { label: 'Mobil', key: 'mobile' },
                     { label: 'Desktop + Mobil', key: 'desktop+mobile' }
-                ]" v-model="platform" />
+                ]" v-model="platformSelection" />
             <button class="button button--primary" @click="addTask">Erstellen</button>
         </div>
         <div class="type--pos-medium-normal">
@@ -17,12 +17,12 @@
                         { label: 'Button', key: 'button' },
                         { label: 'Eingabe', key: 'input' },
                         { label: 'Link', key: 'link' }
-                    ]" v-model="type" />
+                    ]" v-model="typeSelection" />
                 <button class="button button--primary" @click="addTaskStep">Hinzufügen</button>
             </div>
-            <input v-show="type === 'input'" id="input-example" class="input" type="text" placeholder="Beispiel Eingabe" v-model="exampleInput">
+            <input v-show="typeSelection === 'input'" id="input-example" class="input" type="text" placeholder="Beispiel Eingabe" v-model="exampleInput">
             <div v-show="showError" class="element-error-note">
-                <p style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
+                <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
                 <div class="icon-button" @click="closeError">
                     <div class="icon icon--close"></div>
                 </div>
@@ -30,39 +30,49 @@
         </div>
         <div id="tasks" class="scrollable-task-list type--pos-medium-normal">
             <task-list-entry v-for="(task, index) in tasks" :key="index" :taskname="task.taskname" :color="task.color" :steps="task.steps"
+                @addStepIndex="addTaskStepAtIndex($event)"
                 @deletedTask="deletedTask($event)"
                 @deletedStep="deletedStep($event)"
                 @moveUp="moveStepUp($event)"
                 @moveDown="moveStepDown($event)"
-                @edit="setEditMode" />
+                @edit="setEditMode($event)" />
         </div>
     </div>
 </template>
 
 <script>
 import { dispatch, handleEvent } from '../../uiMessageHandler';
-import { Select } from 'figma-plugin-ds-vue';
 
-import TaskListEntry from './TaskListEntry.vue'
+import TaskListEntry from './TaskListEntry.vue';
+import { Select } from 'figma-plugin-ds-vue';
 
 export default {
     name: 'TaskDefinition',
+    components: {
+        TaskListEntry,
+        Select,
+    },
     data() {
         return {
-            tasks: [],          // [ { taskname: ..., platform: ..., color: ..., steps: [ { id: ..., type: ... } ] } ]
+            tasks: [],
             tasknameInput: '',
             exampleInput: '',
-            platform: '',
-            type: '',
+            platformSelection: '',
+            typeSelection: '',
             showError: false,
             errorMessage: '',
             alreadySet: false,
             editMode: false,
+            index: null,
         }
     },
-    components: {
-        TaskListEntry,
-        Select,
+    watch: {
+        typeSelection() {
+            if (this.typeSelection === 'input') {
+                // check if selection already has an example
+                dispatch('checkInputExample', this.tasks[index].platform);
+            }
+        },
     },
     mounted() {
         this.getTaskStorage();
@@ -70,7 +80,8 @@ export default {
         handleEvent('currentTaskStorage', tasks => {
             if (tasks !== undefined) {
                 this.tasks = tasks;
-                this.$emit('updated', this.tasks);
+                // this.$store.commit('tasks', this.tasks);
+                this.$store.commit('tasks', this.tasks);
             }
         });
 
@@ -105,115 +116,135 @@ export default {
             this.addValidTaskStep();
         });
     },
-    watch: {
-        type() {
-            if (this.type === 'input') {
-                // check if selection already has an example
-                dispatch('checkInputExample');
-            }
-        }
-    },
     methods: {
         addTask() {
 			// wenn taskname leer Fehler zurückgeben
+            var platform = this.platformSelection;
 
-            var isUsed = false;
-            this.tasks.forEach(task => {
-                if (task.taskname === this.tasknameInput) {
-                    isUsed = true;
-                }
-            })
-            if (!isUsed) {
-                this.tasks.push({ taskname: this.tasknameInput, platform: this.platform, color: this.getRandomColor(), steps: [] });
+            const index = this.tasks.findIndex((task) => task.taskname === this.tasknameInput);
+            if (index < 0) {
+                this.tasks.push({ taskname: this.tasknameInput, platform: platform, color: this.getRandomColor(), steps: [] });
             } else {
                 this.showError = true;
                 this.errorMessage = 'Es existiert bereits eine Aufgabe mit diesem Namen. Füge dieser Aufgabe weitere Bearbeitungsschritte hinzu oder wähle einen anderen Namen.'
             }
-            
             this.setTaskStorage();
-            this.$emit('updated', this.tasks);
+            // this.$store.commit('tasks', this.tasks);
+            this.$store.commit('tasks', this.tasks);
 		},
         addTaskStep() {
-            console.log('edit mode', this.editMode);
-            if (this.editMode === false) {
-                switch(this.type) {
-                    case 'button':
-                        // check if button is valid
-                        dispatch('checkButtonValidity');
-                        break;
-                    case 'input':
-                        
-                        if (this.exampleInput !== '') {
-                            dispatch('checkInputValidity', this.exampleInput);
-                        } else {
-                            this.showError = true;
-                            this.errorMessage = 'Es wurde kein Beispiel für die Eingabe angegeben. Bitte trage ein Beispiel ein.';
-                        }
-                        break;
-                    case 'link':
-                        // check if link is valid
-                        dispatch('checkLinkValidity');
-                        break;
-                }
-            } else {
-                this.addValidTaskStep();
-            }
-        },
-        addValidTaskStep() {
-            var numSteps = 0;
-            var color = null;
-            var steps = null;
-            for (let i = 0; i < this.tasks.length; i++) {
-                if (this.tasks[i].taskname === this.tasknameInput) {
-                    numSteps = this.tasks[i].steps.length;
-                    color = this.tasks[i].color;
-                    steps = this.tasks[i].steps;
-                }
-            }
-            if (numSteps > 0) {
-                dispatch('checkStepValidityBefore', { before: steps[steps.length-1].id, after: null });
-                handleEvent('validityBefore', validityBefore => {
-                    if (validityBefore) {
-                        dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.type, numSteps: numSteps, color: color, input: this.exampleInput });
-                        return;
+            const index = this.tasks.findIndex((task) => task.taskname === this.tasknameInput);
+            switch(this.typeSelection) {
+                case 'button':
+                    dispatch('checkButtonValidity', this.tasks[index].platform);
+                    break;
+                case 'input':
+                    if (this.exampleInput !== '') {
+                        dispatch('checkInputValidity', { input: this.exampleInput, platform: this.tasks[index].platform });
                     } else {
                         this.showError = true;
-                        this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum voherigen Schritt bzw. zu der vorherigen Seite besteht.';
+                        this.errorMessage = 'Es wurde kein Beispiel für die Eingabe angegeben. Bitte trage ein Beispiel ein.';
                     }
-                });
+                    break;
+                case 'link':
+                    dispatch('checkLinkValidity', this.tasks[index].platform);
+                    break;
+            }
+        },
+        addTaskStepAtIndex(index) {
+            if (index !== null) {
+                this.index = index;
+            }
+            this.addTaskStep();
+        },
+        addValidTaskStep() {
+            const taskIndex = this.tasks.findIndex((task) => task.taskname === this.tasknameInput);
+            var numSteps = this.tasks[taskIndex].steps.length;
+            var color = this.tasks[taskIndex].color;
+            var steps = this.tasks[taskIndex].steps;
+            if (this.index === null) {
+                if (numSteps > 0) {
+                    dispatch('checkStepValidityBefore', { before: steps[steps.length-1].id, after: null });
+                    handleEvent('validityBefore', validityBefore => {
+                        if (validityBefore) {
+                            dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.typeSelection, numSteps: numSteps, color: color, input: this.exampleInput });
+                            return;
+                        } else {
+                            this.showError = true;
+                            this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum voherigen Schritt bzw. zu der vorherigen Seite besteht.';
+                        }
+                    });
+                } else {
+                    dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.typeSelection, numSteps: numSteps, color: color, input: this.exampleInput });
+                    return;
+                }
             } else {
-                dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.type, numSteps: numSteps, color: color, input: this.exampleInput });
-                return;
+                if (this.index === 0) {
+                    dispatch('checkStepValidityAfter', { before: null, after: steps[0].id });
+                    handleEvent('validityAfter', validityAfter => {
+                        if (validityAfter) {
+                            dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.typeSelection, numSteps: numSteps, index: this.index, color: color, input: this.exampleInput });
+                            return;
+                        } else {
+                            this.showError = true;
+                            this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum nachfolgenden Schritt bzw. zu der nachfolgenden Seite besteht.';
+                        }
+                    });
+                } else if (this.index > 0) {
+                    dispatch('checkStepValidityBefore', { before: steps[this.index-1].id, after: null });
+                    handleEvent('validityBefore', validityBefore => {
+                        if (validityBefore) {
+                            dispatch('checkStepValidityAfter', { before: null, after: steps[this.index].id });
+                            handleEvent('validityAfter', validityAfter => {
+                                if (validityAfter) {
+                                    dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.typeSelection, numSteps: numSteps, index: this.index, color: color, input: this.exampleInput });
+                                    return;
+                                } else {
+                                    this.showError = true;
+                                    this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum nachfolgenden Schritt bzw. zu der nachfolgenden Seite besteht.';
+                                }
+                            });
+                        } else {
+                            this.showError = true;
+                            this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum vorherigen Schritt bzw. zu der vorherigen Seite besteht.';
+                        }
+                    });
+                }
             }
         },
         addTaskStepToScreen(step) {
             for (let i = 0; i < this.tasks.length; i++) {
                 if (this.tasks[i].taskname === step.taskname) {
-                    this.tasks[i].steps.push({ id: step.id, type: this.type, input: this.exampleInput });
+                    if (this.index !== null) {
+                        this.tasks[i].steps.splice(this.index, 0, { id: step.id, type: this.typeSelection, input: this.exampleInput });
+                    } else {
+                        this.tasks[i].steps.push({ id: step.id, type: this.typeSelection, input: this.exampleInput });
+                    }
                 }
             }
+            if (this.index !== null) {
+                dispatch('updateStepNumbers', this.tasks);
+            }
             this.setTaskStorage();
+            this.$store.commit('tasks', this.tasks);
             this.exampleInput = '';
-            this.type = '';
+            this.typeSelection = '';
+            this.index = null;
         },
         deletedTask(taskname) {
             this.tasks = this.tasks.filter(function(item) {
                 return item.taskname !== taskname;
             });
-            this.$emit('updated', this.tasks);
             this.setTaskStorage();
+            this.$store.commit('tasks', this.tasks);
         },
         deletedStep(args) {
-            for (let i = 0; i < this.tasks.length; i++) {
-				if (this.tasks[i].taskname === args.taskname) {
-					for (let j = 0; j < this.tasks[i].steps.length; j++) {
-						if (this.tasks[i].steps[j].id === args.id) {
-							this.tasks[i].steps.splice(j, 1);
-						}
-					}
-				}
-			}
+            const taskIndex = this.tasks.findIndex((task) => task.taskname === args.taskname);
+            const stepIndex = this.tasks[taskIndex].steps.findIndex((step) => step.id === args.id);
+            this.tasks[taskIndex].steps.splice(stepIndex, 1);
+
             this.setTaskStorage();
+            this.$store.commit('tasks', this.tasks);
         },
         moveStepUp(args) {
             for (let i = 0; i < this.tasks.length; i++) {
@@ -238,6 +269,7 @@ export default {
                                                 this.tasks[i].steps.splice(j-1, 0, temp);
                                                 dispatch('updateStepNumbers', this.tasks);
                                                 this.setTaskStorage();
+                                                this.$store.commit('tasks', this.tasks);
                                             } else {
                                                 this.showError = true;
                                                 this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem vorangehenden (nach Verschieben) Schritt.';
@@ -248,6 +280,7 @@ export default {
                                         this.tasks[i].steps.splice(j-1, 0, temp);
                                         dispatch('updateStepNumbers', this.tasks);
                                         this.setTaskStorage();
+                                        this.$store.commit('tasks', this.tasks);
                                     }
                                 } else {
                                     this.showError = true;
@@ -281,6 +314,7 @@ export default {
                                                 this.tasks[i].steps.splice(j+1, 0, temp);
                                                 dispatch('updateStepNumbers', this.tasks);
                                                 this.setTaskStorage();
+                                                this.$store.commit('tasks', this.tasks);
                                             } else {
                                                 this.showError = true;
                                                 this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem vorangehenden (nach Verschieben) Schritt.';
@@ -291,6 +325,7 @@ export default {
                                         this.tasks[i].steps.splice(j+1, 0, temp);
                                         dispatch('updateStepNumbers', this.tasks);
                                         this.setTaskStorage();
+                                        this.$store.commit('tasks', this.tasks);
                                     }
                                 } else {
                                     this.showError = true;
@@ -319,8 +354,13 @@ export default {
             this.showError = false;
             this.errorMessage = '';
         },
-        setEditMode(editMode) {
-            this.editMode = editMode;
+        setEditMode(args) {
+            this.editMode = args.value;
+            if (args.value === true) {
+                this.tasknameInput = args.taskname;
+            } else {
+                this.tasknameInput = '';
+            }
         },
     },
 }
@@ -328,6 +368,7 @@ export default {
 
 <style lang='scss'>
 	@import "../../figma-ui/figma-plugin-ds";
+    @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
     @import "../../../node_modules/figma-plugin-ds-vue/dist/figma-plugin-ds-vue.css";
 
     html, body {

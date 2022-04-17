@@ -34,15 +34,18 @@ export const createExampletext = (input, taskname) => {
  * @param color 
  * @returns annotation
  */
-export const createTaskAnnotation = (taskname, numSteps, color) => {
+export const createTaskAnnotation = (taskname, numSteps, color, index = null) => {
     var stepNumber = String(numSteps + 1);
+    if (index !== null) {
+        stepNumber = String(index++);
+    }
     var convertedColor = convertColor(color);
     var currentSelection = getCurrentSelection();
     var selectionRelTransform = getRelativeTransform(currentSelection.id);
     var selectionParent = getParent(currentSelection.id);
 
-    var ellipse = createEllipseNode('Annotation - ' + taskname + ' - ' + stepNumber, 24, 24, convertedColor);
-    var text = createTextNode('Annotation - ' + taskname + ' - ' + stepNumber + ' - Text', {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, stepNumber)
+    var ellipse = createEllipseNode('Annotation - ' + taskname, 24, 24, convertedColor);
+    var text = createTextNode('Annotation - ' + taskname + ' - Text', {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, stepNumber)
     var containsExample = false;
     var containsJustExample = false;
     for (let i = 0; i < selectionParent.children.length; i++) {
@@ -67,7 +70,7 @@ export const createTaskAnnotation = (taskname, numSteps, color) => {
         setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 12) - 3, selectionRelTransform[1][2] - 7);
     }
 
-    var annotation = createGroupNode('Annotation - ' + taskname + ' - ' + stepNumber + ' - ', [ellipse, text]);
+    var annotation = createGroupNode('Annotation - ' + taskname + ' - ', [ellipse, text]);
 
     addAnnotationToFile(currentSelection, annotation);
 
@@ -127,7 +130,7 @@ export const updateStepAnnotation = (annotationId, number) => {
     if (getType(annotationId) === 'GROUP') {
         for (let i = 0; i < annotation.children.length; i++) {
             if(getType(annotation.children[i].id) === 'TEXT') {
-                setText(annotation, {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, String(number));
+                setText(annotation.children[i], {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, String(number));
             }
         }
     }
@@ -143,19 +146,19 @@ export const checkUsabilitySmells = (history, task) => {
     // Too Many Layers
     var tooManyLayersResult = tooManyLayers(task);
     if (tooManyLayersResult.isFound) {
-        results.push({ title: 'Too Many Layers', value: tooManyLayersResult.value });
+        results.push({ title: 'Too Many Layers', values: tooManyLayersResult.values, steps: tooManyLayersResult.steps });
     }
     // High Website Element Distance
     // Laborious Task
     var laboriousTaskResult = laboriousTask(history, task);
     if (laboriousTaskResult.isFound) {
-        results.push({ title: 'Too Many Layers', value: laboriousTaskResult.value });
+        results.push({ title: 'Laborious Task', values: laboriousTaskResult.values, steps: laboriousTaskResult.steps });
     }
     // Cyclic Task
     // Distant Content
     var distantContentResult = distantContent(task);
     if (distantContentResult.isFound) {
-        results.push({ title: 'Distant Content', value: distantContentResult.value });
+        results.push({ title: 'Distant Content', values: distantContentResult.values, steps: distantContentResult.steps });
     }
     return results;
 }

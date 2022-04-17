@@ -36,14 +36,14 @@ export const metricsArray = [
             'Navigationsmöglichkeiten'
         ]
     },
-    {
-        category: 'Bildschirmgestützte Kontrollen',
-        metrics: [
-            'Größe grafischer Links',
-            'Länge Text-Links',
-            'Interaktionszielgröße',
-            'Benutzte Links',
-            'Horizontales Scrollen'
-        ]
-    },
+    // {
+    //     category: 'Bildschirmgestützte Kontrollen',
+    //     metrics: [
+    //         'Größe grafischer Links',
+    //         'Länge Text-Links',
+    //         'Interaktionszielgröße',
+    //         'Benutzte Links',
+    //         'Horizontales Scrollen'
+    //     ]
+    // },
 ];
