@@ -1,3 +1,0 @@
-class MetricEvaluationHistory extends EvaluationHistory {
-    
-}

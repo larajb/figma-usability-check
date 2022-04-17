@@ -1,3 +1,0 @@
-class UsabilitySmellEvaluationHistory extends EvaluationHistory {
-    
-}
