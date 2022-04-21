@@ -26,17 +26,10 @@ export class Goms {
     }
 
     /**
-     * This is a function that contains all steps of the goms model to calculate the time for executing a task.
-     * @returns time
+     * This is a function to convert task steps to an array of steps containing operators.
+     * @param task 
+     * @returns convertedSteps
      */
-    // public useGomsModel(task: any): number {
-    //     var convertedSteps = this.replacePatterns(task.steps);
-    //     convertedSteps = this.placeResponseTimeOperator(task.steps, convertedSteps);
-    //     convertedSteps = this.placeMentallyPreparingOperator(convertedSteps);
-    //     var time = this.calculateTime(task.steps, convertedSteps);
-    //     return time;
-    // }
-
     public convertToOperators(task: any): any {
         var convertedSteps = this.replacePatterns(task.steps);
         convertedSteps = this.placeResponseTimeOperator(task.steps, convertedSteps);
@@ -44,6 +37,12 @@ export class Goms {
         return convertedSteps;
     }
 
+    /**
+     * This is a function to convert an array of steps containing operators to an array containing the times per operator.
+     * @param steps 
+     * @param convertedSteps 
+     * @returns operatorTimes
+     */
     public getTimeForOperators(steps: any, convertedSteps: any): any {
         var operatorTimes = [];
         for (let i = 0; i < convertedSteps.length; i++) {
@@ -77,6 +76,12 @@ export class Goms {
         return operatorTimes;
     }
 
+    /**
+     * This is a function to calculate the time for a task.
+     * @param task 
+     * @param convertedSteps 
+     * @returns time
+     */
     public calculateGomsTime(task: any, convertedSteps: any): number {
         var time = this.calculateTime(task.steps, convertedSteps);
         return time;
@@ -175,14 +180,8 @@ export class Goms {
 
         // Ms entfernen, wenn geistige Vorbereitung bereits in einem vorangegangenen Schritt
         for (let i = 0; i < convertedSteps.length; i++) {
-            convertedSteps[i] = convertedSteps[i].replace('PMK', 'PK');
+            convertedSteps[i] = convertedSteps[i].replace('MPMK', 'MPK');
         }
-        // alle Ms außer den ersten löschen, wenn Kette von Ms zu einer kognitiven Einheit gehören
-            // bereits oben??
-        // M vor K löschen, wenn K Begrenzer
-            // not neccessary because i use buttons?? > KLM GOMS originally invented for text based interfaces?
-        // M vor K löschen, wenn K Begrenzer, der nach einer Weile automatisch eingegeben wird
-            // s.o.?? > KLM GOMS originally invented for text based interfaces?
         // M löschen, wenn von R überlagert
         for (let i = 0; i < convertedSteps.length; i++) {
             convertedSteps[i] = convertedSteps[i].replace('RM', 'R');

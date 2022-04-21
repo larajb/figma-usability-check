@@ -116,8 +116,8 @@ export default {
                 convertedSteps: result.goms.convertedSteps,
                 avgPointingTime: result.goms.avgPointingTime,
                 avgHomingNum: result.goms.avgHomingNum
-                },
-                result.usabilitySmells);
+            },
+            result.usabilitySmells);
         })
 
         handleEvent('scenarioEvaluationResult', result => {
