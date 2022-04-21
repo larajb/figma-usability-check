@@ -7,14 +7,21 @@ export default new Vuex.Store({
     state: {
         tasks: [],
         scenarios: [],
-        evaluationHistory: [],
+        taskEvaluationHistory: [],
+        scenarioEvaluationHistory: [],
+        evaluationType: 'task',
         currentTaskname: '',
+        currentScenarioname: '',
         currentPage: 'TaskDefinition',
     },
     getters: {
-        currentEvaluation(state) {
-            const index = state.evaluationHistory.findIndex((task) => task.taskname === state.currentTaskname);
-            return state.evaluationHistory[index];
+        currentTaskEvaluation(state) {
+            const index = state.taskEvaluationHistory.findIndex((task) => task.taskname === state.currentTaskname);
+            return state.taskEvaluationHistory[index];
+        },
+        currentScenarioEvaluation(state) {
+            const index = state.scenarioEvaluationHistory.findIndex((scenario) => scenario.scenarioname === state.currentScenarioname);
+            return state.scenarioEvaluationHistory[index];
         },
     },
     mutations: {
@@ -24,11 +31,20 @@ export default new Vuex.Store({
         scenarios(state, scenarios) {
             state.scenarios = scenarios;
         },
-        evaluationHistory(state, history) {
-            state.evaluationHistory = history;
+        taskEvaluationHistory(state, history) {
+            state.taskEvaluationHistory = history;
+        },
+        scenarioEvaluationHistory(state, history) {
+            state.scenarioEvaluationHistory = history;
+        },
+        evaluationType(state, type) {
+            state.evaluationType = type;
         },
         currentTaskname(state, taskname) {
             state.currentTaskname = taskname;
+        },
+        currentScenarioname(state, scenarioname) {
+            state.currentScenarioname = scenarioname;
         },
         currentPage(state, page) {
             state.currentPage = page;

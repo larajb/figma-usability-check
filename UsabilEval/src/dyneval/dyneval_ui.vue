@@ -4,7 +4,8 @@
 			<div id="select-aufgaben" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('TaskDefinition')">Aufgaben</div>
 			<div id="select-szenarien" style="margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('ScenarioDefinition')">Szenarien</div>
 			<div id="select-evaluation" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': (tasks.length === 0) && (scenarios.length === 0)}" @click="setCurrentPage('Evaluation')">Evaluation</div>
-			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': $store.getters.currentEvaluation === undefined}" @click="setCurrentPage('Results')">Ergebnisse</div>
+			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': ($store.getters.currentTaskEvaluation === undefined) && ($store.getters.currentScenarioEvaluation === undefined)}" @click="setCurrentPage('Results')">Ergebnisse</div>
+			<!-- <div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('Results')">Ergebnisse</div> -->
 		</div>
 		<p class="type--pos-large-bold">
 			Dynamische Evaluation
@@ -40,12 +41,12 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(['tasks', 'scenarios', 'evaluationHistory', 'currentPage', 'currentTaskname']),
+		...mapState(['tasks', 'scenarios', 'currentPage', 'currentTaskname']),
 	},
 	watch: {
 		currentPage() {
 			var taskDefinitionValue ='';
-			var selectionDefinitionValue = '';
+			var scenarioDefinitionValue = '';
 			var evaluationValue ='';
 			var resultsValue = '';
 			switch(this.currentPage) {
@@ -53,7 +54,7 @@ export default {
 					taskDefinitionValue ='2px solid black';
 					break;
 				case 'ScenarioDefinition':
-					selectionDefinitionValue ='2px solid black';
+					scenarioDefinitionValue ='2px solid black';
 					break;
 				case 'Evaluation':
 					evaluationValue ='2px solid black';
@@ -63,7 +64,7 @@ export default {
 					break;
 			}
 			document.getElementById('select-aufgaben').style.borderBottom = taskDefinitionValue;
-			document.getElementById('select-szenarien').style.borderBottom = selectionDefinitionValue;
+			document.getElementById('select-szenarien').style.borderBottom = scenarioDefinitionValue;
 			document.getElementById('select-evaluation').style.borderBottom = evaluationValue;
 			document.getElementById('select-ergebnisse').style.borderBottom = resultsValue;
 		},

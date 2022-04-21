@@ -29,10 +29,55 @@ export class Goms {
      * This is a function that contains all steps of the goms model to calculate the time for executing a task.
      * @returns time
      */
-    public useGomsModel(task: any): number {
+    // public useGomsModel(task: any): number {
+    //     var convertedSteps = this.replacePatterns(task.steps);
+    //     convertedSteps = this.placeResponseTimeOperator(task.steps, convertedSteps);
+    //     convertedSteps = this.placeMentallyPreparingOperator(convertedSteps);
+    //     var time = this.calculateTime(task.steps, convertedSteps);
+    //     return time;
+    // }
+
+    public convertToOperators(task: any): any {
         var convertedSteps = this.replacePatterns(task.steps);
         convertedSteps = this.placeResponseTimeOperator(task.steps, convertedSteps);
         convertedSteps = this.placeMentallyPreparingOperator(convertedSteps);
+        return convertedSteps;
+    }
+
+    public getTimeForOperators(steps: any, convertedSteps: any): any {
+        var operatorTimes = [];
+        for (let i = 0; i < convertedSteps.length; i++) {
+            operatorTimes.push([]);
+            for (let j = 0; j < convertedSteps[i].length; j++) {
+                switch(convertedSteps[i][j]) {
+                    case 'H':
+                        operatorTimes[i].push({ operator: 'H', time: this.homingTime });
+                        break;
+                    case 'K':
+                        operatorTimes[i].push({ operator: 'K', time: this.keystrokeTime });
+                        break;
+                    case 'M':
+                        operatorTimes[i].push({ operator: 'M', time: this.mentallyPreparingTime });
+                        break;
+                    case 'P':
+                        var pointingTime = 0;
+                        if (i === 0) {
+                            pointingTime = this.calculateFittsLaw(null, steps[i].id);
+                        } else {
+                            pointingTime = this.calculateFittsLaw(steps[i-1].id, steps[i].id);
+                        }
+                        operatorTimes[i].push({ operator: 'P', time: pointingTime });
+                        break;
+                    case 'R':
+                        operatorTimes[i].push({ operator: 'R', time: this.responseTime });
+                        break;
+                }
+            }
+        }
+        return operatorTimes;
+    }
+
+    public calculateGomsTime(task: any, convertedSteps: any): number {
         var time = this.calculateTime(task.steps, convertedSteps);
         return time;
     }

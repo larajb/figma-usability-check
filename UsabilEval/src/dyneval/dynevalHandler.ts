@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { dispatch, handleEvent } from '../codeMessageHandler';
 import { Goms } from './goms/Goms';
 import { checkButtonValidity, checkInputExample, checkInputValidity, checkLinkValidity, checkValidity } from './helper/validityHelper';
@@ -92,7 +93,9 @@ export const dynevalView = () => {
         var avgHomingNum = await figma.clientStorage.getAsync('homingNum');
         var smells = checkUsabilitySmells(history, task);
         var model = new Goms(0.2);
-        var time = model.useGomsModel(task);
+        var convertedSteps = model.convertToOperators(task);
+        var convertedStepsAndTime = model.getTimeForOperators(task.steps, convertedSteps);
+        var time = model.calculateGomsTime(task, convertedSteps);
         var pointingTimeSmell = longP(model.pointingTimes, avgPointingTime);
         if (pointingTimeSmell.isFound) {
             smells.push({ title: 'Long P', values: pointingTimeSmell.values, steps: pointingTimeSmell.values });
@@ -101,14 +104,59 @@ export const dynevalView = () => {
         if (homingNumSmell.isFound) {
             smells.push({ title: 'Many H', values: homingNumSmell.values, steps: homingNumSmell.steps });
         }
-        dispatch('evaluationResult', { goms: { time: time, avgPointingTime: model.avgPointingTime, avgHomingNum: model.avgHomingNum }, usabilitySmells: smells});
+        dispatch('taskEvaluationResult', { goms: { time: time, convertedSteps: convertedStepsAndTime, avgPointingTime: model.avgPointingTime, avgHomingNum: model.avgHomingNum }, usabilitySmells: smells});
     })
 
     handleEvent('calculateGomsComparison', (task) => {
         var model = new Goms(0.2);
-        var time = model.useGomsModel(task);
+        var convertedSteps = model.convertToOperators(task);
+        var time = model.calculateGomsTime(task, convertedSteps);
         dispatch('calculatedGomsComparisonTime', time);
     });
+
+    handleEvent('evaluateScenario', async (args) => {
+        var result = [];
+        args.scenario.tasks.forEach(task => {
+            const taskIndex = args.tasks.findIndex((element) => element.taskname === task.taskname);
+            var taskElement = args.tasks[taskIndex];
+            var smells = checkUsabilitySmells(args.history, taskElement);
+            var model = new Goms(0.2);
+            var convertedSteps = model.convertToOperators(taskElement);
+            var convertedStepsAndTime = model.getTimeForOperators(taskElement.steps, convertedSteps);
+            var time = model.calculateGomsTime(taskElement, convertedSteps);
+            var evaluationIndex = -1;
+            if (args.history.length > 0) {
+                evaluationIndex = args.history.findIndex((element) => element.taskname === task.taskname);
+            }
+            if (evaluationIndex < 0) {
+                args.history.push({
+                    id: 0,
+                    type: 'task',
+                    taskname: task.taskname,
+                    color: taskElement.color,
+                    evaluationRuns: [
+                        {
+                            timestamp: Date.now(),
+                            steps: taskElement.steps,
+                            goms: { gomsTime: time, convertedSteps: convertedStepsAndTime, avgPointingTime: model.avgPointingTime, avgHomingNum: model.avgHomingNum },
+                            usabilitySmells: smells,
+                            comparison:  null
+                        }
+                    ]
+                });
+            } else {
+                args.history[evaluationIndex].evaluationRuns.unshift({
+                    timestamp: Date.now(),
+                    steps: taskElement.steps,
+                    goms: { gomsTime: time, convertedSteps: convertedStepsAndTime, avgPointingTime: model.avgPointingTime, avgHomingNum: model.avgHomingNum },
+                    usabilitySmells: smells,
+                    comparison: null
+                });
+            }
+            result.push({ taskname: task.taskname, time: time });
+        })
+        dispatch('scenarioEvaluationResult', { taskEvaluationHistory: args.history, result: result });
+    })
 
     /**
      * Get and set storage.
@@ -139,16 +187,28 @@ export const dynevalView = () => {
         await figma.clientStorage.setAsync('scenarios', scenarios);
     })
 
-    handleEvent('getEvaluationStorage', async () => {
+    handleEvent('getTaskEvaluationStorage', async () => {
         var evaluationStorage = undefined;
         await figma.clientStorage.getAsync('taskEvaluation').then((value) => {
             evaluationStorage = value;
         });
-        dispatch('currentEvaluationStorage', evaluationStorage);
+        dispatch('currentTaskEvaluationStorage', evaluationStorage);
     });
 
-    handleEvent('setEvaluationStorage', async (storage) => {
+    handleEvent('getScenarioEvaluationStorage', async () => {
+        var evaluationStorage = undefined;
+        await figma.clientStorage.getAsync('scenarioEvaluation').then((value) => {
+            evaluationStorage = value;
+        });
+        dispatch('currentScenarioEvaluationStorage', evaluationStorage);
+    });
+
+    handleEvent('setTaskEvaluationStorage', async (storage) => {
         await figma.clientStorage.setAsync('taskEvaluation', storage);
+    });
+
+    handleEvent('setScenarioEvaluationStorage', async (storage) => {
+        await figma.clientStorage.setAsync('scenarioEvaluation', storage);
     });
 
     handleEvent('getPointingTimeStorage', async () => {

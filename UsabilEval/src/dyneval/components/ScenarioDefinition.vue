@@ -8,7 +8,7 @@
         <div>
             <p class="type--pos-medium-normal">Wähle eine Aufgabe und füge sie dem Szenario hinzu.</p>
             <div class="scenario-definition__input">
-                <Select id="task-select" :items="tasksList" v-model="task" />
+                <Select id="task-select" style="width: 100%" :items="tasksList" v-model="task" />
                 <button class="button button--primary" @click="addTask">Hinzufügen</button>
             </div>
             <button class="type--pos-small-normal button--link-look" @click="handleClick">Aufgabe definieren</button>
