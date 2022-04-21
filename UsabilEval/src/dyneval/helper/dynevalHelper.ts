@@ -2,7 +2,7 @@ import { resourceLimits } from "worker_threads";
 import { addAnnotationToFile, getCurrentSelection, getNode } from "../../figmaAccess/fileContents";
 import { createEllipseNode, createGroupNode, createTextNode } from "../../figmaAccess/nodeCreator";
 import { getHeight, getParent, getRelativeTransform, getType, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
-import { distantContent, laboriousTask, tooManyLayers } from "./usabilitySmellsHelper";
+import { distantContent, highWebsiteElementDistance, laboriousTask, tooManyLayers } from "./usabilitySmellsHelper";
 import { checkInputExample } from "./validityHelper";
 
 /**
@@ -149,12 +149,10 @@ export const checkUsabilitySmells = (history, task) => {
         results.push({ title: 'Too Many Layers', values: tooManyLayersResult.values, steps: tooManyLayersResult.steps });
     }
     // High Website Element Distance
-    // Laborious Task
-    var laboriousTaskResult = laboriousTask(history, task);
-    if (laboriousTaskResult.isFound) {
-        results.push({ title: 'Laborious Task', values: laboriousTaskResult.values, steps: laboriousTaskResult.steps });
+    var highWebsiteElementDistanceResult = highWebsiteElementDistance(task);
+    if (highWebsiteElementDistanceResult.isFound) {
+        results.push({ title: 'High Website Element Distance', values: highWebsiteElementDistanceResult.values, steps: highWebsiteElementDistanceResult.values.steps })
     }
-    // Cyclic Task
     // Distant Content
     var distantContentResult = distantContent(task);
     if (distantContentResult.isFound) {
