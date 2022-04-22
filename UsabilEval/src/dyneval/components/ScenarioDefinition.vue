@@ -103,6 +103,8 @@ export default {
                 handleEvent('validityBefore', validityBefore => {
                     if (validityBefore) {
                         this.scenarios[scenarioIndex].tasks.push({ taskname: this.task, color: this.tasks[taskIndex].color });
+                        this.setScenarioStorage();
+                        this.$store.commit('scenarios', this.scenarios);
                         return;
                     } else {
                         this.showError = true;
@@ -111,11 +113,10 @@ export default {
                 });
             } else {
                 this.scenarios[scenarioIndex].tasks.push({ taskname: this.task, color: this.tasks[taskIndex].color });
+                this.setScenarioStorage();
+                this.$store.commit('scenarios', this.scenarios);
                 return;
             }
-
-            this.setScenarioStorage();
-            this.$store.commit('scenarios', this.scenarios);
         },
         deletedScenario(scenarioname) {
             this.scenarios = this.scenarios.filter(function(item) {
