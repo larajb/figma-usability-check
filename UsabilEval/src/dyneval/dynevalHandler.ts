@@ -94,6 +94,11 @@ export const dynevalView = () => {
         dispatch('linkValidity', validity);
     });
 
+    handleEvent('checkTaskComparisonValidity', async (args) => {
+        var validity = await checkTaskComparisonValidity(args.firstTask, args.secondTask);
+        dispatch('taskComparisonValidity', validity);
+    })
+
     /**
      * Evaluation
      */

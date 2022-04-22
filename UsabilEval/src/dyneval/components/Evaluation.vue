@@ -22,6 +22,12 @@
             <Select id="first-scenario-select" :items="firstScenarios" v-model="firstScenario" />
         </div>
         <button class="button button--primary" style="margin-top: 10px" @click="startEvaluation">Start</button>
+        <div v-show="showError" class="element-error-note">
+            <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
+            <div class="icon-button" @click="closeError">
+                <div class="icon icon--close"></div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -48,6 +54,8 @@ export default {
             // secondScenarios: [],
             taskEvaluationHistory: [],
             scenarioEvaluationHistory: [],
+            showError: false,
+            errorMessage: '',
         }
     },
     computed: {
@@ -71,6 +79,13 @@ export default {
             const result = this.secondTasks.filter(item => item.label !== this.firstTask);
             this.secondTasks = result;
             this.$store.commit('currentTaskname', this.firstTask);
+        },
+        secondTask() {
+            if (this.secondTask !== '') {
+                const firstTaskIndex = this.tasks.findIndex((task) => task.taskname === this.firstTask);
+                const secondTaskIndex = this.tasks.findIndex((task) => task.taskname === this.secondTask);
+                dispatch('checkTaskComparisonValidity', { firstTask: this.tasks[firstTaskIndex], secondTask: this.tasks[secondTaskIndex] });
+            }
         },
         firstScenario() {
             this.$store.commit('currentScenarioname', this.firstScenario);
@@ -121,10 +136,17 @@ export default {
         })
 
         handleEvent('scenarioEvaluationResult', result => {
-            console.log('handle event', result);
             dispatch('setTaskEvaluationStorage', result.taskEvaluationHistory);
             this.$store.commit('taskEvaluationHistory', result.taskEvaluationHistory);
             this.setScenarioEvaluationHistory(result.result);
+        })
+
+        handleEvent('taskComparisonValidity', validity => {
+            if (!validity) {
+                this.secondTask = '';
+                this.showError = true;
+                this.errorMessage = 'Die ausgewählten Aufgaben können nicht miteinander verglichen werden, da sie nicht auf der gleichen Seite beginnen und/oder nicht mit demselben Interaktionselement enden.';
+            }
         })
 
         handleEvent('calculatedGomsComparisonTime', time => {
@@ -164,10 +186,8 @@ export default {
             this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
         },
         setScenarioEvaluationHistory(result) {
-            console.log(this.scenarioEvaluationHistory);
             const index = this.scenarioEvaluationHistory.findIndex((history) => history.scenarioname === this.firstScenario);
             this.scenarioEvaluationHistory[index].evaluationRuns[0].gomsTimes = result;
-            console.log(this.scenarioEvaluationHistory);
             dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
             this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
         },
@@ -251,6 +271,10 @@ export default {
                 var scenario = this.scenarios[scenarioIndex];
                 dispatch('evaluateScenario', { scenario: scenario, tasks: this.tasks, history: this.taskEvaluationHistory });
             }
+        },
+        closeError() {
+            this.showError = false;
+            this.errorMessage = '';
         },
     },
 }
