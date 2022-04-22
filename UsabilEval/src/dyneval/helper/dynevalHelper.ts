@@ -34,13 +34,18 @@ export const createExampletext = (input, taskname) => {
  * @param color 
  * @returns annotation
  */
-export const createTaskAnnotation = (taskname, numSteps, color, index = null) => {
+export const createTaskAnnotation = (taskname, numSteps, color, selection = null, index = null) => {
     var stepNumber = String(numSteps + 1);
     if (index !== null) {
         stepNumber = String(index++);
     }
     var convertedColor = convertColor(color);
-    var currentSelection = getCurrentSelection();
+    var currentSelection = null;
+    if (selection !== null) {
+        currentSelection = selection;
+    } else {
+       currentSelection = getCurrentSelection();
+    }
     var selectionRelTransform = getRelativeTransform(currentSelection.id);
     var selectionParent = getParent(currentSelection.id);
 
@@ -159,6 +164,13 @@ export const checkUsabilitySmells = (history, task) => {
         results.push({ title: 'Distant Content', values: distantContentResult.values, steps: distantContentResult.steps });
     }
     return results;
+}
+
+export const getElementToAnnotation = (id) => {
+    var annotation = figma.getNodeById(id);
+    var parent = getParent(annotation.id);
+    var selection = parent.children[0];
+    return selection;
 }
 
 /**

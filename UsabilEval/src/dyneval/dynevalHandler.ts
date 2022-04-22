@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { dispatch, handleEvent } from '../codeMessageHandler';
 import { Goms } from './goms/Goms';
-import { checkButtonValidity, checkInputExample, checkInputValidity, checkLinkValidity, checkValidity } from './helper/validityHelper';
-import { checkUsabilitySmells, createExampletext, createTaskAnnotation, deleteStepAnnotation, updateStepAnnotation } from './helper/dynevalHelper';
+import { checkButtonValidity, checkInputExample, checkInputValidity, checkLinkValidity, checkTaskComparisonValidity, checkValidity } from './helper/validityHelper';
+import { checkUsabilitySmells, createExampletext, createTaskAnnotation, deleteStepAnnotation, getElementToAnnotation, updateStepAnnotation } from './helper/dynevalHelper';
 import { longP, manyH } from './helper/usabilitySmellsHelper';
 // import { getStorage, setStorage } from '../figmaAccess/storage';
 
@@ -16,12 +16,22 @@ export const dynevalView = () => {
             var isAdded = createExampletext(args.input, args.taskname);
         }
         if (args.index !== undefined) {
-            var taskAnnotation = createTaskAnnotation(args.taskname, args.numSteps, args.color, args.index);
+            var taskAnnotation = createTaskAnnotation(args.taskname, args.numSteps, args.color, null, args.index);
         } else {
             var taskAnnotation = createTaskAnnotation(args.taskname, args.numSteps, args.color);
         }
         dispatch('taskStepAdded', { taskname: args.taskname, id: taskAnnotation.id});
     });
+
+    handleEvent('addTaskSteps', (args) => {
+        var addedSteps = [];
+        for (let i = 0; i < args.steps.length; i++) {
+            var selection = getElementToAnnotation(args.steps[i].id);
+            var taskAnnotation = createTaskAnnotation(args.taskname, i, args.color, selection);
+            addedSteps.push({ id: taskAnnotation.id, type: args.steps[i].type, input: args.steps[i].input });
+        }
+        dispatch('taskStepsAdded', { taskname: args.taskname, steps: addedSteps });
+    })
 
     handleEvent('deleteStep', (args) => {
         deleteStepAnnotation(args.step, args.followingSteps);

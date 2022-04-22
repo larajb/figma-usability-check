@@ -49,6 +49,11 @@
                     </div>
                 </div>
             </div>
+            <div style="display: flex">
+                <p class="type--pos-medium-normal">Kopieren nach</p>
+                <Select id="copy-select" style="width: 100%" :items="taskList" v-model="selectedToCopy" />
+                <button class="button button--primary" @click="copyTaskSteps">Kopieren</button>
+            </div>
         </div>
     </div>
 </template>
@@ -181,6 +186,10 @@ export default {
             const element = document.getElementById('edit-switch-' + this.taskname);
             this.switchValue = element.value;
         },
+        copyTaskSteps() {
+            var selectedIndex = this.tasks.findIndex((task) => task.taskname === this.selectedToCopy);
+            dispatch('addTaskSteps', { taskname: this.tasks[selectedIndex].taskname, color: this.tasks[selectedIndex].color, steps: this.steps })
+        }
     },
 }
 </script>
