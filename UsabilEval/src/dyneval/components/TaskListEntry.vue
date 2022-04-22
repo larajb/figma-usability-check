@@ -56,12 +56,15 @@
 <script>
 import { dispatch, handleEvent } from '../../uiMessageHandler';
 
-import { Toggle } from 'figma-plugin-ds-vue';
+import { mapState } from 'vuex';
+
+import { Toggle, Select } from 'figma-plugin-ds-vue';
 
 export default {
     name: 'TaskListEntry',
     components: {
         Toggle,
+        Select,
     },
     props: {
         taskname: {
@@ -77,12 +80,17 @@ export default {
             default: null,
         }
     },
+    computed: {
+        ...mapState(['tasks', 'scenarios']),
+    },
     data() {
         return {
             myStyle:{
                 backgroundColor: this.color,
             },
             switchValue: false,
+            taskList: [],
+            selectedToCopy: '',
         }
     },
     watch: {
@@ -92,11 +100,47 @@ export default {
         color() {
             this.myStyle.backgroundColor = this.color;
         },
+        tasks() {
+            this.taskList = [{ label: '', key: '' }];
+            this.tasks.forEach(task => {
+                if(task.taskname !== this.taskname) {
+                    this.taskList.push({ label: task.taskname, key: task.taskname });
+                }
+            });
+        },
+    },
+    mounted() {
+        this.taskList = [{ label: '', key: '' }];
+        this.tasks.forEach(task => {
+            if(task.taskname !== this.taskname) {
+                this.taskList.push({ label: task.taskname, key: task.taskname });
+            }
+        });
+
+        handleEvent('taskStepsAdded', (args) => {
+            var selectedIndex = this.tasks.findIndex((task) => task.taskname === args.taskname);
+            this.tasks[selectedIndex].steps = args.steps;
+            console.log(this.tasks[selectedIndex], args.steps);
+            this.$store.commit('tasks', this.tasks);
+            dispatch('setTaskStorage', this.tasks);
+        });
     },
     methods: {
         deleteTask() {
-            dispatch('deleteSteps', { taskname: this.taskname, steps: this.steps });
-            this.$emit('deletedTask', this.taskname);
+            var isFound = false;
+            this.scenarios.forEach(scenario => {
+                for (let i = 0; i < scenario.tasks.length; i++) {
+                    if (scenario.tasks[i].taskname === this.taskname) {
+                        isFound = true;
+                        this.$emit('warning', 'Diese Aufgabe kann nicht gelöscht werden, da sie in einem Szenario verwendet wird.');
+                        return;
+                    }
+                }
+            })
+            if (!isFound) {
+                dispatch('deleteSteps', { taskname: this.taskname, steps: this.steps });
+                this.$emit('deletedTask', this.taskname);
+            }
         },
         deleteStep(step) {
             var followingSteps = [];

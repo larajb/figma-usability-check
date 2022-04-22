@@ -35,7 +35,8 @@
                 @deletedStep="deletedStep($event)"
                 @moveUp="moveStepUp($event)"
                 @moveDown="moveStepDown($event)"
-                @edit="setEditMode($event)" />
+                @edit="setEditMode($event)"
+                @warning="showWarning($event)" />
         </div>
     </div>
 </template>
@@ -70,7 +71,8 @@ export default {
         typeSelection() {
             if (this.typeSelection === 'input') {
                 // check if selection already has an example
-                dispatch('checkInputExample', this.tasks[index].platform);
+                const task = this.tasks.find((task) => task.taskname === this.tasknameInput);
+                dispatch('checkInputExample', task.platform);
             }
         },
     },
@@ -361,6 +363,10 @@ export default {
             } else {
                 this.tasknameInput = '';
             }
+        },
+        showWarning(warning) {
+            this.showError = true;
+            this.errorMessage = warning;
         },
     },
 }
