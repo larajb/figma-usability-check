@@ -56,19 +56,18 @@ export const checkValidity = (args) => {
 }
 
 /**
- * This is a function to check the validity of a button that is currently selected.
+ * This is a function to check the validity of a button that is currently selected. The target size of 44 x 44 pixels is taken from the WCAG 2.1 standard (2.5.5) where it is 
+ * recommended for both desktop and touch devices.
  * @returns validity
  */
 export const checkButtonValidity = (platform) => {
-    var validity = false;
     var currentSelection = getCurrentSelection();
     var width = getWidth(currentSelection.id);
     var height = getHeight(currentSelection.id);
-    /** different min values depending on platform and frame size?
-     * WCAG Richtlinie allgemeingültig > kein Bezug auf Plattform oder Bildschirmgröße
-     */
-    validity = (width >= 44) && (height >= 44);
-    return validity;
+    if ((width >= 44) && (height >= 44)) {
+        return true
+    }
+    return false;
 }
 
 /**
@@ -88,31 +87,34 @@ export const checkInputExample = (platform) => {
 }
 
 /**
- * This is a function to check the validity of an input field.
+ * This is a function to check the validity of an input field. The text width of the input example should be smaller than the width of the input field.
  * @param input 
  * @returns validity
  */
-export const checkInputValidity = (input, platform) => {
-    // input field size should fit with input (example) text
-    // var text = figma.createText();
-    // loadingFont().then(() => {
-    //     text.fontName = { family: 'Roboto', style: 'Regular' };
-    //     text.fills = [{ type: 'SOLID', color: {r: 0, g: 0, b: 1} }];
-    //     text.characters = input;
-    // })
-    // /**
-    //  * The width of an element always = 0 when accessed directly, even if it != 0 when checking inside the node
-    //  */
-    // var width = text.width;     // DOESN'T WORK! WHY?!
-    return true;
+export const checkInputValidity = async (input, platform) => {
+    var selection = getCurrentSelection();
+    var selectionWidth = getWidth(selection.id);
+    var text = figma.createText();
+    var textWidth = null;
+    await loadingFont().then(() => {
+        text.fontName = { family: 'Roboto', style: 'Regular' };
+        text.fontSize = 16;
+        text.fills = [{ type: 'SOLID', color: {r: 0, g: 0, b: 1} }];
+        text.characters = input;
+    })
+    textWidth = text.width;
+    text.remove();
+    if (textWidth < selectionWidth) {
+        return true;
+    }
+    return false;
 }
 
 /**
- * This is a function to check the calidity of a link that is currently selected.
+ * This is a function to check the validity of a link that is currently selected. A text link should not wrap to a second line (Research-Based Web Design and Usability Guidelines 10.11).
  * @returns validity
  */
-export const checkLinkValidity = (platform) => {
-    var validity = false;
+export const checkLinkValidity = async (platform) => {
     var isText = false;
     var isImage = false;
     var currentSelection = getCurrentSelection();
@@ -122,18 +124,49 @@ export const checkLinkValidity = (platform) => {
         isImage = true;
     }
     if (isText) {
-        // textual link: state should be changed when clicked --> CAN'T BE CHECKED (STATE CHANGE NOT POSSIBLE, JUST WITH ANOTHER PAGE)
-        var lengthIsValid = false;
-        /** textual link: length should be valid > Nicht mehr als eine Zeile, manchmal aber auch ein Wort gut... schwierig auszulegen
-         */
+        var selection = getCurrentSelection();
+        var selectionHeight = getHeight(selection.id);
+        var fontSize = 16;
+        if (selection.type === 'TEXT') {
+            fontSize = selection.fontSize;
+        }
+        var text = figma.createText();
+        var textHeight = null;
+        await loadingFont().then(() => {
+            text.fontName = { family: 'Roboto', style: 'Regular' };
+            text.fontSize = fontSize;
+            text.fills = [{ type: 'SOLID', color: {r: 0, g: 0, b: 1} }];
+            text.characters = 'Test';
+        })
+        textHeight = text.height;
+        if (selectionHeight <= textHeight) {
+            return true;
+        }
     }
     if (isImage) {
-        var sizeIsValid = false;
-        /** graphical link: size should be valid > When is the size valid?
-         */
+        var currentSelection = getCurrentSelection();
+        var width = getWidth(currentSelection.id);
+        var height = getHeight(currentSelection.id);
+        if ((width >= 44) && (height >= 44)) {
+            return true
+        }
     }
-    
-    return true;
+    return false;
+}
+
+/**
+ * This is a function to check if two tasks can be compared.
+ * @param firstTask 
+ * @param secondTask 
+ * @returns Boolean
+ */
+export const checkTaskComparisonValidity = (firstTask, secondTask) => {
+    var firstTaskEndFrame = getFrame(firstTask.steps[firstTask.steps.length-1].id);
+    var secondTaskEndFrame = getFrame(secondTask.steps[secondTask.steps.length-1].id);
+    if (firstTask.steps[0].id === secondTask.steps[0].id && firstTaskEndFrame === secondTaskEndFrame) {
+        return true;
+    }
+    return false;
 }
 
 const loadingFont = async () => {
