@@ -2,11 +2,11 @@
     <div v-show="content !== undefined">
         <p class="type--pos-medium-normal">{{ content.taskname }}</p>
         <div id="tasks" v-if="content.evaluationRuns[0].gomsTimes !== null">
-            <bar-chart class="scenario-chart" :chartData="chartData" :options="chartOptions" />
+            <bar-chart class="scenario-chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
         </div>
         <div id="stats">
             <div v-for="(task, index) in taskResults" :key="index">
-                <task-results v-show="taskToShow === index" :content="task" @onReceive="handleClick($event)" />
+                <task-results v-show="taskToShow === task.taskname" :content="task" />
             </div>
         </div>
     </div>
@@ -42,15 +42,14 @@ export default {
                 legend: {
                     display: false,
                 },
-                // plugins: {
-				// 	tooltip: {
-				// 		callbacks: {
-				// 			label: function(context) {
-				// 				return context.label
-				// 			}
-				// 		}
-				// 	},
-				// },
+                tooltips: {
+                    mode: 'single',
+                    callbacks: {
+                        title: function(tooltipItem, data) {
+                            return data['labels'][tooltipItem[0]['index']];
+                        },
+                    },
+                },
                 scales: {
                     xAxes: [{
                         stacked: false,
@@ -61,7 +60,7 @@ export default {
                 },
             },
             taskResults: [],
-            taskToShow: 0,
+            taskToShow: '',
         }
     },
     mounted() {
@@ -94,8 +93,8 @@ export default {
                 this.taskResults.push(this.taskEvaluationHistory[index]);
             })
         },
-        handleClick(taskname) {
-            console.log(taskname);
+        handleClick(label) {
+            this.taskToShow = label;
         },
     },
 }

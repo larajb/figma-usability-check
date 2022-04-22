@@ -40,7 +40,7 @@
         <div id="smells" class="smells-result" v-if="content.evaluationRuns[0].usabilitySmells !== null">
             <div style="display: flex">
                 <div style="margin-right: 20px" class="icon icon--warning"></div>
-                <p class="type--pos-medium-normal">Erweitert</p>
+                <p class="type--pos-medium-normal">Erweitert für {{ content.taskname }}</p>
             </div>
             <div style="margin-left: 40px" v-for="(smell, index) in content.evaluationRuns[0].usabilitySmells" :key="index">
                 <div style="display: flex;">
@@ -50,8 +50,9 @@
                     <p class="type--pos-medium-normal">{{ smell.title }}</p>
                 </div>
                 <div v-show="showSmell" style="margin-left: 10px">
+                    <p class="type--pos-medium-normal" v-if="smell.steps.length === 1">Gefunden in Schritt: {{ smell.steps[0] }}</p>
+                    <p class="type--pos-medium-normal" v-else-if="smell.steps.length > 1">Gefunden in Schritten: {{ getAsString(smell.steps) }}</p>
                     <p class="type--pos-medium-normal">{{ getDescription(smell.title) }}</p>
-                    <p class="type--pos-medium-normal">Hinweis auf das Usability-Problem wurde in dem/den Schritt/en {{ smell.steps }} der Aufgabe {{ content.taskname }} gefunden.</p>
                     <p class="type--pos-medium-normal">{{ getRefactoring(smell.title) }}</p>
                 </div>
             </div>
@@ -99,7 +100,6 @@ export default {
         }
     },
     mounted() {
-        console.log('mounted', this.content);
         if (this.content !== null) {
             this.setChartData();
         }
@@ -107,7 +107,7 @@ export default {
     methods: {
         setChartData() {
             this.chartData = {
-                labels: ['H', 'P', 'K', 'M', 'R'],
+                labels: ['H', 'K', 'M', 'P', 'R'],
                 datasets: [],
             };
             var time = 0.0;
@@ -120,19 +120,19 @@ export default {
                                 backgroundColor: 'rgba(0, 76, 153, 1)',
                             });
                             break;
-                        case 'P':
+                        case 'K':
                             this.chartData.datasets.push({
                                 data: [[0, 0], [time, time + operator.time], [0, 0], [0, 0], [0, 0]],
                                 backgroundColor: 'rgba(0, 102, 204, 1)',
                             });
                             break;
-                        case 'K':
+                        case 'M':
                             this.chartData.datasets.push({
                                 data: [[0, 0], [0, 0], [time, time + operator.time], [0, 0], [0, 0]],
                                 backgroundColor: 'rgba(0, 128, 255, 1)',
                             });
                             break;
-                        case 'M':
+                        case 'P':
                             this.chartData.datasets.push({
                                 data: [[0, 0], [0, 0], [0, 0], [time, time + operator.time], [0, 0]],
                                 backgroundColor: 'rgba(51, 153, 255, 1)',
@@ -164,6 +164,14 @@ export default {
             const index = this.usabilitySmells.findIndex((smell) => smell.title === title);
             return this.usabilitySmells[index].refactoring;
         },
+        getAsString(stepsArray) {
+            const stepsString = '';
+            stepsArray.forEach(step => {
+                stepsString += step;
+            })
+            stepsString = stepsString.slice(0, stepsString.length - 1);
+            return stepsString;
+        }
     },
 }
 </script>
