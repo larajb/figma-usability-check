@@ -2,25 +2,37 @@
     <div>
         <p class="type--pos-medium-normal">Wähle einen Namen und die Zielplattform für die Aufgabe und erstelle sie.</p>
         <div class="task-definition__input">
-            <input id="taskname" class="input" type="text" placeholder="Aufgabe" v-model="tasknameInput">
-            <Select id="platform-select" style="width: 100%" :items="[
-                    { label: 'Desktop', key: 'desktop' },
-                    { label: 'Mobil', key: 'mobile' },
-                    { label: 'Desktop + Mobil', key: 'desktop+mobile' }
-                ]" v-model="platformSelection" />
+            <div class="tooltip">
+				<input id="taskname" class="input" type="text" placeholder="Aufgabe" v-model="tasknameInput">
+				<span class="type--pos-small-normal tooltiptext">Eingabe Aufgabenname</span>
+			</div>
+            <div class="tooltip" style="width: 50%">
+                <Select id="platform-select" :items="[
+                        { label: 'Desktop', key: 'desktop' },
+                        { label: 'Mobil', key: 'mobile' },
+                        { label: 'Desktop + Mobil', key: 'desktop+mobile' }
+                    ]" v-model="platformSelection" />
+                <span class="type--pos-small-normal tooltiptext">Auswahl Plattform</span>
+			</div>
             <button class="button button--primary" @click="addTask">Erstellen</button>
         </div>
         <div class="type--pos-medium-normal">
             <p>Wähle ein UI-Element und einen Elementtyp und füge einen Bearbeitungsschritt hinzu.</p>
             <div class="task-definition__input">
-                <Select id="type-select" style="width: 100%" :items="[
-                        { label: 'Button', key: 'button' },
-                        { label: 'Eingabe', key: 'input' },
-                        { label: 'Link', key: 'link' }
-                    ]" v-model="typeSelection" />
+                <div class="tooltip" style="width: 100%">
+                    <Select id="type-select" :items="[
+                            { label: 'Button', key: 'button' },
+                            { label: 'Eingabe', key: 'input' },
+                            { label: 'Link', key: 'link' }
+                        ]" v-model="typeSelection" />
+                    <span class="type--pos-small-normal tooltiptext">Auswahl der Art des Interaktionselements</span>
+                </div>
                 <button class="button button--primary" @click="addTaskStep">Hinzufügen</button>
             </div>
-            <input v-show="typeSelection === 'input'" id="input-example" class="input" type="text" placeholder="Beispiel Eingabe" v-model="exampleInput">
+            <div class="tooltip" style="width: 100%">
+                <input v-show="typeSelection === 'input'" id="input-example" class="input" type="text" placeholder="Beispiel Eingabe" v-model="exampleInput">
+                <span class="type--pos-small-normal tooltiptext">Eingabe Beispiel für ein Interaktionselement des Typs 'Eingabe'</span>
+            </div>
             <div v-show="showError" class="element-error-note">
                 <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
                 <div class="icon-button" @click="closeError">

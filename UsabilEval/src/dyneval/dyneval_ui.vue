@@ -1,15 +1,32 @@
 <template>
   	<div class="dyneval-ui">
 		<div style="display: flex; margin-bottom: 20px;">
-			<div id="select-aufgaben" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('TaskDefinition')">Aufgaben</div>
-			<div id="select-szenarien" style="margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('ScenarioDefinition')">Szenarien</div>
-			<div id="select-evaluation" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': (tasks.length === 0) && (scenarios.length === 0)}" @click="setCurrentPage('Evaluation')">Evaluation</div>
-			<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': ($store.getters.currentTaskEvaluation === undefined) && ($store.getters.currentScenarioEvaluation === undefined)}" @click="setCurrentPage('Results')">Ergebnisse</div>
-			<!-- <div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('Results')">Ergebnisse</div> -->
+			<div class="tooltip">
+				<div id="select-aufgaben" class="type--pos-medium-normal menu menu-first" @click="setCurrentPage('TaskDefinition')">Aufgaben</div>
+				<span class="type--pos-small-normal tooltiptext">Aufgabendefinition</span>
+			</div>
+			<div class="tooltip">
+				<div id="select-szenarien" class="type--pos-medium-normal menu" @click="setCurrentPage('ScenarioDefinition')">Szenarien</div>
+				<span class="type--pos-small-normal tooltiptext">Szenariendefinition</span>
+			</div>
+			<div class="tooltip">
+				<div id="select-evaluation" class="type--pos-medium-normal menu" :class="{'disabled': (tasks.length === 0) && (scenarios.length === 0)}" @click="setCurrentPage('Evaluation')">Evaluation</div>
+				<span class="type--pos-small-normal tooltiptext">Auswahl der Aufgaben/Szenarien zur Evaluation</span>
+			</div>
+			<div class="tooltip">
+				<div id="select-ergebnisse" class="type--pos-medium-normal menu" :class="{'disabled': ($store.getters.currentTaskEvaluation === undefined) && ($store.getters.currentScenarioEvaluation === undefined)}" @click="setCurrentPage('Results')">Ergebnisse</div>
+				<span class="type--pos-small-normal tooltiptext">Darstellung der Evaluationsergebnisse</span>
+			</div>
 		</div>
-		<p class="type--pos-large-bold">
-			Dynamische Evaluation
-		</p>
+		<div style="display:flex">
+			<p class="type--pos-large-bold">
+				Dynamische Evaluation
+			</p>
+			<div class="tooltip">
+				<div class="icon icon--info"></div>
+				<span class="type--pos-small-normal tooltiptext">Erläuterungen zur dynamischen Evaluation</span>
+			</div>
+		</div>
 		<task-definition v-show="currentPage === 'TaskDefinition'" />
 		<scenario-definition v-show="currentPage === 'ScenarioDefinition'" />
 		<evaluation v-show="currentPage === 'Evaluation'" />
@@ -95,5 +112,46 @@ export default {
 	.disabled {
 		pointer-events: none;
 		opacity: 0.4;
+	}
+
+	.menu {
+		margin-right: 20px
+	}
+
+	.menu-first {
+		margin-left: 5px;
+	}
+
+	.icon--info {
+		background-image: url('../img/information-outline.svg');
+	}
+
+	/* Tooltip container */
+	.tooltip {
+		position: relative;
+		display: inline-block;
+	}
+
+	/* Tooltip text */
+	.tooltip .tooltiptext {
+		visibility: hidden;
+		width: 120px;
+		top: 100%;
+		left: 50%;
+		margin-left: -60px;
+		background-color: rgba(0, 0, 0, 0.6);
+		color: #fff;
+		text-align: center;
+		padding: 5px 0;
+		border-radius: 6px;
+		
+		/* Position the tooltip text - see examples below! */
+		position: absolute;
+		z-index: 1;
+	}
+
+	/* Show the tooltip text when you mouse over the tooltip container */
+	.tooltip:hover .tooltiptext {
+		visibility: visible;
 	}
 </style>

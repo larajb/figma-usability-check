@@ -2,16 +2,25 @@
     <div>
         <p class="type--pos-medium-normal">Wähle einen Namen für ein neues Szenario und erstelle es.</p>
         <div class="scenario-definition__input">
-            <input id="scenarioname" class="input" type="text" placeholder="Szenario" v-model="scenarionameInput">
+            <div class="tooltip" style="width: 100%">
+                <input id="scenarioname" class="input" type="text" placeholder="Szenario" v-model="scenarionameInput">
+                <span class="type--pos-small-normal tooltiptext">Eingabe Szenarioname</span>
+            </div>
             <button class="button button--primary" @click="addScenario">Erstellen</button>
         </div>
         <div>
             <p class="type--pos-medium-normal">Wähle eine Aufgabe und füge sie dem Szenario hinzu.</p>
             <div class="scenario-definition__input">
-                <Select id="task-select" style="width: 100%" :items="tasksList" v-model="task" />
+                <div class="tooltip" style="width: 100%">
+                    <Select id="task-select" :items="tasksList" v-model="task" />
+                    <span class="type--pos-small-normal tooltiptext">Auswahl Aufgabe</span>
+                </div>
                 <button class="button button--primary" @click="addTask">Hinzufügen</button>
             </div>
-            <button class="type--pos-small-normal button--link-look" @click="handleClick">Aufgabe definieren</button>
+            <div class="tooltip">
+                <button class="type--pos-small-normal button--link-look" @click="handleClick">Aufgabe definieren</button>
+                <span class="type--pos-small-normal tooltiptext">Zurück zur Aufgabendefinition</span>
+            </div>
         </div>
         <div v-show="showError" class="element-error-note">
             <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>

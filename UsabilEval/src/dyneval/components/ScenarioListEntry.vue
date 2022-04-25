@@ -5,12 +5,18 @@
                 <p class="type--pos-medium-normal">{{ scenarioname }}</p>
             </div>
             <div style="display: flex;">
-                <div class="icon-button" :id="'delete-' + scenarioname" @click="deleteScenario">
-                    <div class="icon icon--trash"></div>
+                <div class="tooltip">
+                    <div class="icon-button" :id="'delete-' + scenarioname" @click="deleteScenario">
+                        <div class="icon icon--trash"></div>
+                    </div>
+                    <span class="type--pos-small-normal tooltiptext">Szenario löschen</span>
                 </div>
-                <Toggle v-model="switchValue">
-                    Bearbeiten
-                </Toggle>
+                <div class="tooltip">
+                    <Toggle v-model="switchValue">
+                        Bearbeiten
+                    </Toggle>
+                    <span class="type--pos-small-normal tooltiptext">Szenario bearbeiten: Aufgaben löschen</span>
+                </div>
             </div>
         </div>
         <div id="scenario-list" v-show="switchValue === false">
@@ -28,8 +34,11 @@
                     <p class="type--pos-medium-normal">{{ task.taskname }}</p>
                 </div>
                 <div>
-                    <div :id="'delete-' + task.taskname" class="icon-button" @click="deleteTask(task.taskname)">
-                        <div class="icon icon--trash"></div>
+                    <div class="tooltip">
+                        <div :id="'delete-' + task.taskname" class="icon-button" @click="deleteTask(task.taskname)">
+                            <div class="icon icon--trash"></div>
+                        </div>
+                        <span class="type--pos-small-normal tooltiptext">Aufgabe aus Szenario löschen</span>
                     </div>
                 </div>
             </div>
@@ -88,7 +97,7 @@ export default {
 	}
 
     .scenario-step {
-        width: 80%;
+        width: 70%;
 		margin-left: 15%;
         display: flex;
 		justify-content: space-between;

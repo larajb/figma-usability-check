@@ -1,25 +1,43 @@
 <template>
     <div class="type--pos-medium-normal">
         <div style="display: flex; margin-bottom: 20px;">
-			<div id="evaluate-aufgaben" style="margin-left: 5px; margin-right: 20px" @click="$store.commit('evaluationType', 'task')">Aufgaben-Evaluation</div>
-			<div id="evaluate-szenarien" style="margin-right: 20px" @click="$store.commit('evaluationType', 'scenario')">Szenarien-Evaluation</div>
+            <div class="tooltip">
+			    <div id="evaluate-aufgaben" style="margin-left: 5px; margin-right: 20px" @click="$store.commit('evaluationType', 'task')">Aufgaben-Evaluation</div>
+                <span class="type--pos-small-normal tooltiptext">Aufgabenevaluation</span>
+            </div>
+            <div class="tooltip">
+			    <div id="evaluate-szenarien" style="margin-right: 20px" @click="$store.commit('evaluationType', 'scenario')">Szenarien-Evaluation</div>
+                <span class="type--pos-small-normal tooltiptext">Szenarienevaluation</span>
+            </div>
 		</div>
         <div v-if="evaluationType === 'task'">
             <p class="type--pos-medium-normal">
                 Wähle eine Aufgabe zur Evaluation.
             </p>
-            <Select id="first-task-select" :items="firstTasks" v-model="firstTask" />
+            <div class="tooltip" style="width: 100%">
+                <Select id="first-task-select" :items="firstTasks" v-model="firstTask" />
+                <span class="type--pos-small-normal tooltiptext">Auswahl Aufgabe</span>
+            </div>
             <p class="type--pos-medium-normal">
                 Wähle eine weitere Aufgabe zum Vergleich. Falls erforderlich definiere sie zuerst. (optional)
             </p>
-            <Select id="second-task-select" :items="secondTasks" v-model="secondTask" />
-            <button class="type--pos-small-normal button--link-look" @click="$store.commit('currentPage', 'TaskDefinition')">Aufgabe definieren</button>
+            <div class="tooltip" style="width: 100%">
+                <Select id="second-task-select" :items="secondTasks" v-model="secondTask" />
+                <span class="type--pos-small-normal tooltiptext">Auswahl Vergleichsaufgabe</span>
+            </div>
+            <div class="tooltip">
+                <button class="type--pos-small-normal button--link-look" @click="$store.commit('currentPage', 'TaskDefinition')">Aufgabe definieren</button>
+                <span class="type--pos-small-normal tooltiptext">Zurück zur Aufgabendefinition</span>
+            </div>
         </div>
         <div v-else-if="evaluationType === 'scenario'">
             <p class="type--pos-medium-normal">
                 Wähle ein Szenario zur Evaluation.
             </p>
-            <Select id="first-scenario-select" :items="firstScenarios" v-model="firstScenario" />
+            <div class="tooltip" style="width: 100%">
+                <Select id="first-scenario-select" :items="firstScenarios" v-model="firstScenario" />
+                <span class="type--pos-small-normal tooltiptext">Auswahl Szenario</span>
+            </div>
         </div>
         <button class="button button--primary" style="margin-top: 10px" @click="startEvaluation">Start</button>
         <div v-show="showError" class="element-error-note">
