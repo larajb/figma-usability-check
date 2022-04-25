@@ -9,7 +9,6 @@ module.exports = (env, argv) => ({
 	devtool: argv.mode === 'production' ? false : 'inline-source-map',
 
 	entry: {
-		annotations_ui: './src/annotations/annotations_ui.ts',
 		stateval_ui: './src/stateval/stateval_ui.ts',
 		dyneval_ui: './src/dyneval/dyneval_ui.ts',
 		code: './src/code.ts' // The entry point for your plugin code
@@ -75,16 +74,9 @@ module.exports = (env, argv) => ({
 		new VueLoaderPlugin(),
 		new RemovePlugin({
 			after: { include: [
-				'dist/annotations_ui.js',
 				'dist/stateval_ui.js',
 				'dist/dyneval_ui.js'
 			] }
-		}),
-		new HtmlWebpackPlugin({
-			template: './src/annotations/annotations_ui.html',
-			filename: 'annotations_ui.html',
-			inlineSource: '.(js)$',
-			chunks: ['annotations_ui'],
 		}),
 		new HtmlWebpackPlugin({
 			template: './src/stateval/stateval_ui.html',

@@ -3,13 +3,11 @@
 	"api": "1.0.0",
 	"main": "dist/code.js",
 	"ui": {
-		"annotations": "dist/annotations_ui.html",
 		"stateval": "dist/stateval_ui.html",
 		"dyneval": "dist/dyneval_ui.html"
 	},
 	"editorType": ["figma"],
 	"menu": [
-		{"name": "Annotationen", "command": "annotations"},
 		{"name": "Statische Evaluation", "command": "stateval"},
 		{"name": "Dynamische Evaluation", "command": "dyneval"}
 	],
