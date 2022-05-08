@@ -5,21 +5,19 @@
                 <p class="type--pos-medium-normal">{{ scenarioname }}</p>
             </div>
             <div style="display: flex;">
-                <div class="tooltip">
-                    <div class="icon-button" :id="'delete-' + scenarioname" @click="deleteScenario">
-                        <div class="icon icon--trash"></div>
-                    </div>
-                    <span class="type--pos-small-normal tooltiptext">Szenario löschen</span>
+                <div class="tooltip--bottom">
+                    <IconButton @click="deleteScenario" :icon="'trash'" />
+                    <span class="type--pos-small-normal tooltiptext--bottom">Szenario löschen</span>
                 </div>
-                <div class="tooltip">
+                <!-- <div class="tooltip--bottom">
                     <Toggle v-model="switchValue">
                         Bearbeiten
                     </Toggle>
-                    <span class="type--pos-small-normal tooltiptext">Szenario bearbeiten: Aufgaben löschen</span>
-                </div>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Szenario bearbeiten: Aufgaben löschen</span>
+                </div> -->
             </div>
         </div>
-        <div id="scenario-list" v-show="switchValue === false">
+        <div id="scenario-list">
             <div v-for="(task, index) in tasks" :key="index" :id="'task-' + task.taskname" class="scenario-step">
                 <div style="display: flex;">
                     <div class="numberCircle" :style="{ border: `3px solid ${task.color}`, color: task.color }">{{ index + 1 }}</div>
@@ -27,32 +25,31 @@
                 </div>
             </div>
         </div>
-        <div id="scenario-list" v-show="switchValue === true">
+        <!-- <div id="scenario-list" v-show="switchValue === true">
             <div v-for="(task, index) in tasks" :key="index" :id="'task-' + task.taskname" class="scenario-step">
                 <div style="display: flex;">
                     <div class="numberCircle" :style="{ border: `3px solid ${task.color}`, color: task.color }">{{ index + 1 }}</div>
                     <p class="type--pos-medium-normal">{{ task.taskname }}</p>
                 </div>
                 <div>
-                    <div class="tooltip">
-                        <div :id="'delete-' + task.taskname" class="icon-button" @click="deleteTask(task.taskname)">
-                            <div class="icon icon--trash"></div>
-                        </div>
-                        <span class="type--pos-small-normal tooltiptext">Aufgabe aus Szenario löschen</span>
+                    <div class="tooltip--bottom">
+                        <IconButton @click="deleteTask(task.taskname)" :icon="'trash'" />
+                        <span class="type--pos-small-normal tooltiptext--bottom">Aufgabe aus Szenario löschen</span>
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
 <script>
-import { Toggle } from 'figma-plugin-ds-vue';
+import { Toggle, IconButton } from 'figma-plugin-ds-vue';
 
 export default {
     name: 'ScenarioListEntry',
     components: {
         Toggle,
+        IconButton,
     },
     props: {
         scenarioname: {

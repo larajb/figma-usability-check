@@ -44,8 +44,10 @@ export const getAllNodesOfType = (type) => {
  */
 export const addAnnotationToFile = (currentSelection, annotation) => {
     var selectionParent = getParent(currentSelection.id);
+    var index = selectionParent.children.findIndex(child => JSON.stringify(child) === JSON.stringify(currentSelection));
     if (selectionParent.name.endsWith('Annotation')) {
         selectionParent.insertChild(selectionParent.children.length, annotation);
+        index = selectionParent.parent.children.findIndex(child => JSON.stringify(child) === JSON.stringify(selectionParent));
     } else {
         const elementAndAnnotationGroupNode: SceneNode[] = [];
         elementAndAnnotationGroupNode.push(annotation);
@@ -54,7 +56,7 @@ export const addAnnotationToFile = (currentSelection, annotation) => {
             var parent = node.parent;
             elementAndAnnotationGroup.name = node.name + ' + Annotation';
             elementAndAnnotationGroup.insertChild(0, node);
-            parent.appendChild(elementAndAnnotationGroup);
+            parent.insertChild(index, elementAndAnnotationGroup);
         }
     }
 }

@@ -2,31 +2,29 @@
     <div>
         <p class="type--pos-medium-normal">Wähle einen Namen für ein neues Szenario und erstelle es.</p>
         <div class="scenario-definition__input">
-            <div class="tooltip" style="width: 100%">
+            <div class="tooltip--bottom" style="width: 100%">
                 <input id="scenarioname" class="input" type="text" placeholder="Szenario" v-model="scenarionameInput">
-                <span class="type--pos-small-normal tooltiptext">Eingabe Szenarioname</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Szenarioname</span>
             </div>
-            <button class="button button--primary" @click="addScenario">Erstellen</button>
+            <button class="button button--secondary" @click="addScenario">Erstellen</button>
         </div>
         <div>
-            <p class="type--pos-medium-normal">Wähle eine Aufgabe und füge sie dem Szenario hinzu.</p>
+            <p class="type--pos-medium-normal">Wähle eine Aufgabe und füge sie dem oben angegebenen Szenario hinzu.</p>
             <div class="scenario-definition__input">
-                <div class="tooltip" style="width: 100%">
+                <div class="tooltip--bottom" style="width: 100%">
                     <Select id="task-select" :items="tasksList" v-model="task" />
-                    <span class="type--pos-small-normal tooltiptext">Auswahl Aufgabe</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Aufgabe</span>
                 </div>
-                <button class="button button--primary" @click="addTask">Hinzufügen</button>
+                <button class="button button--secondary" @click="addTask">Hinzufügen</button>
             </div>
-            <div class="tooltip">
+            <div class="tooltip--bottom">
                 <button class="type--pos-small-normal button--link-look" @click="handleClick">Aufgabe definieren</button>
-                <span class="type--pos-small-normal tooltiptext">Zurück zur Aufgabendefinition</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Aufgabendefinition</span>
             </div>
         </div>
         <div v-show="showError" class="element-error-note">
             <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
-            <div class="icon-button" @click="closeError">
-                <div class="icon icon--close"></div>
-            </div>
+            <IconButton @click="closeError" :icon="'close'" />
         </div>
         <div id="scenarios" class="scrollable-scenario-list type--pos-medium-normal">
             <scenario-list-entry v-for="(scenario, index) in scenarios" :key="index" :scenarioname="scenario.scenarioname" :tasks="scenario.tasks"
@@ -41,7 +39,7 @@
 import { dispatch, handleEvent } from '../../uiMessageHandler';
 
 import ScenarioListEntry from './ScenarioListEntry.vue';
-import { Select } from 'figma-plugin-ds-vue';
+import { Select, IconButton } from 'figma-plugin-ds-vue';
 import { mapState } from 'vuex';
 
 export default {
@@ -49,6 +47,7 @@ export default {
     components: {
         ScenarioListEntry,
         Select,
+        IconButton,
     },
     data() {
         return {
@@ -108,7 +107,7 @@ export default {
                 const oldTaskLastStep = this.tasks[oldTaskIndex].steps[this.tasks[oldTaskIndex].steps.length - 1];
                 const newTaskLastStep = this.tasks[taskIndex].steps[0];
 
-                dispatch('checkValidityBefore', { before: oldTaskLastStep.id, after: newTaskLastStep.id });
+                dispatch('checkValidityBefore', { before: oldTaskLastStep, after: newTaskLastStep });
                 handleEvent('validityBefore', validityBefore => {
                     if (validityBefore) {
                         this.scenarios[scenarioIndex].tasks.push({ taskname: this.task, color: this.tasks[taskIndex].color });

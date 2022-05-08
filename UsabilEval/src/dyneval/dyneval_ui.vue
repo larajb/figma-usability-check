@@ -1,64 +1,73 @@
 <template>
   	<div class="dyneval-ui">
 		<div style="display: flex; margin-bottom: 20px;">
-			<div class="tooltip">
+			<div class="tooltip--bottom">
+				<IconButton @click="backToStart" :icon="'back'" style="margin-top: -8px; margin-bottom: 0px;" />
+				<span class="type--pos-small-normal tooltiptext--bottom">Zurück zum Start</span>
+			</div>
+			<div class="tooltip--bottom">
 				<div id="select-aufgaben" class="type--pos-medium-normal menu menu-first" @click="setCurrentPage('TaskDefinition')">Aufgaben</div>
-				<span class="type--pos-small-normal tooltiptext">Aufgabendefinition</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Aufgabendefinition</span>
 			</div>
-			<div class="tooltip">
+			<div class="tooltip--bottom">
 				<div id="select-szenarien" class="type--pos-medium-normal menu" @click="setCurrentPage('ScenarioDefinition')">Szenarien</div>
-				<span class="type--pos-small-normal tooltiptext">Szenariendefinition</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Szenariendefinition</span>
 			</div>
-			<div class="tooltip">
+			<div class="tooltip--bottom">
 				<div id="select-evaluation" class="type--pos-medium-normal menu" :class="{'disabled': (tasks.length === 0) && (scenarios.length === 0)}" @click="setCurrentPage('Evaluation')">Evaluation</div>
-				<span class="type--pos-small-normal tooltiptext">Auswahl der Aufgaben/Szenarien zur Evaluation</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Aufgaben/Szenarien zur Evaluation</span>
 			</div>
-			<div class="tooltip">
-				<div id="select-ergebnisse" class="type--pos-medium-normal menu" :class="{'disabled': ($store.getters.currentTaskEvaluation === undefined) && ($store.getters.currentScenarioEvaluation === undefined)}" @click="setCurrentPage('Results')">Ergebnisse</div>
-				<span class="type--pos-small-normal tooltiptext">Darstellung der Evaluationsergebnisse</span>
+			<div class="tooltip--bottom">
+				<div id="select-ergebnisse" class="type--pos-medium-normal menu" :class="{'disabled': evaluationReady === false }" @click="setResultsPage">
+					Ergebnisse
+					<div :class="{ 'notification': showNotification }"></div>
+				</div>
+				<span class="type--pos-small-normal tooltiptext--bottom">Darstellung der Evaluationsergebnisse</span>
 			</div>
-		</div>
-		<div style="display:flex">
-			<p class="type--pos-large-bold">
-				Dynamische Evaluation
-			</p>
-			<div class="tooltip">
-				<div class="icon icon--info"></div>
-				<span class="type--pos-small-normal tooltiptext">Erläuterungen zur dynamischen Evaluation</span>
+			<div class="tooltip--bottom">
+				<IconButton id="select-dokumentation" @click="setCurrentPage('Documentation')" :icon="'library'" style="margin-top: -8px; margin-bottom: 0px;" />
+				<span class="type--pos-small-normal tooltiptext--bottom">Dokumentation/Hilfe zur Nutzung des Plugins</span>
 			</div>
 		</div>
+		<p class="type--pos-large-bold">
+			Dynamische Evaluation
+		</p>
 		<task-definition v-show="currentPage === 'TaskDefinition'" />
 		<scenario-definition v-show="currentPage === 'ScenarioDefinition'" />
 		<evaluation v-show="currentPage === 'Evaluation'" />
 		<results v-show="currentPage === 'Results'" />
+		<documentation v-show="currentPage === 'Documentation'" />
 	</div>
 </template>
 
 <script>
-
-import { selectMenu } from 'figma-plugin-ds';
-
+import { dispatch } from '../uiMessageHandler';
+import { IconButton } from 'figma-plugin-ds-vue';
 import { mapState } from 'vuex'
 
 import TaskDefinition from './components/TaskDefinition.vue';
 import ScenarioDefinition from './components/ScenarioDefinition.vue';
 import Evaluation from './components/Evaluation.vue';
 import Results from './components/Results.vue';
+import Documentation from './components/Documentation.vue';
 
 export default {
 	components: {
+		IconButton,
 		TaskDefinition,
 		ScenarioDefinition,
 		Evaluation,
-		Results
+		Results,
+		Documentation
 	},
 	data() {
 		return {
 			storage: '',
+			showNotification: false,
 		};
 	},
 	computed: {
-		...mapState(['tasks', 'scenarios', 'currentPage', 'currentTaskname']),
+		...mapState(['tasks', 'scenarios', 'currentPage', 'currentTaskname', 'evaluationReady']),
 	},
 	watch: {
 		currentPage() {
@@ -66,6 +75,7 @@ export default {
 			var scenarioDefinitionValue = '';
 			var evaluationValue ='';
 			var resultsValue = '';
+			var documentationValue = '';
 			switch(this.currentPage) {
 				case 'TaskDefinition':
 					taskDefinitionValue ='2px solid black';
@@ -79,24 +89,35 @@ export default {
 				case 'Results':
 					resultsValue ='2px solid black';
 					break;
+				case 'Documentation':
+					documentationValue = '2px solid black';
 			}
 			document.getElementById('select-aufgaben').style.borderBottom = taskDefinitionValue;
 			document.getElementById('select-szenarien').style.borderBottom = scenarioDefinitionValue;
 			document.getElementById('select-evaluation').style.borderBottom = evaluationValue;
 			document.getElementById('select-ergebnisse').style.borderBottom = resultsValue;
+			document.getElementById('select-dokumentation').style.borderBottom = documentationValue;
+		},
+		evaluationReady() {
+			if (this.evaluationReady === true) {
+				this.showNotification = true;
+			}
 		},
 	},
 	mounted() {
-		selectMenu.init();
 		this.showTasks = true;
 		document.getElementById('select-aufgaben').style.borderBottom = '2px solid black';
-	},
-	destroyed() {
-		selectMenu.destroy();
 	},
 	methods: {
 		setCurrentPage(page) {
 			this.$store.commit('currentPage', page);
+		},
+		backToStart() {
+			dispatch('backToStart');
+		},
+		setResultsPage() {
+			this.setCurrentPage('Results');
+			this.showNotification = false;
 		},
 	},
 };
@@ -104,6 +125,7 @@ export default {
 
 <style lang='scss'>
 	@import "../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
+	@import "../tooltips.scss";
 
 	.dyneval-ui {
 		padding: 10px;
@@ -122,36 +144,13 @@ export default {
 		margin-left: 5px;
 	}
 
-	.icon--info {
-		background-image: url('../img/information-outline.svg');
-	}
-
-	/* Tooltip container */
-	.tooltip {
-		position: relative;
-		display: inline-block;
-	}
-
-	/* Tooltip text */
-	.tooltip .tooltiptext {
-		visibility: hidden;
-		width: 120px;
-		top: 100%;
-		left: 50%;
-		margin-left: -60px;
-		background-color: rgba(0, 0, 0, 0.6);
-		color: #fff;
-		text-align: center;
-		padding: 5px 0;
-		border-radius: 6px;
-		
-		/* Position the tooltip text - see examples below! */
+	.notification {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background-color: #0084f8;
 		position: absolute;
-		z-index: 1;
-	}
-
-	/* Show the tooltip text when you mouse over the tooltip container */
-	.tooltip:hover .tooltiptext {
-		visibility: visible;
+		top: -5px;
+		right: 10px;
 	}
 </style>

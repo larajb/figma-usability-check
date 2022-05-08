@@ -1,12 +1,22 @@
 import { getCurrentSelection, getNode } from "../../figmaAccess/fileContents";
-import { getHeight, getWidth, getFrame, getParent, getType } from "../../figmaAccess/nodeProperties";
+import { getHeight, getWidth, getParent, getType, getFrame } from "../../figmaAccess/nodeProperties";
+
+
+export const checkForAnnotationGroup = () => {
+    const selection = getCurrentSelection();
+    if (selection.name.endsWith('Annotation') === false) {
+        return true;
+    }
+    return false;
+}
 
 /**
  * This is a function to check the validity of a connection between two nodes.
  * @param args 
  * @returns 
  */
-export const checkValidity = (args) => {
+ export const checkValidity = (args) => {
+    console.log(args);
     var validity = false;
 
     // get frame of step before
@@ -16,8 +26,8 @@ export const checkValidity = (args) => {
         var beforeNode = getCurrentSelection();
         beforeFrame = getFrame(beforeNode.id);
     } else {
-        beforeNode = getNode(args.before);
-        beforeFrame = getFrame(args.before);
+        beforeNode = getNode(args.before.id);
+        beforeFrame = getFrame(args.before.id);
     }
 
     // get frame of step after
@@ -27,8 +37,8 @@ export const checkValidity = (args) => {
         var afterNode = getCurrentSelection();
         afterFrame = getFrame(afterNode.id);
     } else {
-        afterNode = getNode(args.after);
-        afterFrame = getFrame(args.after);
+        afterNode = getNode(args.after.id);
+        afterFrame = getFrame(args.after.id);
     }
 
     // compare frames
@@ -60,7 +70,7 @@ export const checkValidity = (args) => {
  * recommended for both desktop and touch devices.
  * @returns validity
  */
-export const checkButtonValidity = (platform) => {
+export const checkButtonValidity = () => {
     var currentSelection = getCurrentSelection();
     var width = getWidth(currentSelection.id);
     var height = getHeight(currentSelection.id);
@@ -73,7 +83,7 @@ export const checkButtonValidity = (platform) => {
 /**
  * This is a function to check if the selected element already contains an example.
  */
-export const checkInputExample = (platform) => {
+export const checkInputExample = () => {
     var currentSelection = getCurrentSelection();
     var selectionParent = getParent(currentSelection.id);
     if (selectionParent.name.endsWith('Annotation')) {
@@ -91,7 +101,7 @@ export const checkInputExample = (platform) => {
  * @param input 
  * @returns validity
  */
-export const checkInputValidity = async (input, platform) => {
+export const checkInputValidity = async (input) => {
     var selection = getCurrentSelection();
     var selectionWidth = getWidth(selection.id);
     var text = figma.createText();
@@ -114,17 +124,16 @@ export const checkInputValidity = async (input, platform) => {
  * This is a function to check the validity of a link that is currently selected. A text link should not wrap to a second line (Research-Based Web Design and Usability Guidelines 10.11).
  * @returns validity
  */
-export const checkLinkValidity = async (platform) => {
+export const checkLinkValidity = async () => {
     var isText = false;
-    var isImage = false;
-    var currentSelection = getCurrentSelection();
-    if (getType(currentSelection.id) === 'TEXT') {
+    var isImageOrShape = false;
+    var selection = getCurrentSelection();
+    if (getType(selection.id) === 'TEXT') {
         isText = true;
     } else {
-        isImage = true;
+        isImageOrShape = true;
     }
     if (isText) {
-        var selection = getCurrentSelection();
         var selectionHeight = getHeight(selection.id);
         var fontSize = 16;
         if (selection.type === 'TEXT') {
@@ -143,28 +152,12 @@ export const checkLinkValidity = async (platform) => {
             return true;
         }
     }
-    if (isImage) {
-        var currentSelection = getCurrentSelection();
-        var width = getWidth(currentSelection.id);
-        var height = getHeight(currentSelection.id);
+    if (isImageOrShape) {
+        var width = getWidth(selection.id);
+        var height = getHeight(selection.id);
         if ((width >= 44) && (height >= 44)) {
             return true
         }
-    }
-    return false;
-}
-
-/**
- * This is a function to check if two tasks can be compared.
- * @param firstTask 
- * @param secondTask 
- * @returns Boolean
- */
-export const checkTaskComparisonValidity = (firstTask, secondTask) => {
-    var firstTaskEndFrame = getFrame(firstTask.steps[firstTask.steps.length-1].id);
-    var secondTaskEndFrame = getFrame(secondTask.steps[secondTask.steps.length-1].id);
-    if (firstTask.steps[0].id === secondTask.steps[0].id && firstTaskEndFrame === secondTaskEndFrame) {
-        return true;
     }
     return false;
 }

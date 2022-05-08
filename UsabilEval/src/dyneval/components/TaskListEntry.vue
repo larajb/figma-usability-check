@@ -6,17 +6,15 @@
                 <p class="type--pos-medium-normal">{{ taskname }}</p>
             </div>
             <div style="display: flex">
-                <div class="tooltip">
-                    <div class="icon-button" :id="'delete-' + taskname" @click="deleteTask">
-                        <div class="icon icon--trash"></div>
-                    </div>
-                    <span class="type--pos-small-normal tooltiptext">Aufgabe löschen</span>
+                <div class="tooltip--bottom">
+                    <IconButton @click="deleteTask" :icon="'trash'" />
+                    <span class="type--pos-small-normal tooltiptext--bottom">Aufgabe löschen</span>
                 </div>
-                <div class="tooltip">
+                <div class="tooltip--bottom">
                     <Toggle v-model="switchValue">
                         Bearbeiten
                     </Toggle>
-                    <span class="type--pos-small-normal tooltiptext">Aufgabe bearbeiten: Reihenfolge der Aufgabenschritte ändern, Schritte am Anfang oder in der Mitte hinzufügen, Schritte löschen</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Schritte in Aufgabe bearbeiten</span>
                 </div>
             </div>
         </div>
@@ -24,47 +22,39 @@
             <div v-for="(step, index) in steps" :key="index" :id="'step-' + step" class="task-step">
                 <div style="display: flex;">
                     <div class="numberCircle" :style="{ border: `3px solid ${color}`, color: color }">{{ index + 1 }}</div>
-                    <p class="type--pos-medium-normal">{{ step.type }} ({{ step.id }})</p>
+                    <p class="type--pos-medium-normal">{{ getStepType(step.type) }} - {{ step.name.length > 15 ? step.name.substr(0, 15) + '..' : step.name }}</p>
                 </div>
             </div>
         </div>
         <div id="task-list" v-show="switchValue === true">
             <div v-for="(step, index) in steps" :key="index" :id="'step-' + step" class="task-step">
-                <div class="icon-button" style="margin-left: 40px" @click="addTaskStep(index)">
-                    <div class="icon icon--plus"></div>
-                </div>
+                <IconButton @click="addTaskStep(index)" style="margin-left: 40px" :icon="'plus'" />
                 <div class="task-step-content">
                     <div style="display: flex">
-                        <div>
-                            <div class="icon-button" :class="{ 'disabled-button': index === 0 }" style="height: 20px; width: 20px" @click="moveUp(taskname, step.id)">
-                                <div class="icon icon--chevron-up"></div>
-                            </div>
-                            <div class="icon-button" :class="{ 'disabled-button': index === steps.length-1 }" style="height: 20px; width: 20px" @click="moveDown(taskname, step.id)">
-                                <div class="icon icon--chevron-down"></div>
-                            </div>
+                        <div style="display: none">
+                            <IconButton @click="moveUp(taskname, step.id)" :icon="'caret-up'" :class="{ 'disabled-button': index === 0 }" />
+                            <IconButton @click="moveDown(taskname, step.id)" :icon="'caret-down'" :class="{ 'disabled-button': index === steps.length-1 }" />
                         </div>
                         <div style="display: flex; margin-left: 20px">
                             <div class="numberCircle" :style="{ border: `3px solid ${color}`, color: color }">{{ index + 1 }}</div>
-                            <p class="type--pos-medium-normal">{{ step.type }} ({{ step.id }})</p>
+                            <p class="type--pos-medium-normal">{{ getStepType(step.type) }} - {{ step.name.length > 6 ? step.name.substr(0, 6) + '..' : step.name }}</p>
                         </div>
                     </div>
                     <div class="task-step-settings">
-                        <div class="tooltip">
-                            <div :id="'delete-' + step" class="icon-button" @click="deleteStep(step)">
-                                <div class="icon icon--trash"></div>
-                            </div>
-                            <span class="type--pos-small-normal tooltiptext">Aufgabenschritt löschen</span>
+                        <div class="tooltip--bottom">
+                            <IconButton @click="deleteStep(step)" :icon="'trash'" />
+                            <span class="type--pos-small-normal tooltiptext--bottom">Aufgabenschritt löschen</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div v-if="steps.length > 0" style="display: flex; margin-left: 40px; margin-top: 20px;">
                 <p class="type--pos-small-normal">Kopieren nach</p>
-                <div class="tooltip" style="width: 50%">
+                <div class="tooltip--bottom" style="width: 50%">
                     <Select id="copy-select" :items="taskList" v-model="selectedToCopy" />
-                    <span class="type--pos-small-normal tooltiptext">Ziel zum Kopieren der Aufgabenschritte</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Ziel zum Kopieren der Aufgabenschritte</span>
                 </div>
-                <button class="button button--primary" @click="copyTaskSteps">Kopieren</button>
+                <button class="button button--secondary" @click="copyTaskSteps">Kopieren</button>
             </div>
         </div>
     </div>
@@ -75,13 +65,14 @@ import { dispatch, handleEvent } from '../../uiMessageHandler';
 
 import { mapState } from 'vuex';
 
-import { Toggle, Select } from 'figma-plugin-ds-vue';
+import { Toggle, Select, IconButton } from 'figma-plugin-ds-vue';
 
 export default {
     name: 'TaskListEntry',
     components: {
         Toggle,
         Select,
+        IconButton,
     },
     props: {
         taskname: {
@@ -137,7 +128,6 @@ export default {
         handleEvent('taskStepsAdded', (args) => {
             var selectedIndex = this.tasks.findIndex((task) => task.taskname === args.taskname);
             this.tasks[selectedIndex].steps = args.steps;
-            console.log(this.tasks[selectedIndex], args.steps);
             this.$store.commit('tasks', this.tasks);
             dispatch('setTaskStorage', this.tasks);
         });
@@ -163,18 +153,17 @@ export default {
             var followingSteps = [];
             for (let i = 0; i < this.steps.length; i++) {
                 if (this.steps[i].id === step.id) {
-                    // check if new before and new current fit
                     var newBefore = this.steps[i-1];
                     var newCurrent = this.steps[i+1];
                     if (newBefore !== undefined && newCurrent !== undefined) {
-                        dispatch('checkStepValidityBefore', { before: newBefore.id, current: newCurrent.id })
+                        dispatch('checkStepValidityBefore', { before: newBefore, after: newCurrent })
                         handleEvent('validityBefore', validityBefore => {
                             if (validityBefore) {
                                 followingSteps = this.steps.slice(i+1);
                                 dispatch('deleteStep', { taskname: this.taskname, step: step, followingSteps: followingSteps });
                                 this.$emit('deletedStep', { taskname: this.taskname, id: step.id });
                             } else {
-                                alert('Dieser Schritt kann nicht gelöscht werden, da vom vorherigen der nachfolgende nicht erreicht werden kann.');
+                                this.$emit('warning', 'Dieser Schritt kann nicht gelöscht werden, da vom vorherigen der nachfolgende nicht erreicht werden kann.');
                             }
                         });
                     } else {
@@ -201,6 +190,16 @@ export default {
         copyTaskSteps() {
             var selectedIndex = this.tasks.findIndex((task) => task.taskname === this.selectedToCopy);
             dispatch('addTaskSteps', { taskname: this.tasks[selectedIndex].taskname, color: this.tasks[selectedIndex].color, steps: this.steps })
+        },
+        getStepType(type) {
+            switch(type) {
+                case 'link':
+                    return 'Link';
+                case 'clickElement':
+                    return 'Klickelement';
+                case 'input':
+                    return 'Eingabe';
+            }
         }
     },
 }
@@ -252,14 +251,6 @@ export default {
 		display: flex;
         vertical-align: middle;
 	}
-
-    .icon--chevron-up {
-        background-image: url('../../img/chevron-up.svg');
-    }
-
-    .icon--chevron-down {
-        background-image: url('../../img/chevron-down.svg');
-    }
 
     .disabled-button {
         pointer-events: none;

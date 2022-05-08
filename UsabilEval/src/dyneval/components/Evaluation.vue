@@ -1,50 +1,45 @@
 <template>
     <div class="type--pos-medium-normal">
-        <div style="display: flex; margin-bottom: 20px;">
-            <div class="tooltip">
-			    <div id="evaluate-aufgaben" style="margin-left: 5px; margin-right: 20px" @click="$store.commit('evaluationType', 'task')">Aufgaben-Evaluation</div>
-                <span class="type--pos-small-normal tooltiptext">Aufgabenevaluation</span>
-            </div>
-            <div class="tooltip">
-			    <div id="evaluate-szenarien" style="margin-right: 20px" @click="$store.commit('evaluationType', 'scenario')">Szenarien-Evaluation</div>
-                <span class="type--pos-small-normal tooltiptext">Szenarienevaluation</span>
+        <div style="margin-bottom: 20px;">
+            <p class="type--pos-medium-normal">Wähle die Art der Evaluation.</p>
+            <div class="tooltip--bottom">
+                <Radio :items="[{ label: 'Aufgabenevaluation', value: 'task' }, { label: 'Szenarienevaluation', value: 'scenario' }]" v-model="evaluationTypeValue" />
+                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Evaluationsart</span>
             </div>
 		</div>
         <div v-if="evaluationType === 'task'">
             <p class="type--pos-medium-normal">
                 Wähle eine Aufgabe zur Evaluation.
             </p>
-            <div class="tooltip" style="width: 100%">
+            <div class="tooltip--bottom" style="width: 100%">
                 <Select id="first-task-select" :items="firstTasks" v-model="firstTask" />
-                <span class="type--pos-small-normal tooltiptext">Auswahl Aufgabe</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Aufgabe</span>
             </div>
             <p class="type--pos-medium-normal">
-                Wähle eine weitere Aufgabe zum Vergleich. Falls erforderlich definiere sie zuerst. (optional)
+                Wähle eine weitere Aufgabe zum Vergleich mit der zuvor ausgewählten Aufgabe. Falls erforderlich definiere sie zuerst. (optional)
             </p>
-            <div class="tooltip" style="width: 100%">
+            <div class="tooltip--bottom" style="width: 100%">
                 <Select id="second-task-select" :items="secondTasks" v-model="secondTask" />
-                <span class="type--pos-small-normal tooltiptext">Auswahl Vergleichsaufgabe</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Vergleichsaufgabe</span>
             </div>
-            <div class="tooltip">
+            <div class="tooltip--bottom">
                 <button class="type--pos-small-normal button--link-look" @click="$store.commit('currentPage', 'TaskDefinition')">Aufgabe definieren</button>
-                <span class="type--pos-small-normal tooltiptext">Zurück zur Aufgabendefinition</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Aufgabendefinition</span>
             </div>
         </div>
         <div v-else-if="evaluationType === 'scenario'">
             <p class="type--pos-medium-normal">
                 Wähle ein Szenario zur Evaluation.
             </p>
-            <div class="tooltip" style="width: 100%">
+            <div class="tooltip--bottom" style="width: 100%">
                 <Select id="first-scenario-select" :items="firstScenarios" v-model="firstScenario" />
-                <span class="type--pos-small-normal tooltiptext">Auswahl Szenario</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Szenario</span>
             </div>
         </div>
         <button class="button button--primary" style="margin-top: 10px" @click="startEvaluation">Start</button>
         <div v-show="showError" class="element-error-note">
             <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
-            <div class="icon-button" @click="closeError">
-                <div class="icon icon--close"></div>
-            </div>
+            <IconButton @click="closeError" :icon="'close'" />
         </div>
     </div>
 </template>
@@ -52,26 +47,27 @@
 <script>
 import { dispatch, handleEvent } from '../../uiMessageHandler';
 import { v4 as uuidv4 } from 'uuid';
-import { Select } from 'figma-plugin-ds-vue';
+import { Select, Radio, IconButton } from 'figma-plugin-ds-vue';
 import { mapState } from 'vuex';
 
 export default {
     name: 'Evaluation',
     components: {
         Select,
+        Radio,
+        IconButton,
     },
     data() {
         return {
             firstTask: '',
             firstScenario: '',
             secondTask: '',
-            // secondScenario: '',
             firstTasks: [],
             firstScenarios: [],
             secondTasks: [],
-            // secondScenarios: [],
             taskEvaluationHistory: [],
             scenarioEvaluationHistory: [],
+            evaluationTypeValue: 'task',
             showError: false,
             errorMessage: '',
         }
@@ -97,37 +93,22 @@ export default {
             const result = this.secondTasks.filter(item => item.label !== this.firstTask);
             this.secondTasks = result;
             this.$store.commit('currentTaskname', this.firstTask);
+            this.$store.commit('evaluationReady', false);
         },
         secondTask() {
-            if (this.secondTask !== '') {
-                const firstTaskIndex = this.tasks.findIndex((task) => task.taskname === this.firstTask);
-                const secondTaskIndex = this.tasks.findIndex((task) => task.taskname === this.secondTask);
-                dispatch('checkTaskComparisonValidity', { firstTask: this.tasks[firstTaskIndex], secondTask: this.tasks[secondTaskIndex] });
-            }
+            this.$store.commit('evaluationReady', false);
         },
         firstScenario() {
             this.$store.commit('currentScenarioname', this.firstScenario);
+            this.$store.commit('evaluationReady', false);
         },
-        evaluationType() {
-			var taskEvaluationValue ='';
-			var scenarioEvaluationValue = '';
-			switch(this.evaluationType) {
-				case 'task':
-					taskEvaluationValue ='2px solid black';
-					break;
-				case 'scenario':
-					scenarioEvaluationValue ='2px solid black';
-					break;
-			}
-			document.getElementById('evaluate-aufgaben').style.borderBottom = taskEvaluationValue;
-			document.getElementById('evaluate-szenarien').style.borderBottom = scenarioEvaluationValue;
-		},
+        evaluationTypeValue() {
+            this.$store.commit('evaluationType', this.evaluationTypeValue);
+        },
     },
     mounted() {
         this.getTaskEvaluationHistory();
         this.getScenarioEvaluationHistory();
-
-        document.getElementById('evaluate-aufgaben').style.borderBottom = '2px solid black';
 
         handleEvent('currentTaskEvaluationStorage', storage => {
             if (storage !== undefined) {
@@ -144,31 +125,32 @@ export default {
         });
 
         handleEvent('taskEvaluationResult', result => {
-            this.setTaskEvaluationHistory({ 
-                gomsTime: result.goms.time,
-                convertedSteps: result.goms.convertedSteps,
-                avgPointingTime: result.goms.avgPointingTime,
-                avgHomingNum: result.goms.avgHomingNum
-            },
-            result.usabilitySmells);
+            this.setTaskEvaluationHistory(this.firstTask, result.goms, result.usabilitySmells);
+            this.$store.commit('evaluationReady', true);
         })
 
         handleEvent('scenarioEvaluationResult', result => {
             dispatch('setTaskEvaluationStorage', result.taskEvaluationHistory);
             this.$store.commit('taskEvaluationHistory', result.taskEvaluationHistory);
-            this.setScenarioEvaluationHistory(result.result);
+            this.setScenarioEvaluationHistory(result.gomsTimes, result.usabilitySmells);
+            this.$store.commit('evaluationReady', true);
         })
 
-        handleEvent('taskComparisonValidity', validity => {
-            if (!validity) {
-                this.secondTask = '';
-                this.showError = true;
-                this.errorMessage = 'Die ausgewählten Aufgaben können nicht miteinander verglichen werden, da sie nicht auf der gleichen Seite beginnen und/oder nicht mit demselben Interaktionselement enden.';
-            }
-        })
+        // handleEvent('taskComparisonValidity', validity => {
+        //     if (!validity) {
+        //         this.secondTask = '';
+        //         this.showError = true;
+        //         this.errorMessage = 'Die ausgewählten Aufgaben können nicht miteinander verglichen werden, da sie nicht auf der gleichen Seite beginnen und/oder nicht mit demselben Interaktionselement enden.';
+        //     }
+        // })
 
-        handleEvent('calculatedGomsComparisonTime', time => {
-            this.setComparison(time);
+        handleEvent('comparisonEvaluationResult', result => {
+            // this.setTaskEvaluationHistory(this.secondTask, {
+            //     gomsTime: result.goms.time,
+            //     convertedSteps: result.goms.convertedSteps
+            // },
+            // result.usabilitySmells);
+            this.setComparison(this.firstTask, result.goms, result.usabilitySmells);
         })
     },
     methods: {
@@ -196,29 +178,29 @@ export default {
         getScenarioEvaluationHistory() {
             dispatch('getScenarioEvaluationStorage');
         },
-        setTaskEvaluationHistory(gomsResult, usabilitySmellsResult) {
-            const index = this.taskEvaluationHistory.findIndex((history) => history.taskname === this.firstTask);
+        setTaskEvaluationHistory(taskname, gomsResult, usabilitySmellsResult) {
+            const index = this.taskEvaluationHistory.findIndex((history) => history.taskname === taskname);
             this.taskEvaluationHistory[index].evaluationRuns[0].goms = gomsResult;
             this.taskEvaluationHistory[index].evaluationRuns[0].usabilitySmells = usabilitySmellsResult;
             dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
             this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
         },
-        setScenarioEvaluationHistory(result) {
+        setScenarioEvaluationHistory(gomsTimes, usabilitySmells) {
             const index = this.scenarioEvaluationHistory.findIndex((history) => history.scenarioname === this.firstScenario);
-            this.scenarioEvaluationHistory[index].evaluationRuns[0].gomsTimes = result;
+            this.scenarioEvaluationHistory[index].evaluationRuns[0].gomsTimes = gomsTimes;
+            this.scenarioEvaluationHistory[index].evaluationRuns[0].usabilitySmells = usabilitySmells;
             dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
             this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
         },
-        setComparison(time) {
-            const index = this.taskEvaluationHistory.findIndex((history) => history.taskname === this.firstTask);
-            this.taskEvaluationHistory[index].evaluationRuns[0].comparison = {
-                taskname: this.secondTask,
-                gomsTime: time
-            };
+        setComparison(taskname, gomsResult, usabilitySmellsResult) {
+            const index = this.taskEvaluationHistory.findIndex((history) => history.taskname === taskname);
+            this.taskEvaluationHistory[index].evaluationRuns[0].comparison.goms = gomsResult;
+            this.taskEvaluationHistory[index].evaluationRuns[0].comparison.usabilitySmells = usabilitySmellsResult;
             dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
             this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
         },
         startEvaluation() {
+            this.$store.commit('evaluationReady', false);
             this.$store.commit('taskEvaluationHistory', []);
             this.$store.commit('scenarioEvaluationHistory', []);
             if (this.evaluationType === 'task') {
@@ -238,7 +220,8 @@ export default {
                                 usabilitySmells: null,
                                 comparison: this.secondTask !== '' ? {
                                     taskname: this.secondTask,
-                                    gomsTime: null,
+                                    goms: null,
+                                    usabilitySmells: null,
                                 } : null
                             }
                         ]
@@ -251,7 +234,8 @@ export default {
                         usabilitySmells: null,
                         comparison: this.secondTask !== '' ? {
                             taskname: this.secondTask,
-                            gomsTime: null,
+                            goms: null,
+                            usabilitySmells: null,
                         } : null
                     })
                 }
@@ -259,7 +243,7 @@ export default {
                 if (this.secondTask !== '') {
                     const indexSecond = this.tasks.findIndex((task) => task.taskname === this.secondTask);
                     var secondTask = this.tasks[indexSecond];
-                    dispatch('calculateGomsComparison', secondTask);
+                    dispatch('evaluateComparison', secondTask);
                 }
                 var task = this.tasks[taskIndex];
                 dispatch('evaluateTask', task);
@@ -276,6 +260,7 @@ export default {
                                 timestamp: Date.now(),
                                 tasks: this.scenarios[scenarioIndex].tasks,
                                 gomsTimes: null,
+                                usabilitySmells: null,
                             }
                         ]
                     })
@@ -284,6 +269,7 @@ export default {
                         timestamp: Date.now(),
                         tasks: this.scenarios[scenarioIndex].tasks,
                         gomsTimes: null,
+                        usabilitySmells: null,
                     })
                 }
                 var scenario = this.scenarios[scenarioIndex];

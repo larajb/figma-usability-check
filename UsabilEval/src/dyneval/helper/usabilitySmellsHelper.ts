@@ -2,15 +2,53 @@ import { getNode } from "../../figmaAccess/fileContents";
 import { getFrame, getPage, getParent } from "../../figmaAccess/nodeProperties";
 
 /**
+ * This is a function to check some usability smells saved in a js file.
+ * @param task 
+ * @returns result
+ */
+ export const checkUsabilitySmells = (steps, avgPointingTime, avgHomingNum, pointingTimes, homingNums) => {
+    var results = [];            // smells = [ { title: ..., value: ... }, ... ]
+
+    // Too Many Layers
+    var tooManyLayersResult = tooManyLayers(steps);
+    if (tooManyLayersResult.isFound) {
+        results.push({ title: 'Too Many Layers', isFound: tooManyLayersResult.isFound, values: tooManyLayersResult.values, steps: tooManyLayersResult.steps });
+    }
+    // High Website Element Distance
+    var highWebsiteElementDistanceResult = highWebsiteElementDistance(steps);
+    if (highWebsiteElementDistanceResult.isFound) {
+        results.push({ title: 'High Website Element Distance', isFound: highWebsiteElementDistanceResult.isFound, values: highWebsiteElementDistanceResult.values, steps: highWebsiteElementDistanceResult.steps })
+    }
+    // Distant Content
+    var distantContentResult = distantContent(steps);
+    if (distantContentResult.isFound) {
+        results.push({ title: 'Distant Content', isFound: distantContentResult.isFound, values: distantContentResult.values, steps: distantContentResult.steps });
+    }
+    // Long P
+    var pointingTimeSmell = longP(pointingTimes, avgPointingTime);
+    if (pointingTimeSmell.isFound) {
+        results.push({ title: 'Long P', isFound: pointingTimeSmell.isFound, values: pointingTimeSmell.values, steps: pointingTimeSmell.values });
+    }
+
+    // Many H
+    var homingNumSmell = manyH(homingNums, avgHomingNum);
+    if (homingNumSmell.isFound) {
+        results.push({ title: 'Many H', isFound: homingNumSmell.isFound, values: homingNumSmell.values, steps: homingNumSmell.steps });
+    }
+
+    return results;
+}
+
+/**
  * This is a function to check for the 'Too Many Layers' usability smell. It counts frame changes and returns true if five or more frame changes are found.
  * @param task 
  * @returns result
  */
-export const tooManyLayers = (task) => {
+export const tooManyLayers = (steps) => {
     var result = { isFound: false, values: [], steps: [] };
     var count = 0;
-    for (let i = 1; i < task.steps.length; i++) {
-        if (getFrame(task.steps[i].id).id !== getFrame(task.steps[i-1].id).id) {
+    for (let i = 1; i < steps.length; i++) {
+        if ((getFrame(steps[i].id).id !== getFrame(steps[i-1].id).id)) {
             count++;
         }
     }
@@ -26,13 +64,13 @@ export const tooManyLayers = (task) => {
  * @param task 
  * @returns result
  */
-export const highWebsiteElementDistance = (task) => {
+export const highWebsiteElementDistance = (steps) => {
     var result = { isFound: false, values: [], steps: [] };
     var distanceSum = 0.0;
     // calculate sum of distances
-    for (let i = 1; i < task.steps.length; i++) {
-        var currentNode = getNode(task.steps[i].id);
-        var beforeNode = getNode(task.steps[i-1].id);
+    for (let i = 1; i < steps.length; i++) {
+        var currentNode = getNode(steps[i].id);
+        var beforeNode = getNode(steps[i-1].id);
         var containSame = currentNode.reactions.some(r=> beforeNode.reactions.includes(r));
         if (currentNode.id === beforeNode.id || containSame) {
             distanceSum += 0.0;
@@ -46,7 +84,7 @@ export const highWebsiteElementDistance = (task) => {
             distanceSum += 1.0;
         }
     }
-    var severity = distanceSum / task.steps.length;
+    var severity = distanceSum / steps.length;
     if (severity > 0.5) {
         result.isFound = true;
     }
@@ -59,11 +97,11 @@ export const highWebsiteElementDistance = (task) => {
  * @param task 
  * @returns result
  */
-export const distantContent = (task) => {
+export const distantContent = (steps) => {
     var result = { isFound: false, values: [], steps: [] };
     var count = 0;
-    for (let i = 1; i < task.steps.length - 1; i++) {
-        if (getFrame(task.steps[i-1].id).id !== getFrame(task.steps[i].id).id && getFrame(task.steps[i].id).id !== getFrame(task.steps[i+1].id).id) {
+    for (let i = 1; i < steps.length - 1; i++) {
+        if (getFrame(steps[i-1].id).id !== getFrame(steps[i].id).id && getFrame(steps[i].id).id !== getFrame(steps[i+1].id).id) {
             result.isFound = true
             count++;
             result.steps.push(i+1);
@@ -121,13 +159,23 @@ export const longP = (pointingTimes, avgPointingTime) => {
  */
 export const manyH = (homingNums, avgHomingNum) => {
     var result = { isFound: false, values: [], steps: [] };
-    for (let i = 0; i < homingNums.length; i++) {
-        if (homingNums[i] > (avgHomingNum * 1.5)) {
-            result.isFound = true;
-            result.values.push(homingNums[i]);
-            result.steps.push(i+1);
+    if (homingNums.filter(num => num === 1).length > 1) {
+        for (let i = 0; i < homingNums.length; i++) {
+            if (homingNums[i] > (avgHomingNum * 1.5)) {
+                result.isFound = true;
+                result.values.push(homingNums[i]);
+                result.steps.push(i+1);
+            }
         }
     }
+    // var homingNumsSum = 0;
+    // for (let i = 0; i < homingNums.length; i++) {
+    //     homingNumsSum += homingNums[i];
+    // }
+    // var avg = homingNumsSum / homingNums.length;
+    // if (avg > avgHomingNum * 1.5) {
+    //     result.isFound = true;
+    // }
     return result;
 }
 

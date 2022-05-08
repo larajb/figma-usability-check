@@ -13,6 +13,7 @@ export default new Vuex.Store({
         currentTaskname: '',
         currentScenarioname: '',
         currentPage: 'TaskDefinition',
+        evaluationReady: false,
     },
     getters: {
         currentTaskEvaluation(state) {
@@ -49,10 +50,8 @@ export default new Vuex.Store({
         currentPage(state, page) {
             state.currentPage = page;
         },
+        evaluationReady(state, isReady) {
+            state.evaluationReady = isReady;
+        },
     },
-    // actions: {
-    //     setTasks({ commit }, tasks) {
-    //         commit('tasks', tasks);
-    //     },
-    // }
 })

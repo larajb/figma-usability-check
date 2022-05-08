@@ -4,7 +4,7 @@
             <scenario-results :content="$store.getters.currentScenarioEvaluation" />
         </div>
         <div v-else-if="evaluationType === 'task' && $store.getters.currentTaskEvaluation !== undefined">
-            <task-results :content="$store.getters.currentTaskEvaluation" />
+            <task-results v-if="$store.getters.currentTaskEvaluation.evaluationRuns[0].goms !== null" :content="$store.getters.currentTaskEvaluation" />
         </div>
     </div>
 </template>

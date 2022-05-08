@@ -1,12 +1,18 @@
-import { v4 as uuidv4 } from 'uuid';
 import { dispatch, handleEvent } from '../codeMessageHandler';
-import { Goms } from './goms/Goms';
-import { checkButtonValidity, checkInputExample, checkInputValidity, checkLinkValidity, checkTaskComparisonValidity, checkValidity } from './helper/validityHelper';
-import { checkUsabilitySmells, createExampletext, createTaskAnnotation, deleteStepAnnotation, getElementToAnnotation, updateStepAnnotation } from './helper/dynevalHelper';
-import { longP, manyH } from './helper/usabilitySmellsHelper';
-// import { getStorage, setStorage } from '../figmaAccess/storage';
+import { checkButtonValidity, checkForAnnotationGroup, checkInputExample, checkInputValidity, checkLinkValidity, checkValidity } from './helper/validityHelper';
+import { checkForOverlay, createExampletext, createTaskAnnotation, deleteStepAnnotation, getElementToAnnotation, updateStepAnnotation } from './helper/dynevalHelper';
+import { checkUsabilitySmells, distantContent, highWebsiteElementDistance } from './helper/usabilitySmellsHelper';
+import { startView } from '../start/startHandler';
+import { getCurrentSelection } from '../figmaAccess/fileContents';
+import { calculateTime, convertToOperators, getTimeForOperators, getTimeForSteps } from './helper/gomsHelper';
 
 export const dynevalView = () => {
+
+    handleEvent('backToStart', () => {
+        figma.showUI(__uiFiles__.start);
+        startView();
+        figma.ui.resize(450, 550);
+    });
 
     /**
      * Create, update and delete annotations
@@ -20,7 +26,8 @@ export const dynevalView = () => {
         } else {
             var taskAnnotation = createTaskAnnotation(args.taskname, args.numSteps, args.color);
         }
-        dispatch('taskStepAdded', { taskname: args.taskname, id: taskAnnotation.id});
+        var selection = getCurrentSelection();
+        dispatch('taskStepAdded', { taskname: args.taskname, id: taskAnnotation.id, name: selection.name });
     });
 
     handleEvent('addTaskSteps', (args) => {
@@ -28,7 +35,7 @@ export const dynevalView = () => {
         for (let i = 0; i < args.steps.length; i++) {
             var selection = getElementToAnnotation(args.steps[i].id);
             var taskAnnotation = createTaskAnnotation(args.taskname, i, args.color, selection);
-            addedSteps.push({ id: taskAnnotation.id, type: args.steps[i].type, input: args.steps[i].input });
+            addedSteps.push({ id: taskAnnotation.id, name: selection.name, type: args.steps[i].type, input: args.steps[i].input });
         }
         dispatch('taskStepsAdded', { taskname: args.taskname, steps: addedSteps });
     })
@@ -54,6 +61,12 @@ export const dynevalView = () => {
     /**
      * Check the validity of connections between task steps and the validity of ui element charactertistics.
      */
+
+    handleEvent('checkSelection', async () => {
+        var isNotAnnotationGroup = checkForAnnotationGroup();
+        dispatch('selectionChecked', isNotAnnotationGroup);
+    });
+
     handleEvent('checkStepValidityBefore', async (args) => {
         var validity = await checkValidity(args);
         dispatch('validityBefore', validity);
@@ -69,76 +82,98 @@ export const dynevalView = () => {
         dispatch('validityAfter', validity);
     });
 
-    handleEvent('checkButtonValidity', async (platform) => {
-        var validity = await checkButtonValidity(platform);
+    handleEvent('checkButtonValidity', async () => {
+        var validity = await checkButtonValidity();
         dispatch('buttonValidity', validity);
     });
 
-    handleEvent('checkInputExample', async (platform) => {
-        var result = await checkInputExample(platform);
+    handleEvent('checkInputExample', async () => {
+        var result = await checkInputExample();
         dispatch('inputExampleCheck', result);
     });
 
-    handleEvent('checkInputValidity', async (args) => {
+    handleEvent('checkInputValidity', async (input) => {
         var validity = false;
-        if (args.input !== null) {
-            validity = await checkInputValidity(args.input, args.platform);
+        if (input !== null) {
+            validity = await checkInputValidity(input);
         } else {
             validity = true;
         }
         dispatch('inputValidity', validity);
     });
 
-    handleEvent('checkLinkValidity', async (platform) => {
-        var validity = await checkLinkValidity(platform);
+    handleEvent('checkLinkValidity', async () => {
+        var validity = await checkLinkValidity();
         dispatch('linkValidity', validity);
     });
-
-    handleEvent('checkTaskComparisonValidity', async (args) => {
-        var validity = await checkTaskComparisonValidity(args.firstTask, args.secondTask);
-        dispatch('taskComparisonValidity', validity);
-    })
 
     /**
      * Evaluation
      */
     handleEvent('evaluateTask', async (task) => {
-        var history = await figma.clientStorage.getAsync('taskEvaluation');
         var avgPointingTime = await figma.clientStorage.getAsync('pointingTime');
         var avgHomingNum = await figma.clientStorage.getAsync('homingNum');
-        var smells = checkUsabilitySmells(history, task);
-        var model = new Goms(0.2);
-        var convertedSteps = model.convertToOperators(task);
-        var convertedStepsAndTime = model.getTimeForOperators(task.steps, convertedSteps);
-        var time = model.calculateGomsTime(task, convertedSteps);
-        var pointingTimeSmell = longP(model.pointingTimes, avgPointingTime);
-        if (pointingTimeSmell.isFound) {
-            smells.push({ title: 'Long P', values: pointingTimeSmell.values, steps: pointingTimeSmell.values });
-        }
-        var homingNumSmell = manyH(model.homingNums, avgHomingNum);
-        if (homingNumSmell.isFound) {
-            smells.push({ title: 'Many H', values: homingNumSmell.values, steps: homingNumSmell.steps });
-        }
-        dispatch('taskEvaluationResult', { goms: { time: time, convertedSteps: convertedStepsAndTime, avgPointingTime: model.avgPointingTime, avgHomingNum: model.avgHomingNum }, usabilitySmells: smells});
+
+        var convertedSteps = convertToOperators(task);
+        var operatorTimes = getTimeForOperators(task.steps, convertedSteps);
+        var stepsTimes = getTimeForSteps(operatorTimes);
+        var gomsResult = calculateTime(task.steps, convertedSteps, avgPointingTime, avgHomingNum);
+        await figma.clientStorage.setAsync('pointingTime', gomsResult.avgPointingTimeStorage);
+        await figma.clientStorage.setAsync('homingNum', gomsResult.avgHomingNumStorage);
+
+        var smells = checkUsabilitySmells(task.steps, avgPointingTime, avgHomingNum, gomsResult.pointingTimes, gomsResult.homingNums);
+
+        dispatch('taskEvaluationResult', { goms: { gomsTime: gomsResult.time, operatorTimes: operatorTimes, stepsTimes: stepsTimes }, usabilitySmells: smells});
     })
 
-    handleEvent('calculateGomsComparison', (task) => {
-        var model = new Goms(0.2);
-        var convertedSteps = model.convertToOperators(task);
-        var time = model.calculateGomsTime(task, convertedSteps);
-        dispatch('calculatedGomsComparisonTime', time);
+    handleEvent('evaluateComparison', async (task) => {
+        var avgPointingTime = await figma.clientStorage.getAsync('pointingTime');
+        var avgHomingNum = await figma.clientStorage.getAsync('homingNum');
+
+        var convertedSteps = convertToOperators(task);
+        var operatorTimes = getTimeForOperators(task.steps, convertedSteps);
+        var stepsTimes = getTimeForSteps(operatorTimes);
+        var gomsResult = calculateTime(task.steps, convertedSteps, avgPointingTime, avgHomingNum);
+        await figma.clientStorage.setAsync('pointingTime', gomsResult.avgPointingTimeStorage);
+        await figma.clientStorage.setAsync('homingNum', gomsResult.avgHomingNumStorage);
+
+        var smells = checkUsabilitySmells(task.steps, avgPointingTime, avgHomingNum, gomsResult.pointingTimes, gomsResult.homingNums);
+        
+        dispatch('comparisonEvaluationResult', { goms: { gomsTime: gomsResult.time, operatorTimes: operatorTimes, stepsTimes: stepsTimes }, usabilitySmells: smells});
     });
 
     handleEvent('evaluateScenario', async (args) => {
         var result = [];
+        var scenarioSteps = [];
+        var transitionSteps = [];
+        var taskNum = 0;
+        var avgPointingTime = await figma.clientStorage.getAsync('pointingTime');
+        var newAvgPointingTime = 0.0;
+        var avgHomingNum = await figma.clientStorage.getAsync('homingNum');
+        var newAvgHomingNum = 0.0;
         args.scenario.tasks.forEach(task => {
             const taskIndex = args.tasks.findIndex((element) => element.taskname === task.taskname);
             var taskElement = args.tasks[taskIndex];
-            var smells = checkUsabilitySmells(args.history, taskElement);
-            var model = new Goms(0.2);
-            var convertedSteps = model.convertToOperators(taskElement);
-            var convertedStepsAndTime = model.getTimeForOperators(taskElement.steps, convertedSteps);
-            var time = model.calculateGomsTime(taskElement, convertedSteps);
+            for (let i = 0; i < taskElement.steps.length; i++) {
+                if (taskNum !== args.scenario.tasks.length-1 && i === taskElement.steps.length-2) {
+                    transitionSteps.push({ transitionNum: taskNum + 1, steps: [ taskElement.steps[i] ]});
+                } else if (taskNum !== args.scenario.tasks.length-1 && i === taskElement.steps.length-1) {
+                    transitionSteps[taskNum].steps.push(taskElement.steps[i]);
+                } else if (taskNum >= 1 && (i === 0 || i == 1)) {
+                    transitionSteps[taskNum-1].steps.push(taskElement.steps[i]);
+                }
+            }
+            taskElement.steps.forEach(step => {
+                scenarioSteps.push(step);
+            })
+            var convertedSteps = convertToOperators(taskElement);
+            var operatorTimes = getTimeForOperators(taskElement.steps, convertedSteps);
+            var stepsTimes = getTimeForSteps(operatorTimes);
+            var gomsResult = calculateTime(taskElement.steps, convertedSteps, avgPointingTime, avgHomingNum);
+            newAvgPointingTime = gomsResult.avgPointingTimeStorage;
+            newAvgHomingNum = gomsResult.avgHomingNumStorage;
+            var taskSmells = checkUsabilitySmells(taskElement.steps, avgPointingTime, avgHomingNum, gomsResult.pointingTimes, gomsResult.homingNums);
+
             var evaluationIndex = -1;
             if (args.history.length > 0) {
                 evaluationIndex = args.history.findIndex((element) => element.taskname === task.taskname);
@@ -153,8 +188,8 @@ export const dynevalView = () => {
                         {
                             timestamp: Date.now(),
                             steps: taskElement.steps,
-                            goms: { gomsTime: time, convertedSteps: convertedStepsAndTime, avgPointingTime: model.avgPointingTime, avgHomingNum: model.avgHomingNum },
-                            usabilitySmells: smells,
+                            goms: { gomsTime: gomsResult.time, operatorTimes: operatorTimes, stepsTimes: stepsTimes },
+                            usabilitySmells: taskSmells,
                             comparison:  null
                         }
                     ]
@@ -163,21 +198,40 @@ export const dynevalView = () => {
                 args.history[evaluationIndex].evaluationRuns.unshift({
                     timestamp: Date.now(),
                     steps: taskElement.steps,
-                    goms: { gomsTime: time, convertedSteps: convertedStepsAndTime, avgPointingTime: model.avgPointingTime, avgHomingNum: model.avgHomingNum },
-                    usabilitySmells: smells,
+                    goms: { gomsTime: gomsResult.time, operatorTimes: operatorTimes, stepsTimes: stepsTimes },
+                    usabilitySmells: taskSmells,
                     comparison: null
                 });
             }
-            result.push({ taskname: task.taskname, time: time });
+            taskNum++;
+            result.push({ taskname: task.taskname, time: gomsResult.time });
         })
-        dispatch('scenarioEvaluationResult', { taskEvaluationHistory: args.history, result: result });
+        await figma.clientStorage.setAsync('pointingTime', newAvgPointingTime);
+        await figma.clientStorage.setAsync('homingNum', newAvgHomingNum);
+        var scenarioSmells = [];
+        var highWebsiteElementDistanceResult = highWebsiteElementDistance(scenarioSteps);
+        if (highWebsiteElementDistanceResult.isFound) {
+            scenarioSmells.push({ title: 'High Website Element Distance', isFound: highWebsiteElementDistanceResult.isFound, values: highWebsiteElementDistanceResult.values, steps: highWebsiteElementDistanceResult.steps })
+        }
+        var distantContentFound = false;
+        var distantContentValues = [];
+        var distantContentSteps = [];
+        transitionSteps.forEach(transition => {
+            var distantContentResult = distantContent(transition.steps);
+            if (distantContentResult.isFound) {
+                distantContentFound = true;
+                distantContentValues.push(distantContentResult.values);
+                distantContentSteps.push(transition.transitionNum);
+            }
+        })
+        scenarioSmells.push({ title: 'Distant Content', isFound: distantContentFound, values: distantContentValues, steps: distantContentSteps });
+        dispatch('scenarioEvaluationResult', { taskEvaluationHistory: args.history, gomsTimes: result, usabilitySmells: scenarioSmells });
     })
 
     /**
      * Get and set storage.
      */
     handleEvent('getTaskStorage', async () => {
-        // var tasks = await getStorage('tasks');
         var tasks = undefined;
         await figma.clientStorage.getAsync('tasks').then((value) => {
             tasks = value;
@@ -186,7 +240,6 @@ export const dynevalView = () => {
     });
 
     handleEvent('setTaskStorage', async (tasks) => {
-        // await setStorage('tasks', tasks);
         await figma.clientStorage.setAsync('tasks', tasks);
     })
 
@@ -224,33 +277,5 @@ export const dynevalView = () => {
 
     handleEvent('setScenarioEvaluationStorage', async (storage) => {
         await figma.clientStorage.setAsync('scenarioEvaluation', storage);
-    });
-
-    handleEvent('getPointingTimeStorage', async () => {
-        var storage = undefined;
-        await figma.clientStorage.getAsync('pointingTime').then((value) => {
-            storage = value;
-        });
-        dispatch('pointingTimeStorage', storage);
-    });
-
-    handleEvent('setPointingTimeStorage', async (avgPointingTime) => {
-        var storage = await figma.clientStorage.getAsync('pointingTime');
-        var newStorage = (storage + avgPointingTime) / 2;
-        await figma.clientStorage.setAsync('pointingTime', newStorage);
-    });
-
-    handleEvent('getHomingNumStorage', async () => {
-        var storage = undefined;
-        await figma.clientStorage.getAsync('homingNum').then((value) => {
-            storage = value;
-        });
-        dispatch('homingNumStorage', storage);
-    });
-
-    handleEvent('setHomingNumStorage', async (avgHomingNum) => {
-        var storage = await figma.clientStorage.getAsync('homingNum');
-        var newStorage = (storage + avgHomingNum) / 2;
-        await figma.clientStorage.setAsync('homingNum', newStorage);
     });
 };

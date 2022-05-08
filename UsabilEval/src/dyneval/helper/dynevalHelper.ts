@@ -1,8 +1,6 @@
-import { resourceLimits } from "worker_threads";
 import { addAnnotationToFile, getCurrentSelection, getNode } from "../../figmaAccess/fileContents";
 import { createEllipseNode, createGroupNode, createTextNode } from "../../figmaAccess/nodeCreator";
-import { getHeight, getParent, getRelativeTransform, getType, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
-import { distantContent, highWebsiteElementDistance, laboriousTask, tooManyLayers } from "./usabilitySmellsHelper";
+import { getFrame, getHeight, getParent, getReactions, getRelativeTransform, getType, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
 import { checkInputExample } from "./validityHelper";
 
 /**
@@ -63,16 +61,16 @@ export const createTaskAnnotation = (taskname, numSteps, color, selection = null
     }
     if (selectionParent.name.endsWith('Annotation') === false) {
         setRelativeTransform(ellipse, selectionRelTransform[0][2] - 12, selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] - 3, selectionRelTransform[1][2] - 7);
+        setRelativeTransform(text, selectionRelTransform[0][2] - 4, selectionRelTransform[1][2] - 9);
     } else if (containsJustExample === true) {
         setRelativeTransform(ellipse, selectionRelTransform[0][2] - 12, selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] - 3, selectionRelTransform[1][2] - 7);
+        setRelativeTransform(text, selectionRelTransform[0][2] - 4, selectionRelTransform[1][2] - 9);
     } else if (containsExample === true) {
-        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 3) * 12), selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12) - 3, selectionRelTransform[1][2] - 7);
+        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 3) * 12) + ((selectionParent.children.length - 2) * 4), selectionRelTransform[1][2] - 12);
+        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 16) - 4, selectionRelTransform[1][2] - 9);
     } else if (containsExample === false) {
-        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12), selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 12) - 3, selectionRelTransform[1][2] - 7);
+        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12) + ((selectionParent.children.length - 1) * 4), selectionRelTransform[1][2] - 12);
+        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 16) - 4, selectionRelTransform[1][2] - 9);
     }
 
     var annotation = createGroupNode('Annotation - ' + taskname + ' - ', [ellipse, text]);
@@ -139,31 +137,6 @@ export const updateStepAnnotation = (annotationId, number) => {
             }
         }
     }
-}
-
-/**
- * This is a function to check some usability smells saved in a js file.
- * @param task 
- * @returns result
- */
-export const checkUsabilitySmells = (history, task) => {
-    var results = [];            // smells = [ { title: ..., value: ... }, ... ]
-    // Too Many Layers
-    var tooManyLayersResult = tooManyLayers(task);
-    if (tooManyLayersResult.isFound) {
-        results.push({ title: 'Too Many Layers', values: tooManyLayersResult.values, steps: tooManyLayersResult.steps });
-    }
-    // High Website Element Distance
-    var highWebsiteElementDistanceResult = highWebsiteElementDistance(task);
-    if (highWebsiteElementDistanceResult.isFound) {
-        results.push({ title: 'High Website Element Distance', values: highWebsiteElementDistanceResult.values, steps: highWebsiteElementDistanceResult.values.steps })
-    }
-    // Distant Content
-    var distantContentResult = distantContent(task);
-    if (distantContentResult.isFound) {
-        results.push({ title: 'Distant Content', values: distantContentResult.values, steps: distantContentResult.steps });
-    }
-    return results;
 }
 
 export const getElementToAnnotation = (id) => {

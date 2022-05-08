@@ -1,43 +1,33 @@
 <template>
     <div>
-        <p class="type--pos-medium-normal">Wähle einen Namen und die Zielplattform für die Aufgabe und erstelle sie.</p>
+        <p class="type--pos-medium-normal">Wähle einen Namen für eine neue Aufgabe und erstelle sie.</p>
         <div class="task-definition__input">
-            <div class="tooltip">
+            <div class="tooltip--bottom" style="width: 100%">
 				<input id="taskname" class="input" type="text" placeholder="Aufgabe" v-model="tasknameInput">
-				<span class="type--pos-small-normal tooltiptext">Eingabe Aufgabenname</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Eingabe Aufgabenname</span>
 			</div>
-            <div class="tooltip" style="width: 50%">
-                <Select id="platform-select" :items="[
-                        { label: 'Desktop', key: 'desktop' },
-                        { label: 'Mobil', key: 'mobile' },
-                        { label: 'Desktop + Mobil', key: 'desktop+mobile' }
-                    ]" v-model="platformSelection" />
-                <span class="type--pos-small-normal tooltiptext">Auswahl Plattform</span>
-			</div>
-            <button class="button button--primary" @click="addTask">Erstellen</button>
+            <button class="button button--secondary" @click="addTask">Erstellen</button>
         </div>
         <div class="type--pos-medium-normal">
-            <p>Wähle ein UI-Element und einen Elementtyp und füge einen Bearbeitungsschritt hinzu.</p>
+            <p>Wähle im Entwurf ein UI-Element und in der folgenden Auswahl einen Interaktionstypen und füge einen neuen Bearbeitungsschritt zu der oben angegebenen Aufgabe hinzu.</p>
             <div class="task-definition__input">
-                <div class="tooltip" style="width: 100%">
+                <div class="tooltip--bottom" style="width: 100%">
                     <Select id="type-select" :items="[
-                            { label: 'Button', key: 'button' },
-                            { label: 'Eingabe', key: 'input' },
+                            { label: 'Eingabefeld', key: 'input' },
+                            { label: 'Klickelement', key: 'clickElement' },
                             { label: 'Link', key: 'link' }
                         ]" v-model="typeSelection" />
-                    <span class="type--pos-small-normal tooltiptext">Auswahl der Art des Interaktionselements</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Art des Interaktionselements</span>
                 </div>
-                <button class="button button--primary" @click="addTaskStep">Hinzufügen</button>
+                <button class="button button--secondary" @click="addTaskStep">Hinzufügen</button>
             </div>
-            <div class="tooltip" style="width: 100%">
+            <div class="tooltip--bottom" style="width: 100%">
                 <input v-show="typeSelection === 'input'" id="input-example" class="input" type="text" placeholder="Beispiel Eingabe" v-model="exampleInput">
-                <span class="type--pos-small-normal tooltiptext">Eingabe Beispiel für ein Interaktionselement des Typs 'Eingabe'</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Beispiel für ein Interaktionselement des Typs 'Eingabe'</span>
             </div>
             <div v-show="showError" class="element-error-note">
                 <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
-                <div class="icon-button" @click="closeError">
-                    <div class="icon icon--close"></div>
-                </div>
+                <IconButton @click="closeError" :icon="'close'" />
             </div>
         </div>
         <div id="tasks" class="scrollable-task-list type--pos-medium-normal">
@@ -57,20 +47,20 @@
 import { dispatch, handleEvent } from '../../uiMessageHandler';
 
 import TaskListEntry from './TaskListEntry.vue';
-import { Select } from 'figma-plugin-ds-vue';
+import { Select, IconButton } from 'figma-plugin-ds-vue';
 
 export default {
     name: 'TaskDefinition',
     components: {
         TaskListEntry,
         Select,
+        IconButton,
     },
     data() {
         return {
             tasks: [],
             tasknameInput: '',
             exampleInput: '',
-            platformSelection: '',
             typeSelection: '',
             showError: false,
             errorMessage: '',
@@ -82,9 +72,7 @@ export default {
     watch: {
         typeSelection() {
             if (this.typeSelection === 'input') {
-                // check if selection already has an example
-                const task = this.tasks.find((task) => task.taskname === this.tasknameInput);
-                dispatch('checkInputExample', task.platform);
+                dispatch('checkInputExample');
             }
         },
     },
@@ -94,18 +82,42 @@ export default {
         handleEvent('currentTaskStorage', tasks => {
             if (tasks !== undefined) {
                 this.tasks = tasks;
-                // this.$store.commit('tasks', this.tasks);
                 this.$store.commit('tasks', this.tasks);
             }
         });
 
 		handleEvent('taskStepAdded', step => {
-			this.addTaskStepToScreen(step);
+            this.addTaskStepToScreen(step);
 		});
+
+        handleEvent('selectionChecked', isNotAnnotationGroup => {
+            if (isNotAnnotationGroup) {
+                switch(this.typeSelection) {
+                    case 'clickElement':
+                        dispatch('checkButtonValidity');
+                        break;
+                    case 'input':
+                        if (this.exampleInput !== '') {
+                            dispatch('checkInputValidity', this.exampleInput);
+                        } else {
+                            this.showError = true;
+                            this.errorMessage = 'Bitte trage ein Beispiel für die Eingabe ein.';
+                        }
+                        break;
+                    case 'link':
+                        dispatch('checkLinkValidity');
+                        break;
+                }
+            } else {
+                this.showError = true;
+                this.errorMessage = 'Du scheinst die Gruppierung von Element und Annotation gewählt zu haben. Bitte wähle nur das Interaktionselement aus.'
+            }
+        });
+
         handleEvent('buttonValidity', validity => {
             if (!validity) {
                 this.showError = true;
-                this.errorMessage = 'Die Größe des Buttons sollte angepasst werden. Buttons sollten mindestens 44px x 44px groß sein.'
+                this.errorMessage = 'Ein Klickelement sollte im Idealfall 44x44 px groß sein.'
             }
             this.addValidTaskStep();
         });
@@ -125,44 +137,33 @@ export default {
         handleEvent('linkValidity', validity => {
             if (!validity) {
                 this.showError = true;
-                // add note that link is ...
             }
             this.addValidTaskStep();
         });
     },
     methods: {
         addTask() {
-			// wenn taskname leer Fehler zurückgeben
-            var platform = this.platformSelection;
-
-            const index = this.tasks.findIndex((task) => task.taskname === this.tasknameInput);
-            if (index < 0) {
-                this.tasks.push({ taskname: this.tasknameInput, platform: platform, color: this.getRandomColor(), steps: [] });
+			if (this.tasknameInput !== '') {
+                const index = this.tasks.findIndex((task) => task.taskname === this.tasknameInput);
+                if (index < 0) {
+                    this.tasks.push({ taskname: this.tasknameInput, color: this.getRandomColor(), steps: [] });
+                } else {
+                    this.showError = true;
+                    this.errorMessage = 'Es existiert bereits eine Aufgabe mit diesem Namen. Füge dieser Aufgabe weitere Bearbeitungsschritte hinzu oder wähle einen anderen Namen.'
+                }
+                this.setTaskStorage();
+                this.$store.commit('tasks', this.tasks);
             } else {
                 this.showError = true;
-                this.errorMessage = 'Es existiert bereits eine Aufgabe mit diesem Namen. Füge dieser Aufgabe weitere Bearbeitungsschritte hinzu oder wähle einen anderen Namen.'
+                this.errorMessage = 'Bitte wähle einen Namen für die Aufgabe.';
             }
-            this.setTaskStorage();
-            // this.$store.commit('tasks', this.tasks);
-            this.$store.commit('tasks', this.tasks);
 		},
         addTaskStep() {
-            const index = this.tasks.findIndex((task) => task.taskname === this.tasknameInput);
-            switch(this.typeSelection) {
-                case 'button':
-                    dispatch('checkButtonValidity', this.tasks[index].platform);
-                    break;
-                case 'input':
-                    if (this.exampleInput !== '') {
-                        dispatch('checkInputValidity', { input: this.exampleInput, platform: this.tasks[index].platform });
-                    } else {
-                        this.showError = true;
-                        this.errorMessage = 'Es wurde kein Beispiel für die Eingabe angegeben. Bitte trage ein Beispiel ein.';
-                    }
-                    break;
-                case 'link':
-                    dispatch('checkLinkValidity', this.tasks[index].platform);
-                    break;
+            if (this.tasknameInput !== '') {
+                dispatch('checkSelection');
+            } else {
+                this.showError = true;
+                this.errorMessage = 'Bitte wähle eine Aufgabe aus, um einen Schritt hinzuzufügen.';
             }
         },
         addTaskStepAtIndex(index) {
@@ -178,7 +179,7 @@ export default {
             var steps = this.tasks[taskIndex].steps;
             if (this.index === null) {
                 if (numSteps > 0) {
-                    dispatch('checkStepValidityBefore', { before: steps[steps.length-1].id, after: null });
+                    dispatch('checkStepValidityBefore', { before: steps[steps.length-1], after: null });
                     handleEvent('validityBefore', validityBefore => {
                         if (validityBefore) {
                             dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.typeSelection, numSteps: numSteps, color: color, input: this.exampleInput });
@@ -194,7 +195,7 @@ export default {
                 }
             } else {
                 if (this.index === 0) {
-                    dispatch('checkStepValidityAfter', { before: null, after: steps[0].id });
+                    dispatch('checkStepValidityAfter', { before: null, after: steps[0] });
                     handleEvent('validityAfter', validityAfter => {
                         if (validityAfter) {
                             dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.typeSelection, numSteps: numSteps, index: this.index, color: color, input: this.exampleInput });
@@ -205,10 +206,10 @@ export default {
                         }
                     });
                 } else if (this.index > 0) {
-                    dispatch('checkStepValidityBefore', { before: steps[this.index-1].id, after: null });
+                    dispatch('checkStepValidityBefore', { before: steps[this.index-1], after: null });
                     handleEvent('validityBefore', validityBefore => {
                         if (validityBefore) {
-                            dispatch('checkStepValidityAfter', { before: null, after: steps[this.index].id });
+                            dispatch('checkStepValidityAfter', { before: null, after: steps[this.index] });
                             handleEvent('validityAfter', validityAfter => {
                                 if (validityAfter) {
                                     dispatch('addTaskStep', { taskname: this.tasknameInput, type: this.typeSelection, numSteps: numSteps, index: this.index, color: color, input: this.exampleInput });
@@ -230,9 +231,9 @@ export default {
             for (let i = 0; i < this.tasks.length; i++) {
                 if (this.tasks[i].taskname === step.taskname) {
                     if (this.index !== null) {
-                        this.tasks[i].steps.splice(this.index, 0, { id: step.id, type: this.typeSelection, input: this.exampleInput });
+                        this.tasks[i].steps.splice(this.index, 0, { id: step.id, name: step.name, type: this.typeSelection, input: this.exampleInput });
                     } else {
-                        this.tasks[i].steps.push({ id: step.id, type: this.typeSelection, input: this.exampleInput });
+                        this.tasks[i].steps.push({ id: step.id, name: step.name, type: this.typeSelection, input: this.exampleInput });
                     }
                 }
             }
@@ -265,10 +266,9 @@ export default {
 				if (this.tasks[i].taskname === args.taskname) {
 					for (let j = 0; j < this.tasks[i].steps.length; j++) {
                         if (this.tasks[i].steps[j].id === args.id) {
-                            var before = this.tasks[i].steps[j-2] ? this.tasks[i].steps[j-2].id : null;
-                            var current = this.tasks[i].steps[j].id;
-                            var after = this.tasks[i].steps[j-1] ? this.tasks[i].steps[j-1].id : null;
-
+                            var before = this.tasks[i].steps[j-2] ? this.tasks[i].steps[j-2] : null;
+                            var current = this.tasks[i].steps[j];
+                            var after = this.tasks[i].steps[j-1] ? this.tasks[i].steps[j-1] : null;
                             // check if current connects to new after
                             dispatch('checkStepValidityAfter', { before: current, after: after });
                             handleEvent('validityAfter', validityAfter => {
@@ -311,9 +311,9 @@ export default {
 				if (this.tasks[i].taskname === args.taskname) {
 					for (let j = 0; j < this.tasks[i].steps.length; j++) {
                         if (this.tasks[i].steps[j].id === args.id) {
-                            var before = this.tasks[i].steps[j+1] ? this.tasks[i].steps[j+1].id : null;
-                            var current = this.tasks[i].steps[j].id;
-                            var after = this.tasks[i].steps[j+2] ? this.tasks[i].steps[j+2].id : null;
+                            var before = this.tasks[i].steps[j+1] ? this.tasks[i].steps[j+1] : null;
+                            var current = this.tasks[i].steps[j];
+                            var after = this.tasks[i].steps[j+2] ? this.tasks[i].steps[j+2] : null;
                             
                             // check  if new before connects to current
                             dispatch('checkStepValidityBefore', { before: before, after: current });
