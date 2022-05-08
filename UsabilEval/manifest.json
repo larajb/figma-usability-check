@@ -1,15 +1,17 @@
 {
-	"name": "UsabilEval",
+	"name": "Usability Evaluation",
 	"api": "1.0.0",
 	"main": "dist/code.js",
 	"ui": {
+		"start": "dist/start_ui.html",
 		"stateval": "dist/stateval_ui.html",
 		"dyneval": "dist/dyneval_ui.html"
 	},
 	"editorType": ["figma"],
 	"menu": [
-		{"name": "Statische Evaluation", "command": "stateval"},
-		{"name": "Dynamische Evaluation", "command": "dyneval"}
+		{"name": "Startseite", "command": "start"},
+		{"name": "Globale Evaluation", "command": "stateval"},
+		{"name": "Lokale Evaluation", "command": "dyneval"}
 	],
 	"id": "1094202341925042367"
 }
