@@ -1,57 +1,79 @@
 <template>
     <div>
-        <div class="checkbox">
-            <input :id="metric" type="checkbox" class="checkbox__box" @click="handleClick(metric, item)" :disabled="disabled">
-            <label :for="metric" class="checkbox__label">{{ metric }}</label>
-            <img width='20px' height='20px' :src="isClicked ? chevronRight : chevronDown" @click="isClicked = !isClicked" />
+        <div class="metric">
+            <Checkbox v-model="selected" @input="handleClick">{{ metric.title }}</Checkbox>
+            <IconButton @click="isClicked = !isClicked" :icon="isClicked ? 'caret-down' : 'caret-right'" />
         </div>
         <div v-if="isClicked" class="metric-info type--pos-small-normal">
-            <p>zusätzliche Informationen</p>
+            <p>{{ metric.description }}</p>
         </div>
     </div>
 </template>
 
 <script>
-import chevronRight from '../../img/chevron-right.svg';
-import chevronDown from '../../img/chevron-down.svg';
+import { mapState } from 'vuex';
+
+import { Checkbox, IconButton } from 'figma-plugin-ds-vue';
 
 export default {
     name: 'Metric',
     props: {
         metric: {
-            type: String,
-            default: null,
-        },
-        item: {
             type: Object,
             default: null,
         },
-        disabled: {
+        insideProfile: {
             type: Boolean,
             default: false,
         },
     },
+    components: {
+        Checkbox,
+        IconButton,
+    },
+    computed: {
+        ...mapState(['currentEvaluationProfile', 'selectedMetrics']),
+    },
     data() {
         return {
             isClicked: false,
-            chevronRight,
-            chevronDown
+            selected: false,
         }
     },
+    watch: {
+        insideProfile() {
+            if (this.insideProfile === true) {
+                this.selected = true;
+            } else {
+                this.selected = false;
+            }
+        },
+        currentEvaluationProfile() {
+            if (this.currentEvaluationProfile === null) {
+                this.selected = false;
+            } else {
+                const index = this.currentEvaluationProfile.metrics.findIndex((metric) => metric === this.metric.title);
+                if (index >= 0 ) {
+                    this.selected = true;
+                } else {
+                    this.selected = false;
+                }
+            }
+            this.$emit('selected', { title: this.metric.title, isSelected: this.selected });
+        },
+        selectedMetrics() {
+            const index = this.selectedMetrics.findIndex((selectedMetric) => selectedMetric === this.metric.title);
+            if (index >= 0 ) {
+                this.selected = true;
+            } else {
+                this.selected = false;
+            }
+        },
+    },
     methods: {
-        handleClick(metric, item) {
-			if (document.getElementById(metric).checked === false) {
-				document.getElementById(item.category).checked = false;
-			} else {
-				let allChecked = true;
-				for (let i = 0; i < item.metrics.length; i++) {
-					if (allChecked === true) {
-						allChecked = document.getElementById(item.metrics[i]).checked;
-					}
-				}
-				document.getElementById(item.category).checked = allChecked;
-			}
-		}
+        handleClick() {
+            this.$emit('selected', { title: this.metric.title, isSelected: this.selected });
+        },
     }
 };
 </script>
@@ -59,12 +81,12 @@ export default {
 <style lang='scss'>
 	@import "../../figma-ui/figma-plugin-ds";
 
-    .checkbox {
+    .metric {
 		display: flex;
 		justify-content: space-between;
 	}
 
 	.metric-info {
-		margin-left: 35px;
+		margin-left: 20px;
 	}
 </style>

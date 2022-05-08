@@ -1,49 +1,50 @@
 export const metricsArray = [
     {
-        category: 'Organisation des Inhalts',
-        metrics: [
-            'Einheitlichkeit des Layouts',
-            'Vertikales Gleichgewicht',
-            'Gleichgewicht',
-            'Gesamtdichte',
-            'Ränder',
-            'Wirtschaftlichkeit',
-            'Maß für die Regelmäßigkeit'
-        ]
+        title: 'Farbkonsistenz',
+        description: 'Die Farbkonsistenz umfasst den Prozentsatz der vordefinierten Farben im Verhältnis zur Gesamtzahl der verwendeten Farben. Im Idealfall sind nur die vordefinierten Farben enthalten. Zurzeit können lediglich lokale Styles (innerhalb dieses Entwurfs) zur Evaluation herangezogen werden.',
+        resultSentenceSingle: 'Diese Farbe wird im Entwurf verwendet, gehört aber nicht zu den vordefinierten Farben.',
+        resultSentenceMultiple: 'Diese Farben werden im Entwurf verwendet, gehören aber nicht zu den vordefinierten Farben.',
+        thresholds: { green: { min: 100, max: 100 }, yellow: { min: 50, max: 99 }, red: { min: 0, max: 49 } },
+        multipleFrames: false,
     },
     {
-        category: 'Barrierefreiheit',
-        metrics: [
-            'Farbkontrast (Inhalt und Schrift)',
-            'FRE-Wert',
-            'Farbinformation Alternative'
-        ]
-    },
-    {
-        category: 'Konsistenz',
-        metrics: [
-            'Farbkonsistenz',
-            'Schriftkonsistenz',
-            'Linkkonsistenz'
-        ]
-    },
-    {
-        category: 'Navigation',
-        metrics: [
-            'Einheitliche Navigation',
-            'Verweis auf Startseite',
-            'Verwaiste Seiten',
-            'Navigationsmöglichkeiten'
-        ]
+        title: 'Schriftkonsistenz',
+        description: 'Die Schriftkonsistenz umfasst den Prozentsatz der vordefinierten Schriftformate im Verhältnis zur Gesamtzahl der verwendeten Schriftformate. Ein Schriftformat kann die Schriftfamilie, die Größe, den Stil, die Farbe und andere Schriftmerkmale wie den Zeichenabstand umfassen. Es sollten nur (einige wenige) vordefinierte Schriftformate verwendet werden. Zurzeit können lediglich lokale Styles (innerhalb dieses Entwurfs) zur Evaluation herangezogen werden.',
+        resultSentenceSingle: 'Dieses Schriftformat wird im Entwurf verwendet, gehört aber nicht zu den vordefinierten Schriftformaten.',
+        resultSentenceMultiple: 'Diese Schriftformate werden im Entwurf verwendet, gehören aber nicht zu den vordefinierten Schriftformaten.',
+        thresholds: { green: { min: 100, max: 100 }, yellow: { min: 50, max: 99 }, red: { min: 0, max: 49 } },
+        multipleFrames: false,
     },
     // {
-    //     category: 'Bildschirmgestützte Kontrollen',
-    //     metrics: [
-    //         'Größe grafischer Links',
-    //         'Länge Text-Links',
-    //         'Interaktionszielgröße',
-    //         'Benutzte Links',
-    //         'Horizontales Scrollen'
-    //     ]
+    //     title: 'Linkkonsistenz',
+    //     description: 'Links mit demselben Ziel sollten die gleiche Linkbeschreibung haben. Im Einklang mit die-sem Ziel sollten Links mit unterschiedlichen Zielen nicht denselben Linktext verwenden. Dies gilt ebenso für nicht-textliche Verlinkungen.',
+    //     resultSentenceSingle: 'Die folgenden Links haben das gleiche Ziel, stimmen aber in ihrer Gestaltung nicht überein.',
+    //     resultSentenceMultiple: 'Die folgenden Links haben das gleiche Ziel, stimmen aber in ihrer Gestaltung nicht überein.',
+    //     thresholds: null,
+    //     multipleFrames: true,
     // },
+    {
+        title: 'Verweis auf Startseite',
+        description: 'Bei einer Webseite mit mehr als einer Seite, sollten alle Seiten einen Link zurück zur Homepage/Startseite haben. Lediglich die Startseite/Homepage selbst muss nicht mit sich selbst verlinkt sein. ',
+        resultSentenceSingle: 'Die folgende Seite besitzt keine Verlinkung auf die Startseite.',
+        resultSentenceMultiple: 'Die folgenden Seiten bseitzen keine Verlinkung auf die Startseite.',
+        thresholds: { green: { min: 1, max: 1 }, yellow: { min: 0.5, max: 0.99 }, red: { min: 0, max: 0.49 } },
+        multipleFrames: true,
+    },
+    {
+        title: 'Verwaiste Seiten',
+        description: 'Verwaiste Seiten sind Teil einer Website, aber keine der anderen Seiten der Website verweist auf sie, so dass sie nicht über einen internen Link erreicht werden können. Sie verschlechtern die Navigierbarkeit einer Webseite und sollten daher vermieden werden.',
+        resultSentenceSingle: 'Die folgende Seite ist eine verwaiste Seite. Sie kann innerhalb der Anwendung nicht erreicht werden.',
+        resultSentenceMultiple: 'Die folgenden Seiten sind verwaiste Seiten. Sie können innerhalb der Anwendung nicht erreicht werden.',
+        thresholds: { green: { min: 0, max: 0 }, yellow: { min: 0.1, max: 0.5 }, red: { min: 0.51, max: 1 } },
+        multipleFrames: true,
+    },
+    {
+        title: 'Schriftgröße',
+        description: 'Auf Webseiten sollte mindestens eine Schriftgröße von 12pt verwendet werden.',
+        resultSentenceSingle: 'Im folgenden Textfeld wird eine Schriftgröße von weniger als 12pt verwendet.',
+        resultSentenceMultiple: 'In den folgenden Textfeldern wird eine Schriftgröße von weniger als 12pt verwendet.',
+        thresholds: null,
+        multipleFrames: false,
+    },
 ];
