@@ -3,25 +3,24 @@
         <div style="display: flex">
             <div v-if="getColorValue(result.metric, result) === 'green'" class="tooltip--right">
                 <Icon icon="resolve-filled" class="icon--green" />
-				<span class="type--pos-small-normal tooltiptext--right">Keine Verstöße gefunden</span>
-			</div>
+                <span class="type--pos-small-normal tooltiptext--right">Keine Verstöße gefunden</span>
+            </div>
             <div v-else-if="getColorValue(result.metric, result) === 'yellow'" class="tooltip--right">
-				<Icon icon="warning" class="icon--yellow" />
-				<span class="type--pos-small-normal tooltiptext--right">Wenige Verstöße gefunden</span>
-			</div>
+                <Icon icon="warning" class="icon--yellow" />
+                <span class="type--pos-small-normal tooltiptext--right">Wenige Verstöße gefunden</span>
+            </div>
             <div v-else-if="getColorValue(result.metric, result) === 'red'" class="tooltip--right">
-				<Icon icon="warning" class="icon--red" />
-				<span class="type--pos-small-normal tooltiptext--right">Einige Verstöße gefunden</span>
-			</div>
+                <Icon icon="warning" class="icon--red" />
+                <span class="type--pos-small-normal tooltiptext--right">Einige Verstöße gefunden</span>
+            </div>
             <p class="type--pos-medium-bold">{{ result.metric }}</p>
-            <IconButton v-if="result.nodes.length > 0" @click="isClicked = !isClicked" :icon="isClicked ? 'caret-down' : 'caret-right'" />
         </div>
-        <div v-if="isClicked" style="margin-left: 30px">
+        <div style="margin-left: 40px">
+            <p class="type--pos-medium-normal">{{ getResultSentence() }}</p>
             <div v-if="result.type === 'colorStyle'">
-                <p class="type--pos-medium-normal">{{ getResultSentence() }}</p>
                 <table class="table" style="margin-left: -11px">
                     <tr v-for="(element, index2) in result.nodes" :key="index2">
-                        <td>
+                        <td align="top">
                             <div v-if="element.fill.length === 1" class="result-colorsquare" :style="{ backgroundColor: convertSingleColor(element.fill[0].color, element.fill[0].opacity) }"></div>
                             <div v-if="element.fill.length > 1" class="result-colorsquare" :style="{ background: convertMultipleColor(element.fill) }"></div>
                         </td>
@@ -33,7 +32,6 @@
                 </table>
             </div>
             <div v-if="result.type === 'fontStyle'">
-                <p class="type--pos-medium-normal">{{ getResultSentence() }}</p>
                 <table class="table" style="margin-left: -11px">
                     <tr v-for="(element, index2) in result.nodes" :key="index2">
                         <td class="table-cell" :class="[ isHistory ? '' : 'hoverable' ]" @click="isHistory ? null : select(element.nodes)">
@@ -43,7 +41,6 @@
                 </table>
             </div>
             <div v-else-if="result.type === 'comparison'">
-                <p class="type--pos-medium-normal">{{ getResultSentence() }}</p>
                 <table class="table" style="margin-left: -11px">
                     <tr>
                         <td class="type--pos-medium-bold">Häufigste Formatierung</td>
@@ -70,7 +67,6 @@
                 </table>
             </div>
             <div v-else-if="result.type === 'single'">
-                <p class="type--pos-medium-normal">{{ getResultSentence() }}</p>
                 <table class="table" style="margin-left: -11px">
                     <tr v-for="(element, index2) in result.nodes" :key="index2">
                         <td class="table-cell" :class="[ isHistory ? '' : 'hoverable' ]" @click="isHistory ? null : select([element.id])">
@@ -195,8 +191,7 @@ export default {
     }
     
     .hoverable:hover {
-        border-radius: 5px;
-        background-color: rgba(0, 132, 248, 0.4);
+        border: 1px solid #0084f8;
     }
 
     .table {
