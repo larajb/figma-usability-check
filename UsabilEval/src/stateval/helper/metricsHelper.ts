@@ -139,7 +139,7 @@ export const localColorConsistency = (frames) => {
             if (!node.name.startsWith('Annotation')) {
                 if ('fills' in node) {
                     const index = nodeFills.findIndex((nodeFill) => JSON.stringify(nodeFill.fill) === JSON.stringify(node.fills));
-                    if (containsBlackOrWhite(node.fills) === false && node.fills.length > 0) {
+                    if (containsBlackOrWhite(node.fills) === false && containsImage(node.fills) === false && node.fills.length > 0) {
                         if (index < 0) {
                             nodeFills.push({ nodes: [node.id], fill: node.fills });
                         } else if (index >= 0) {
@@ -169,6 +169,16 @@ const containsBlackOrWhite = (fills) => {
         }
     });
     return containsBlackOrWhite;
+}
+
+const containsImage = (fills) => {
+    var containsImage = false;
+    fills.forEach(fill => {
+        if (fill.type === 'IMAGE') {
+            containsImage = true;
+        }
+    });
+    return containsImage;
 }
 
 /**

@@ -27,7 +27,7 @@ export const metricsArray = [
         title: 'Verweis auf Startseite',
         description: 'Bei einer Webseite mit mehr als einer Seite, sollten alle Seiten einen Link zurück zur Homepage/Startseite haben. Lediglich die Startseite/Homepage selbst muss nicht mit sich selbst verlinkt sein. ',
         resultSentenceSingle: 'Die folgende Seite besitzt keine Verlinkung auf die Startseite.',
-        resultSentenceMultiple: 'Die folgenden Seiten bseitzen keine Verlinkung auf die Startseite.',
+        resultSentenceMultiple: 'Die folgenden Seiten besitzen keine Verlinkung auf die Startseite.',
         thresholds: { green: { min: 1, max: 1 }, yellow: { min: 0.5, max: 0.99 }, red: { min: 0, max: 0.49 } },
         multipleFrames: true,
     },

@@ -1,7 +1,6 @@
-import { allowedNodeEnvironmentFlags } from 'process';
 import { dispatch, handleEvent } from '../codeMessageHandler';
 import { startView } from '../start/startHandler';
-import { fontSize, homepageReference, linkConsistency, localColorConsistency, localFontConsistency, orphanPages, targetSize, textLinkLength } from './helper/metricsHelper';
+import { fontSize, homepageReference, localColorConsistency, localFontConsistency, orphanPages } from './helper/metricsHelper';
 
 export const statevalView = () => {
     handleEvent('loadMetrics', () => {
@@ -51,7 +50,6 @@ export const statevalView = () => {
      */
 
     handleEvent('evaluate', (args) => {
-        console.log(args);
         var results = [];
         args.selectedMetrics.forEach(metric => {
             switch(metric) {
@@ -62,10 +60,6 @@ export const statevalView = () => {
                 case 'Schriftkonsistenz':
                     var localFontConsistencyResult = localFontConsistency(args.selectedFrames);
                     results.push({ metric: 'Schriftkonsistenz', value: localFontConsistencyResult.value, nodes: localFontConsistencyResult.nodes, type: 'fontStyle' });
-                    break;
-                case 'Linkkonsistenz':
-                    var linkConsistencyResult = linkConsistency(args.selectedFrames);
-                    results.push({ metric: 'Linkkonsistenz', value: linkConsistencyResult.value, nodes: linkConsistencyResult.nodes, type: 'comparison' });
                     break;
                 case 'Verweis auf Startseite':
                     var homepageReferenceResult = homepageReference(args.selectedFrames, args.homepage);
@@ -81,7 +75,6 @@ export const statevalView = () => {
                     break;
             }
         });
-        console.log(results);
         dispatch('evaluationResults', results);
     });
 
