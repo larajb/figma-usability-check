@@ -14,29 +14,6 @@ export const getCurrentSelection = () => {
     return selection;
 }
 
-export const getNode = (nodeId) => {
-    var node = figma.getNodeById(nodeId);
-    return node;
-}
-
-/**
- * This is a function to get all nodes on the current page.
- * @returns nodes
- */
-export const getAllNodes = () => {
-    const nodes = figma.currentPage.findAll();
-    return nodes;
-}
-
-/**
- * This is a function to get all  nodes on the current page that have a given type.
- * @returns frameNodes
- */
-export const getAllNodesOfType = (type) => {
-    const frameNodes = figma.currentPage.findAll(n => n.type === type);
-    return frameNodes;
-}
-
 
 /**
  * This is a function to add an annotation to a file

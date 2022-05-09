@@ -70,5 +70,5 @@ export default {
 </script>
 
 <style lang='scss'>
-
+    @import "../../figma-ui/figma-plugin-ds";
 </style>

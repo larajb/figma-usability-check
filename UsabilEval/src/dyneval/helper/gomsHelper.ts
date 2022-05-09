@@ -1,5 +1,5 @@
 import { getNode } from "../../figmaAccess/fileContents";
-import { getCenterOfNode, getFrame, getReactions, getRelativeTransform, getWidth } from "../../figmaAccess/nodeProperties";
+import { getCenterOfNode, getFrame, getWidth } from "../../figmaAccess/nodeProperties";
 
 /**
  * This is a function to convert task steps to an array of steps containing operators.
@@ -232,7 +232,7 @@ export const calculateTime = (steps, convertedSteps) => {
  * @param currentStepId 
  * @returns time
  */
-const calculateFittsLaw = (lastStepId: number, currentStepId: number) => {
+const calculateFittsLaw = (lastStepId: string, currentStepId: string) => {
     // two nodes > calculate fitts law between
     // a + b*log2(d/s + 1)
     var a = 0.05;
@@ -242,7 +242,7 @@ const calculateFittsLaw = (lastStepId: number, currentStepId: number) => {
     // if last undefined = center of page or upper left edge
     var lastCenter = null;
     if (lastStepId !== null) {
-        var lastUIElement = getNode(lastStepId).parent.children[0];
+        var lastUIElement = figma.getNodeById(lastStepId).parent.children[0];
         lastCenter = getCenterOfNode(lastUIElement.id);
     } else {
         lastCenter = { x: 0, y: 0 };
@@ -250,7 +250,7 @@ const calculateFittsLaw = (lastStepId: number, currentStepId: number) => {
 
     // get center of second
     // if second is on an overlay --> use overlayRelativePosition
-    var currentUIElement = getNode(currentStepId).parent.children[0];
+    var currentUIElement = figma.getNodeById(currentStepId).parent.children[0];
     var currentCenter = getCenterOfNode(currentUIElement.id);
 
     // calculate x and y for pythagoras

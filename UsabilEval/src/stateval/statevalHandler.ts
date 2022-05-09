@@ -3,16 +3,15 @@ import { startView } from '../start/startHandler';
 import { fontSize, homepageReference, localColorConsistency, localFontConsistency, orphanPages } from './helper/metricsHelper';
 
 export const statevalView = () => {
-    handleEvent('loadMetrics', () => {
-        loadMetrics();
-    });
 
+    // to navigate back to the start page
     handleEvent('backToStart', () => {
         figma.showUI(__uiFiles__.start);
         startView();
         figma.ui.resize(450, 550);
     });
 
+    // to get all pages of a figma document
     handleEvent('getPages', () => {
         var pages = figma.root.children;
         var pagesObjects = [];
@@ -22,6 +21,7 @@ export const statevalView = () => {
         dispatch('allPages', pagesObjects);
     });
 
+    // to get all frames of a page
     handleEvent('getFrames', (pageId) => {
         const page = figma.getNodeById(pageId);
         const frames = page.findAll(node => node.type === 'FRAME');
@@ -32,10 +32,7 @@ export const statevalView = () => {
         dispatch('frames', frameObjects);
     });
 
-    /**
-     * Selection
-     */
-
+    // to select all given elements by id
     handleEvent('setSelection', (ids) => {
         var nodes = [];
         ids.forEach(id => {
@@ -45,10 +42,7 @@ export const statevalView = () => {
         figma.currentPage.selection = nodes;
     })
 
-    /**
-     * Evaluation
-     */
-
+    // to evaluate the ui with the selected metrics
     handleEvent('evaluate', (args) => {
         var results = [];
         args.selectedMetrics.forEach(metric => {
@@ -78,10 +72,7 @@ export const statevalView = () => {
         dispatch('evaluationResults', results);
     });
 
-    /**
-     * Get and set storage
-     */
-
+    // to get the stored custom evaluation profiles
     handleEvent('getEvaluationProfileStorage', async () => {
         var storage = undefined;
         await figma.clientStorage.getAsync('evaluationProfiles').then((value) => {
@@ -90,10 +81,12 @@ export const statevalView = () => {
         dispatch('currentEvaluationProfileStorage', storage);
     });
 
+    // to store the custom evaluation profiles
     handleEvent('setEvaluationProfileStorage', async (storage) => {
         await figma.clientStorage.setAsync('evaluationProfiles', storage);
     })
 
+    // to get the stored evaluations
     handleEvent('getEvaluationStorage', async () => {
         var storage = undefined;
         await figma.clientStorage.getAsync('evaluation').then((value) => {
@@ -102,11 +95,8 @@ export const statevalView = () => {
         dispatch('currentEvaluationStorage', storage);
     })
 
+    // to store the evaluation results
     handleEvent('setEvaluationStorage', async (storage) => {
         await figma.clientStorage.setAsync('evaluation', storage);
     });
-}
-
-const loadMetrics = () => {
-    
 }

@@ -1,25 +1,27 @@
-import { addAnnotationToFile, getCurrentSelection, getNode } from "../../figmaAccess/fileContents";
+import { addAnnotationToFile, getCurrentSelection } from "../../figmaAccess/fileContents";
 import { createEllipseNode, createGroupNode, createTextNode } from "../../figmaAccess/nodeCreator";
-import { getFrame, getHeight, getParent, getReactions, getRelativeTransform, getType, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
+import { getHeight, getParent, getRelativeTransform, getType, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
 import { checkInputExample } from "./validityHelper";
 
 /**
  * This is a function to create an example text for an input field.
  * @param input 
  * @param taskname
- * @returns text
+ * @returns Boolean
  */
 export const createExampletext = (input, taskname) => {
     var result = checkInputExample();
     if (result === null) {
-        var currentSelection = getCurrentSelection();
-        var selectionRelTransform = getRelativeTransform(currentSelection.id);
-        var selectionHeight = getHeight(currentSelection.id);
+        var selection = getCurrentSelection();
+        if (selection !== null) {
+            var selectionRelTransform = getRelativeTransform(selection.id);
+            var selectionHeight = getHeight(selection.id);
 
-        var text = createTextNode('Annotation - ' + taskname + ' - Eingabebeispiel', {r: 0, g: 0, b: 1}, null, input)
-        setRelativeTransform(text, selectionRelTransform[0][2] + 10, selectionRelTransform[1][2] + selectionHeight / 2 - text.height / 2)
+            var text = createTextNode('Annotation - ' + taskname + ' - Eingabebeispiel', {r: 0, g: 0, b: 1}, null, input)
+            setRelativeTransform(text, selectionRelTransform[0][2] + 10, selectionRelTransform[1][2] + selectionHeight / 2 - text.height / 2)
 
-        addAnnotationToFile(currentSelection, text);
+            addAnnotationToFile(selection, text);
+        }
     }
 
     return true;
@@ -30,6 +32,8 @@ export const createExampletext = (input, taskname) => {
  * @param taskname 
  * @param numSteps 
  * @param color 
+ * @param selection
+ * @param index
  * @returns annotation
  */
 export const createTaskAnnotation = (taskname, numSteps, color, selection = null, index = null) => {
@@ -44,40 +48,42 @@ export const createTaskAnnotation = (taskname, numSteps, color, selection = null
     } else {
        currentSelection = getCurrentSelection();
     }
-    var selectionRelTransform = getRelativeTransform(currentSelection.id);
-    var selectionParent = getParent(currentSelection.id);
+    if (currentSelection !== null) {
+        var selectionRelTransform = getRelativeTransform(currentSelection.id);
+        var selectionParent = getParent(currentSelection.id);
 
-    var ellipse = createEllipseNode('Annotation - ' + taskname, 24, 24, convertedColor);
-    var text = createTextNode('Annotation - ' + taskname + ' - Text', {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, stepNumber)
-    var containsExample = false;
-    var containsJustExample = false;
-    for (let i = 0; i < selectionParent.children.length; i++) {
-        if (selectionParent.children[i].name.endsWith('Eingabebeispiel')) {
-            containsExample = true;
-            if (selectionParent.children.length === 2) {
-                containsJustExample = true;
+        var ellipse = createEllipseNode('Annotation - ' + taskname, 24, 24, convertedColor);
+        var text = createTextNode('Annotation - ' + taskname + ' - Text', {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, stepNumber)
+        var containsExample = false;
+        var containsJustExample = false;
+        for (let i = 0; i < selectionParent.children.length; i++) {
+            if (selectionParent.children[i].name.endsWith('Eingabebeispiel')) {
+                containsExample = true;
+                if (selectionParent.children.length === 2) {
+                    containsJustExample = true;
+                }
             }
         }
+        if (selectionParent.name.endsWith('Annotation') === false) {
+            setRelativeTransform(ellipse, selectionRelTransform[0][2] - 12, selectionRelTransform[1][2] - 12);
+            setRelativeTransform(text, selectionRelTransform[0][2] - 4, selectionRelTransform[1][2] - 9);
+        } else if (containsJustExample === true) {
+            setRelativeTransform(ellipse, selectionRelTransform[0][2] - 12, selectionRelTransform[1][2] - 12);
+            setRelativeTransform(text, selectionRelTransform[0][2] - 4, selectionRelTransform[1][2] - 9);
+        } else if (containsExample === true) {
+            setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 3) * 12) + ((selectionParent.children.length - 2) * 4), selectionRelTransform[1][2] - 12);
+            setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 16) - 4, selectionRelTransform[1][2] - 9);
+        } else if (containsExample === false) {
+            setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12) + ((selectionParent.children.length - 1) * 4), selectionRelTransform[1][2] - 12);
+            setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 16) - 4, selectionRelTransform[1][2] - 9);
+        }
+
+        var annotation = createGroupNode('Annotation - ' + taskname + ' - ', [ellipse, text]);
+
+        addAnnotationToFile(currentSelection, annotation);
+
+        return annotation;
     }
-    if (selectionParent.name.endsWith('Annotation') === false) {
-        setRelativeTransform(ellipse, selectionRelTransform[0][2] - 12, selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] - 4, selectionRelTransform[1][2] - 9);
-    } else if (containsJustExample === true) {
-        setRelativeTransform(ellipse, selectionRelTransform[0][2] - 12, selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] - 4, selectionRelTransform[1][2] - 9);
-    } else if (containsExample === true) {
-        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 3) * 12) + ((selectionParent.children.length - 2) * 4), selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 16) - 4, selectionRelTransform[1][2] - 9);
-    } else if (containsExample === false) {
-        setRelativeTransform(ellipse, selectionRelTransform[0][2] + ((selectionParent.children.length - 2) * 12) + ((selectionParent.children.length - 1) * 4), selectionRelTransform[1][2] - 12);
-        setRelativeTransform(text, selectionRelTransform[0][2] + ((selectionParent.children.length - 1) * 16) - 4, selectionRelTransform[1][2] - 9);
-    }
-
-    var annotation = createGroupNode('Annotation - ' + taskname + ' - ', [ellipse, text]);
-
-    addAnnotationToFile(currentSelection, annotation);
-
-    return annotation;
 }
 
 /**
@@ -86,7 +92,7 @@ export const createTaskAnnotation = (taskname, numSteps, color, selection = null
  * @param followingSteps 
  */
 export const deleteStepAnnotation = (step, followingSteps) => {
-    var stepAnnotation = getNode(step.id);
+    var stepAnnotation = figma.getNodeById(step.id);
     var annotationInput = step.input;
     var parent = getParent(step.id);
     stepAnnotation.remove();
@@ -110,7 +116,7 @@ export const deleteStepAnnotation = (step, followingSteps) => {
     }
     if (followingSteps !== undefined) {
         followingSteps.forEach(step => {
-            var stepNode = getNode(step.id);
+            var stepNode = figma.getNodeById(step.id);
             if (getType(stepNode.id) === 'GROUP') {
                 for (let i = 0; i < stepNode.children.length; i++) {
                     if (getType(stepNode.children[i].id) === 'TEXT') {
@@ -129,7 +135,7 @@ export const deleteStepAnnotation = (step, followingSteps) => {
  * @param number 
  */
 export const updateStepAnnotation = (annotationId, number) => {
-    var annotation = getNode(annotationId);
+    var annotation = figma.getNodeById(annotationId);
     if (getType(annotationId) === 'GROUP') {
         for (let i = 0; i < annotation.children.length; i++) {
             if(getType(annotation.children[i].id) === 'TEXT') {
@@ -139,6 +145,11 @@ export const updateStepAnnotation = (annotationId, number) => {
     }
 }
 
+/**
+ * This function is used to get the node of an annotated element by annotation id.
+ * @param id 
+ * @returns selection
+ */
 export const getElementToAnnotation = (id) => {
     var annotation = figma.getNodeById(id);
     var parent = getParent(annotation.id);
@@ -149,7 +160,7 @@ export const getElementToAnnotation = (id) => {
 /**
  * This is a function to convert a css formatted rgb color to a figma formatted rgb color.
  * @param color 
- * @returns 
+ * @returns Object
  */
 const convertColor = (color) => {
     color = color.replace('rgb(', '');

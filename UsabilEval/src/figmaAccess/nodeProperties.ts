@@ -6,7 +6,9 @@
 export const getRelativeTransform = (nodeId) => {
     var relativeTransform = null;
     var node = figma.getNodeById(nodeId);
-    relativeTransform = node.relativeTransform;
+    if ('relativeTransform' in node) {
+        relativeTransform = node.relativeTransform;
+    }
     return relativeTransform;
 }
 

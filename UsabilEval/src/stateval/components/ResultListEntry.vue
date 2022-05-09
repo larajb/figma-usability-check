@@ -193,12 +193,7 @@ export default {
         padding-right: 10px;
         vertical-align: center
     }
-
-    .hoverable:hover {
-        border-radius: 5px;
-        background-color: rgba(0, 132, 248, 0.4);
-    }
-
+    
     .hoverable:hover {
         border-radius: 5px;
         background-color: rgba(0, 132, 248, 0.4);

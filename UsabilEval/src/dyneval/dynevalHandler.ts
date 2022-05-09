@@ -27,7 +27,9 @@ export const dynevalView = () => {
             var taskAnnotation = createTaskAnnotation(args.taskname, args.numSteps, args.color);
         }
         var selection = getCurrentSelection();
-        dispatch('taskStepAdded', { taskname: args.taskname, id: taskAnnotation.id, name: selection.name });
+        if (selection !== null) {
+            dispatch('taskStepAdded', { taskname: args.taskname, id: taskAnnotation.id, name: selection.name });
+        }
     });
 
     handleEvent('addTaskSteps', (args) => {

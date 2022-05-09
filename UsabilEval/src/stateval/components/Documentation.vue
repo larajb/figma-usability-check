@@ -123,10 +123,6 @@ export default {
 <style lang="scss">
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .table {
-		border-spacing: 10px;
-	}
-
     .scrollable-docs {
         max-height: 80%;
         overflow-y: scroll;

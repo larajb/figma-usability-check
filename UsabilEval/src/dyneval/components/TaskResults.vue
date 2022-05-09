@@ -50,28 +50,7 @@
                 <tr v-for="(smell, index) in content.evaluationRuns[0].usabilitySmells" :key="index">
                     <td></td>
                     <td>
-                        <div style="display: flex">
-                            <p class="type--pos-medium-normal">{{ smell.title }}</p>
-                            <IconButton @click="showSmell = !showSmell" :icon="showSmell ? 'caret-down' : 'caret-right'" />
-                        </div>
-                        <table v-show="showSmell" class="table">
-                            <tr class="type--pos-medium-normal" v-if="smell.steps.length === 1">
-                                <td valign="top">Gefunden in</td>
-                                <td>Schritt {{ smell.steps[0] }} ({{ getTimeFromTo(content.evaluationRuns[0].goms.stepsTimes, smell.steps[0]) }})</td>
-                            </tr>
-                            <tr class="type--pos-medium-normal" v-else-if="smell.steps.length > 1">
-                                <td valign="top">Gefunden in</td>
-                                <td>Schritten {{ getAsString(content.evaluationRuns[0].goms.stepsTimes, smell.steps) }}</td>
-                            </tr>
-                            <tr class="type--pos-medium-normal">
-                                <td valign="top">Erscheinung</td>
-                                <td>{{ getDescription(smell.title) }}</td>
-                            </tr>
-                            <tr class="type--pos-medium-normal">
-                                <td valign="top">Behebung</td>
-                                <td>{{ getRefactoring(smell.title) }}</td>
-                            </tr>
-                        </table>
+                        <usability-smell-result :smell="smell" />
                     </td>
                 </tr>
             </table>
@@ -92,11 +71,11 @@
 </template>
 
 <script>
-import { usabilitySmellsArray } from '../usabilitySmells/usabilitySmells';
 import { mapState } from 'vuex';
 import { Icon, IconButton } from 'figma-plugin-ds-vue';
 
 import BarChart from './BarChart';
+import UsabilitySmellResult from './UsabilitySmellResult.vue';
 
 export default {
     name: 'TaskResults',
@@ -104,6 +83,7 @@ export default {
         BarChart,
         Icon,
         IconButton,
+        UsabilitySmellResult,
     },
     props: {
         content: {
@@ -114,8 +94,6 @@ export default {
     data() {
         return {
             showHistory: false,
-            showSmell: false,
-            usabilitySmells: usabilitySmellsArray,
             chartData: null,
             chartOptions: {
                 responsive: true,
@@ -210,42 +188,12 @@ export default {
             var formattedDate = date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + minutes;
             return formattedDate;
         },
-        getDescription(title) {
-            const index = this.usabilitySmells.findIndex((smell) => smell.title === title);
-            return this.usabilitySmells[index].description;
-        },
-        getRefactoring(title) {
-            const index = this.usabilitySmells.findIndex((smell) => smell.title === title);
-            return this.usabilitySmells[index].refactoring;
-        },
         convertColor(color, alpha) {
             color = color.replace('rgb(', '');
             color = color.replace(')', '');
             var colorSplitted = color.split(',');
             var newColor = 'rgba(' + colorSplitted[0] + ', ' + colorSplitted[1] + ', ' + colorSplitted[2] + ', ' + alpha + ')';
             return newColor;
-        },
-        getAsString(stepsTimes, stepsArray) {
-            var stepsString = '';
-            for (let i = 0; i < stepsArray.length; i++) {
-                var step = stepsArray[i].toString() + ' (' + this.getTimeFromTo(stepsTimes, i+1) + ')';
-                stepsString += step + ', ';
-            }
-            stepsString = stepsString.slice(0, stepsString.length - 2);
-            return stepsString;
-        },
-        getTimeFromTo(stepsTimes, stepNum) {
-            var from = 0.0;
-            var to = 0.0;
-            for (let i = 0; i < stepNum; i++) {
-                if (i === 0) {
-                    to += stepsTimes[i];
-                } else {
-                    from += stepsTimes[i-1];
-                    to += stepsTimes[i];
-                }
-            }
-            return from.toFixed(2).toString() + ' - ' + to.toFixed(2).toString() + ' s';
         },
         checkSmellPresence(smells) {
             var hasSmells = false;

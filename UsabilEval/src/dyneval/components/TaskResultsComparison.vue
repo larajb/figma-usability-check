@@ -133,7 +133,6 @@ export default {
             })
         },
         setTaskResults() {
-            console.log(this.taskEvaluationHistory);
             const taskIndex = this.taskEvaluationHistory.findIndex((element) => element.taskname === this.content.taskname);
             this.taskResults.push(this.taskEvaluationHistory[taskIndex]);
             const comparisonIndex = this.taskEvaluationHistory.findIndex((element) => element.taskname === this.content.evaluationRuns[0].comparison.taskname);
