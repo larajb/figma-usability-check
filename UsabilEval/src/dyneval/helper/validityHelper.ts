@@ -16,7 +16,6 @@ export const checkForAnnotationGroup = () => {
  * @returns 
  */
  export const checkValidity = (args) => {
-    console.log(args);
     var validity = false;
 
     // get frame of step before

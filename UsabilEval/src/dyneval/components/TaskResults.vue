@@ -19,10 +19,6 @@
                                 <td>{{ content.taskname }}:</td>
                                 <td>{{ content.evaluationRuns[0].goms.gomsTime.toFixed(2) }} s</td>
                             </tr>
-                            <tr v-if="content.evaluationRuns[0].comparison !== null">
-                                <td>{{ content.evaluationRuns[0].comparison.taskname }}:</td>
-                                <td>{{ content.evaluationRuns[0].comparison.goms.gomsTime.toFixed(2) }} s</td>
-                            </tr>
                         </table>
                     </td>
                 </tr>
@@ -163,81 +159,49 @@ export default {
     },
     methods: {
         setChartData() {
-            if (this.content.evaluationRuns[0].comparison === null) {
-                var task = this.tasks.find((task) => task.taskname === this.content.taskname);
-                this.chartData = {
-                    labels: ['H', 'K', 'M', 'P', 'R'],
-                    datasets: [],
-                };
-                var time = 0.0;
-                this.content.evaluationRuns[0].goms.operatorTimes.forEach(step => {
-                    step.forEach(operator => {
-                        switch(operator.operator) {
-                            case 'H':
-                                this.chartData.datasets.push({
-                                    data: [[time.toFixed(2), (time + operator.time).toFixed(2)], [0, 0], [0, 0], [0, 0], [0, 0]],
-                                    backgroundColor: this.convertColor(task.color, 0.9),
-                                });
-                                break;
-                            case 'K':
-                                this.chartData.datasets.push({
-                                    data: [[0, 0], [time.toFixed(2), (time + operator.time).toFixed(2)], [0, 0], [0, 0], [0, 0]],
-                                    backgroundColor: this.convertColor(task.color, 0.8),
-                                });
-                                break;
-                            case 'M':
-                                this.chartData.datasets.push({
-                                    data: [[0, 0], [0, 0], [time.toFixed(2), (time + operator.time).toFixed(2)], [0, 0], [0, 0]],
-                                    backgroundColor: this.convertColor(task.color, 0.7),
-                                });
-                                break;
-                            case 'P':
-                                this.chartData.datasets.push({
-                                    data: [[0, 0], [0, 0], [0, 0], [time.toFixed(2), (time + operator.time).toFixed(2)], [0, 0]],
-                                    backgroundColor: this.convertColor(task.color, 0.6),
-                                });
-                                break;
-                            case 'R':
-                                this.chartData.datasets.push({
-                                    data: [[0, 0], [0, 0], [0, 0], [0, 0], [time.toFixed(2), (time + operator.time).toFixed(2)]],
-                                    backgroundColor: this.convertColor(task.color, 0.5),
-                                });
-                                break;
-                        }
-                        time += operator.time;
-                    })
+            var task = this.tasks.find((task) => task.taskname === this.content.taskname);
+            this.chartData = {
+                labels: ['H', 'K', 'M', 'P', 'R'],
+                datasets: [],
+            };
+            var time = 0.0;
+            this.content.evaluationRuns[0].goms.operatorTimes.forEach(step => {
+                step.forEach(operator => {
+                    switch(operator.operator) {
+                        case 'H':
+                            this.chartData.datasets.push({
+                                data: [[time.toFixed(2), (time + operator.time).toFixed(2)], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                backgroundColor: this.convertColor(task.color, 0.9),
+                            });
+                            break;
+                        case 'K':
+                            this.chartData.datasets.push({
+                                data: [[0, 0], [time.toFixed(2), (time + operator.time).toFixed(2)], [0, 0], [0, 0], [0, 0]],
+                                backgroundColor: this.convertColor(task.color, 0.8),
+                            });
+                            break;
+                        case 'M':
+                            this.chartData.datasets.push({
+                                data: [[0, 0], [0, 0], [time.toFixed(2), (time + operator.time).toFixed(2)], [0, 0], [0, 0]],
+                                backgroundColor: this.convertColor(task.color, 0.7),
+                            });
+                            break;
+                        case 'P':
+                            this.chartData.datasets.push({
+                                data: [[0, 0], [0, 0], [0, 0], [time.toFixed(2), (time + operator.time).toFixed(2)], [0, 0]],
+                                backgroundColor: this.convertColor(task.color, 0.6),
+                            });
+                            break;
+                        case 'R':
+                            this.chartData.datasets.push({
+                                data: [[0, 0], [0, 0], [0, 0], [0, 0], [time.toFixed(2), (time + operator.time).toFixed(2)]],
+                                backgroundColor: this.convertColor(task.color, 0.5),
+                            });
+                            break;
+                    }
+                    time += operator.time;
                 })
-            } else {
-                var firstTask = this.tasks.find((task) => task.taskname === this.content.taskname);
-                var secondTask = this.tasks.find((task) => task.taskname === this.content.evaluationRuns[0].comparison.taskname);
-                this.chartData = {
-                    labels: [this.content.taskname, this.content.evaluationRuns[0].comparison.taskname],
-                    datasets: [],
-                };
-                var index = 0;
-                var time = 0.0;
-                this.content.evaluationRuns[0].goms.stepsTimes.forEach(stepTime => {
-                    index ++;
-                    this.chartData.datasets.push({
-                        label: 'Schritt' + index.toString(),
-                        data: [[time.toFixed(2), (time + stepTime).toFixed(2)], [0, 0]],
-                        backgroundColor: firstTask.color,
-                    });
-                    time += stepTime;
-                })
-
-                index = 0;
-                time = 0.0;
-                this.content.evaluationRuns[0].comparison.goms.stepsTimes.forEach(stepTime => {
-                    index ++;
-                    this.chartData.datasets.push({
-                        label: 'Schritt' + index.toString(),
-                        data: [[0, 0], [time.toFixed(2), (time + stepTime).toFixed(2)]],
-                        backgroundColor: secondTask.color,
-                    });
-                    time += stepTime;
-                })
-            }
+            })
         },
         formatDate(timestamp) {
             var date = new Date(timestamp);
@@ -262,9 +226,9 @@ export default {
             return newColor;
         },
         getAsString(stepsTimes, stepsArray) {
-            const stepsString = '';
+            var stepsString = '';
             for (let i = 0; i < stepsArray.length; i++) {
-                var step = stepsArray[i].toString() + ' (' + getTimeFromTo(stepsTimes, i+1) + ')';
+                var step = stepsArray[i].toString() + ' (' + this.getTimeFromTo(stepsTimes, i+1) + ')';
                 stepsString += step + ', ';
             }
             stepsString = stepsString.slice(0, stepsString.length - 2);
@@ -291,15 +255,6 @@ export default {
                 }
             })
             return hasSmells;
-        },
-        findInComparison(title) {
-            var isAlsoFound = false;
-            this.content.evaluationRuns[0].comparison.usabilitySmells.forEach(smell => {
-                if (smell.title === title && smell.isFound) {
-                    isAlsoFound = true;
-                }
-            })
-            return isAlsoFound;
         },
     },
 }

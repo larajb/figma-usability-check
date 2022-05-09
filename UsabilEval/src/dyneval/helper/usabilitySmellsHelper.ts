@@ -6,7 +6,7 @@ import { getFrame, getPage, getParent } from "../../figmaAccess/nodeProperties";
  * @param task 
  * @returns result
  */
- export const checkUsabilitySmells = (steps, avgPointingTime, avgHomingNum, pointingTimes, homingNums) => {
+ export const checkUsabilitySmells = (steps, avgPointingTime, avgHomingNum, pointingTimes, homingNum) => {
     var results = [];            // smells = [ { title: ..., value: ... }, ... ]
 
     // Too Many Layers
@@ -27,11 +27,11 @@ import { getFrame, getPage, getParent } from "../../figmaAccess/nodeProperties";
     // Long P
     var pointingTimeSmell = longP(pointingTimes, avgPointingTime);
     if (pointingTimeSmell.isFound) {
-        results.push({ title: 'Long P', isFound: pointingTimeSmell.isFound, values: pointingTimeSmell.values, steps: pointingTimeSmell.values });
+        results.push({ title: 'Long P', isFound: pointingTimeSmell.isFound, values: pointingTimeSmell.values, steps: pointingTimeSmell.steps });
     }
 
     // Many H
-    var homingNumSmell = manyH(homingNums, avgHomingNum);
+    var homingNumSmell = manyH(homingNum, avgHomingNum);
     if (homingNumSmell.isFound) {
         results.push({ title: 'Many H', isFound: homingNumSmell.isFound, values: homingNumSmell.values, steps: homingNumSmell.steps });
     }
@@ -112,19 +112,6 @@ export const distantContent = (steps) => {
 }
 
 // /**
-//  * This is a function to check for the 'Laborious Task' usability smell.
-//  * @param task 
-//  */
-// export const laboriousTask = (history, task) => {
-//     var result = { isFound: false, values: [], steps: [] };
-//     if (history !== undefined) {
-//         var avgTime = calculateAverageTime(history);
-//         var avgStepsNum = calculateAverageStepNum(history);
-//     }
-//     return result;
-// }
-
-// /**
 //  * This is a function to check for the 'Cyclic Task' usability smell.
 //  * @param task 
 //  */
@@ -141,7 +128,7 @@ export const distantContent = (steps) => {
 export const longP = (pointingTimes, avgPointingTime) => {
     var result = { isFound: false, values: [], steps: [] };
     for (let i = 0; i < pointingTimes.length; i++) {
-        if (pointingTimes[i] > (avgPointingTime * 1.5)) {
+        if (pointingTimes[i] > (avgPointingTime * 2)) {
             result.isFound = true;
             result.values.push(pointingTimes[i]);
             result.steps.push(i+1);
@@ -157,67 +144,11 @@ export const longP = (pointingTimes, avgPointingTime) => {
  * @param avgHomingNum 
  * @returns result
  */
-export const manyH = (homingNums, avgHomingNum) => {
+export const manyH = (homingNum, avgHomingNum) => {
     var result = { isFound: false, values: [], steps: [] };
-    if (homingNums.filter(num => num === 1).length > 1) {
-        for (let i = 0; i < homingNums.length; i++) {
-            if (homingNums[i] > (avgHomingNum * 1.5)) {
-                result.isFound = true;
-                result.values.push(homingNums[i]);
-                result.steps.push(i+1);
-            }
-        }
+    if (homingNum > avgHomingNum) {
+        result.isFound = true;
+        result.values.push(homingNum);
     }
-    // var homingNumsSum = 0;
-    // for (let i = 0; i < homingNums.length; i++) {
-    //     homingNumsSum += homingNums[i];
-    // }
-    // var avg = homingNumsSum / homingNums.length;
-    // if (avg > avgHomingNum * 1.5) {
-    //     result.isFound = true;
-    // }
     return result;
-}
-
-/****************************
- * Helper functions
- ****************************/
-/**
- * This is a function to calculate the average time of all already evaluated tasks.
- * @param history 
- */
-const calculateAverageTime = (history) => {
-    var overallTime = 0;
-    var numEvaluations = 0;
-    var avgTime = 0;
-    if (history.length > 1) {
-        history.forEach(task => {
-            task.evaluationRuns.forEach(run => {
-                overallTime += run.goms.gomsTime;
-                numEvaluations++;
-            });
-        });
-        avgTime = overallTime / numEvaluations;
-    }
-    return avgTime;
-}
-
-/**
- * This is a function to calculate the average step number of all already evaluated tasks. 
- * @param history 
- */
-const calculateAverageStepNum = (history) => {
-    var overallNumSteps = 0;
-    var numEvaluations = 0;
-    var avgNum = 0;
-    if (history.length > 1) {
-        history.forEach(task => {
-            task.evaluationRuns.forEach(run => {
-                overallNumSteps += run.steps.length;
-                numEvaluations++;
-            });
-        });
-        avgNum = overallNumSteps / numEvaluations;
-    }
-    return avgNum;
 }

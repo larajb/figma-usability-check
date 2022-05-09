@@ -1,7 +1,7 @@
 <template>
     <div v-show="content !== undefined">
         <p class="type--pos-medium-normal">{{ content.scenarioname }}</p>
-        <p class="type--pos-small-normal">Mit einem Klick auf einen Aufgabenbalken innerhalb des Graphen wird eine Detailansicht zu der entsprechenden Aufgabe angezeigt. Um in die ursprüngliche Ansicht des Szenarios zurückzukommen, muss außerhalb der Balken in den Graphen geklickt werden.</p>
+        <p class="type--pos-small-normal">Mit einem Klick auf einen Aufgabenbalken wird eine Detailansicht zu der entsprechenden Aufgabe angezeigt. Um in die Detailansicht des Szenarios zurückzukommen, muss außerhalb der Balken in den Graphen geklickt werden.</p>
         <div id="tasks" v-if="content.evaluationRuns[0].gomsTimes !== null">
             <bar-chart class="scenario-chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
         </div>
@@ -60,10 +60,10 @@
                                     <td valign="top">Gefunden in</td>
                                     <td>Übergang {{ smell.steps[0] }}</td>
                                 </tr>
-                                <!-- <tr class="type--pos-medium-normal" v-else-if="smell.steps.length > 1">
+                                <tr class="type--pos-medium-normal" v-if="smell.steps.length > 1">
                                     <td valign="top">Gefunden in</td>
-                                    <td>Schritten {{ getAsString(content.evaluationRuns[0].goms.stepsTimes, smell.steps) }}</td>
-                                </tr> -->
+                                    <td>Übergängen {{ getAsString(smell.steps[0]) }}</td>
+                                </tr>
                                 <tr class="type--pos-medium-normal">
                                     <td valign="top">Erscheinung</td>
                                     <td>{{ getDescription(smell.title) }}</td>
@@ -184,10 +184,10 @@ export default {
             this.content.evaluationRuns[0].tasks.forEach(task => {
                 const index = this.taskEvaluationHistory.findIndex((element) => element.taskname === task.taskname);
                 this.taskResults.push(this.taskEvaluationHistory[index]);
-            })
+            });
         },
-        handleClick(label) {
-            this.taskToShow = label;
+        handleClick(args) {
+            this.taskToShow = args.datasetLabel;
         },
         sumUpTimes(times) {
             var sum = 0.0;
@@ -211,14 +211,13 @@ export default {
             const index = this.usabilitySmells.findIndex((smell) => smell.title === title);
             return this.usabilitySmells[index].refactoring;
         },
-        getAsString(stepsTimes, stepsArray) {
-            const stepsString = '';
-            for (let i = 0; i < stepsArray.length; i++) {
-                var step = stepsArray[i].toString() + ' (' + getTimeFromTo(stepsTimes, i+1) + ')';
-                stepsString += step + ', ';
+        getAsString(transitions) {
+            var transitionsString = '';
+            for (let i = 0; i < transitions.length; i++) {
+                transitionsString += transitions[i] + ', ';
             }
-            stepsString = stepsString.slice(0, stepsString.length - 2);
-            return stepsString;
+            transitionsString = transitionsString.slice(0, transitionsString.length - 2);
+            return transitionsString;
         },
         getTimeFromTo(stepsTimes, stepNum) {
             var from = 0.0;

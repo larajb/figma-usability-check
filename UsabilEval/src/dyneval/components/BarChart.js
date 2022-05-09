@@ -10,14 +10,17 @@ export default {
     },
     methods: {
         handle(event) {
-            var label = '';
+            var dataLabel = '';
+            var datasetLabel = '';
             var activePoint = this.$data._chart.getElementAtEvent(event)[0];
             if (activePoint !== undefined) {
                 var data = activePoint._chart.data;
+                var dataIndex = activePoint._index;
                 var datasetIndex = activePoint._datasetIndex;
-                label = data.datasets[datasetIndex].label;
+                dataLabel = data.labels[dataIndex];
+                datasetLabel = data.datasets[datasetIndex].label;
             }
-            this.$emit('clicked', label);
+            this.$emit('clicked', { dataLabel: dataLabel, datasetLabel: datasetLabel });
         }
     },
 }

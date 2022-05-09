@@ -35,6 +35,17 @@
                 <Select id="first-scenario-select" :items="firstScenarios" v-model="firstScenario" />
                 <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Szenario</span>
             </div>
+            <p class="type--pos-medium-normal">
+                Wähle ein weiterer Szenario zum Vergleich mit dem zuvor ausgewählten Szenario. Falls erforderlich definiere es zuerst. (optional)
+            </p>
+            <div class="tooltip--bottom" style="width: 100%">
+                <Select id="second-scenario-select" :items="secondScenarios" v-model="secondScenario" />
+                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Vergleichsszenario</span>
+            </div>
+            <div class="tooltip--bottom">
+                <button class="type--pos-small-normal button--link-look" @click="$store.commit('currentPage', 'ScenarioDefinition')">Szenario definieren</button>
+                <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Szenariendefinition</span>
+            </div>
         </div>
         <button class="button button--primary" style="margin-top: 10px" @click="startEvaluation">Start</button>
         <div v-show="showError" class="element-error-note">
@@ -61,9 +72,11 @@ export default {
         return {
             firstTask: '',
             firstScenario: '',
+            secondScenario: '',
             secondTask: '',
             firstTasks: [],
             firstScenarios: [],
+            secondScenarios: [],
             secondTasks: [],
             taskEvaluationHistory: [],
             scenarioEvaluationHistory: [],
@@ -80,13 +93,7 @@ export default {
             this.setTasks();
         },
         scenarios() {
-            this.firstScenarios = [{ label: '', key: '' }];
-            this.scenarios.forEach(scenario => {
-                this.firstScenarios.push({
-                    label: scenario.scenarioname,
-                    key: scenario.scenarioname,
-                })
-            })
+            this.setScenarios();
         },
         firstTask() {
             this.setTasks();
@@ -99,7 +106,13 @@ export default {
             this.$store.commit('evaluationReady', false);
         },
         firstScenario() {
+            this.setScenarios();
+            const result = this.secondScenarios.filter(item => item.label !== this.firstScenario);
+            this.secondScenarios = result;
             this.$store.commit('currentScenarioname', this.firstScenario);
+            this.$store.commit('evaluationReady', false);
+        },
+        secondScenario() {
             this.$store.commit('evaluationReady', false);
         },
         evaluationTypeValue() {
@@ -110,19 +123,19 @@ export default {
         this.getTaskEvaluationHistory();
         this.getScenarioEvaluationHistory();
 
-        handleEvent('currentTaskEvaluationStorage', storage => {
-            if (storage !== undefined) {
-                this.taskEvaluationHistory = storage;
-                this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
-            }
-        });
+        // handleEvent('currentTaskEvaluationStorage', storage => {
+        //     if (storage !== undefined) {
+        //         this.taskEvaluationHistory = storage;
+        //         this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
+        //     }
+        // });
 
-        handleEvent('currentScenarioEvaluationStorage', storage => {
-            if (storage !== undefined) {
-                this.scenarioEvaluationHistory = storage;
-                this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
-            }
-        });
+        // handleEvent('currentScenarioEvaluationStorage', storage => {
+        //     if (storage !== undefined) {
+        //         this.scenarioEvaluationHistory = storage;
+        //         this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
+        //     }
+        // });
 
         handleEvent('taskEvaluationResult', result => {
             this.setTaskEvaluationHistory(this.firstTask, result.goms, result.usabilitySmells);
@@ -132,26 +145,27 @@ export default {
         handleEvent('scenarioEvaluationResult', result => {
             dispatch('setTaskEvaluationStorage', result.taskEvaluationHistory);
             this.$store.commit('taskEvaluationHistory', result.taskEvaluationHistory);
-            this.setScenarioEvaluationHistory(result.gomsTimes, result.usabilitySmells);
+            this.taskEvaluationHistory = result.taskEvaluationHistory;
+            this.setScenarioEvaluationHistory(this.firstScenario, result.gomsTimes, result.usabilitySmells);
             this.$store.commit('evaluationReady', true);
         })
 
-        // handleEvent('taskComparisonValidity', validity => {
-        //     if (!validity) {
-        //         this.secondTask = '';
-        //         this.showError = true;
-        //         this.errorMessage = 'Die ausgewählten Aufgaben können nicht miteinander verglichen werden, da sie nicht auf der gleichen Seite beginnen und/oder nicht mit demselben Interaktionselement enden.';
-        //     }
-        // })
-
-        handleEvent('comparisonEvaluationResult', result => {
-            // this.setTaskEvaluationHistory(this.secondTask, {
-            //     gomsTime: result.goms.time,
-            //     convertedSteps: result.goms.convertedSteps
-            // },
-            // result.usabilitySmells);
-            this.setComparison(this.firstTask, result.goms, result.usabilitySmells);
+        handleEvent('comparisonTaskEvaluationResult', result => {
+            this.setTaskEvaluationHistory(this.secondTask, result.goms, result.usabilitySmells);
+            this.setTaskComparison(this.firstTask, result.goms, result.usabilitySmells);
         })
+
+        handleEvent('comparisonScenarioEvaluationResult', result => {
+            dispatch('setTaskEvaluationStorage', result.taskEvaluationHistory);
+            this.$store.commit('taskEvaluationHistory', result.taskEvaluationHistory);
+            this.taskEvaluationHistory = result.taskEvaluationHistory;
+            this.setScenarioComparison(this.firstScenario, result.gomsTimes, result.usabilitySmells);
+            this.setScenarioEvaluationHistory(this.secondScenario, result.gomsTimes, result.usabilitySmells);
+
+            const scenarioIndex = this.scenarios.findIndex((scenario) => scenario.scenarioname === this.firstScenario);
+            var scenario = this.scenarios[scenarioIndex];
+            dispatch('evaluateScenario', { scenario: scenario, tasks: this.tasks, history: this.taskEvaluationHistory });
+        });
     },
     methods: {
         setTasks() {
@@ -165,6 +179,20 @@ export default {
                 this.secondTasks.push({
                     label: task.taskname,
                     key: task.taskname,
+                })
+            })
+        },
+        setScenarios() {
+            this.firstScenarios = [{ label: '', key: '' }];
+            this.secondScenarios = [{ label: '', key: '' }];
+            this.scenarios.forEach(scenario => {
+                this.firstScenarios.push({
+                    label: scenario.scenarioname,
+                    key: scenario.scenarioname,
+                })
+                this.secondScenarios.push({
+                    label: scenario.scenarioname,
+                    key: scenario.scenarioname,
                 })
             })
         },
@@ -185,19 +213,26 @@ export default {
             dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
             this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
         },
-        setScenarioEvaluationHistory(gomsTimes, usabilitySmells) {
-            const index = this.scenarioEvaluationHistory.findIndex((history) => history.scenarioname === this.firstScenario);
+        setScenarioEvaluationHistory(scenarioname, gomsTimes, usabilitySmells) {
+            const index = this.scenarioEvaluationHistory.findIndex((history) => history.scenarioname === scenarioname);
             this.scenarioEvaluationHistory[index].evaluationRuns[0].gomsTimes = gomsTimes;
             this.scenarioEvaluationHistory[index].evaluationRuns[0].usabilitySmells = usabilitySmells;
             dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
             this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
         },
-        setComparison(taskname, gomsResult, usabilitySmellsResult) {
+        setTaskComparison(taskname, gomsResult, usabilitySmellsResult) {
             const index = this.taskEvaluationHistory.findIndex((history) => history.taskname === taskname);
             this.taskEvaluationHistory[index].evaluationRuns[0].comparison.goms = gomsResult;
             this.taskEvaluationHistory[index].evaluationRuns[0].comparison.usabilitySmells = usabilitySmellsResult;
             dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
             this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
+        },
+        setScenarioComparison(scenarioname, gomsTimesResult, usabilitySmellsResult) {
+            const index = this.scenarioEvaluationHistory.findIndex((history) => history.scenarioname === scenarioname);
+            this.scenarioEvaluationHistory[index].evaluationRuns[0].comparison.gomsTimes = gomsTimesResult;
+            this.scenarioEvaluationHistory[index].evaluationRuns[0].comparison.usabilitySmells = usabilitySmellsResult;
+            dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
+            this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
         },
         startEvaluation() {
             this.$store.commit('evaluationReady', false);
@@ -208,8 +243,6 @@ export default {
                 const taskIndex = this.tasks.findIndex((task) => task.taskname === this.firstTask);
                 if (evaluationIndex < 0) {
                     this.taskEvaluationHistory.push({
-                        id: uuidv4(),
-                        type: 'task',
                         taskname: this.firstTask,
                         color: this.tasks[taskIndex].color,
                         evaluationRuns: [
@@ -243,7 +276,32 @@ export default {
                 if (this.secondTask !== '') {
                     const indexSecond = this.tasks.findIndex((task) => task.taskname === this.secondTask);
                     var secondTask = this.tasks[indexSecond];
-                    dispatch('evaluateComparison', secondTask);
+
+                    const evaluationIndex = this.taskEvaluationHistory.findIndex((task) => task.taskname === this.secondTask);
+                    if (evaluationIndex < 0) {
+                        this.taskEvaluationHistory.push({
+                            taskname: this.secondTask,
+                            color: this.tasks[indexSecond].color,
+                            evaluationRuns: [
+                                {
+                                    timestamp: Date.now(),
+                                    steps: this.tasks[indexSecond].steps,
+                                    goms: null,
+                                    usabilitySmells: null,
+                                    comparison:  null
+                                }
+                            ]
+                        });
+                    } else {
+                        this.taskEvaluationHistory[evaluationIndex].evaluationRuns.unshift({
+                            timestamp: Date.now(),
+                            steps: this.tasks[indexSecond].steps,
+                            goms: null,
+                            usabilitySmells: null,
+                            comparison: null
+                        })
+                    }
+                    dispatch('evaluateTaskComparison', secondTask);
                 }
                 var task = this.tasks[taskIndex];
                 dispatch('evaluateTask', task);
@@ -252,8 +310,6 @@ export default {
                 const scenarioIndex = this.scenarios.findIndex((scenario) => scenario.scenarioname === this.firstScenario);
                 if (evaluationIndex < 0) {
                     this.scenarioEvaluationHistory.push({
-                        id: uuidv4(),
-                        type: 'scenario',
                         scenarioname: this.firstScenario,
                         evaluationRuns: [
                             {
@@ -261,6 +317,11 @@ export default {
                                 tasks: this.scenarios[scenarioIndex].tasks,
                                 gomsTimes: null,
                                 usabilitySmells: null,
+                                comparison: this.secondScenario !== '' ? {
+                                    scenarioname: this.secondScenario,
+                                    gomsTimes: null,
+                                    usabilitySmells: null,
+                                } : null
                             }
                         ]
                     })
@@ -270,10 +331,46 @@ export default {
                         tasks: this.scenarios[scenarioIndex].tasks,
                         gomsTimes: null,
                         usabilitySmells: null,
+                        comparison: this.secondScenario !== '' ? {
+                            scenarioname: this.secondScenario,
+                            gomsTimes: null,
+                            usabilitySmells: null,
+                        } : null
                     })
                 }
-                var scenario = this.scenarios[scenarioIndex];
-                dispatch('evaluateScenario', { scenario: scenario, tasks: this.tasks, history: this.taskEvaluationHistory });
+
+                if (this.secondScenario !== '') {
+                    const indexSecond = this.scenarios.findIndex((scenario) => scenario.scenarioname === this.secondScenario);
+                    var secondScenario = this.scenarios[indexSecond];
+                    const evaluationIndex = this.scenarioEvaluationHistory.findIndex((scenario) => scenario.scenarioname === this.secondScenario);
+                    if (evaluationIndex < 0) {
+                        this.scenarioEvaluationHistory.push({
+                            type: 'scenario',
+                            scenarioname: this.secondScenario,
+                            evaluationRuns: [
+                                {
+                                    timestamp: Date.now(),
+                                    tasks: this.scenarios[indexSecond].tasks,
+                                    gomsTimes: null,
+                                    usabilitySmells: null,
+                                    comparison: null
+                                }
+                            ]
+                        })
+                    } else {
+                        this.scenarioEvaluationHistory[evaluationIndex].evaluationRuns.unshift({
+                            timestamp: Date.now(),
+                            tasks: this.scenarios[scenarioIndex].tasks,
+                            gomsTimes: null,
+                            usabilitySmells: null,
+                            comparison: null
+                        })
+                    }
+                    dispatch('evaluateScenarioComparison', { scenario: secondScenario, tasks: this.tasks, history: this.taskEvaluationHistory });
+                } else {
+                    var scenario = this.scenarios[scenarioIndex];
+                    dispatch('evaluateScenario', { scenario: scenario, tasks: this.tasks, history: this.taskEvaluationHistory });
+                }
             }
         },
         closeError() {

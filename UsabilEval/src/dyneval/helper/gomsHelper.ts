@@ -1,5 +1,5 @@
 import { getNode } from "../../figmaAccess/fileContents";
-import { getCenterOfNode, getCenterOfNodeOnOverlay, getFrame, getReactions, getRelativeTransform, getWidth } from "../../figmaAccess/nodeProperties";
+import { getCenterOfNode, getFrame, getReactions, getRelativeTransform, getWidth } from "../../figmaAccess/nodeProperties";
 
 /**
  * This is a function to convert task steps to an array of steps containing operators.
@@ -37,11 +37,9 @@ export const convertToOperators = (task) => {
                 case 'P':
                     var pointingTime = 0;
                     if (i === 0) {
-                        pointingTime = calculateFittsLaw(null, null, steps[i].id);
-                    } else if (i === 1) {
-                        pointingTime = calculateFittsLaw(null, steps[i-1].id, steps[i].id);
+                        pointingTime = calculateFittsLaw(null, steps[i].id);
                     } else {
-                        pointingTime = calculateFittsLaw(steps[i-2].id, steps[i-1].id, steps[i].id);
+                        pointingTime = calculateFittsLaw(steps[i-1].id, steps[i].id);
                     }
                     operatorTimes[i].push({ operator: 'P', time: pointingTime });
                     break;
@@ -186,13 +184,12 @@ const placeMentallyPreparingOperator = (convertedSteps) => {
  * @param convertedSteps 
  * @returns time
  */
-export const calculateTime = (steps, convertedSteps, avgPointingTimeStorage, avgHomingNumStorage) => {
+export const calculateTime = (steps, convertedSteps) => {
     var pointingTimes = [];
-    var homingNums = [];
+    var homingNum = 0;
     var time = 0.0;
     for (let i = 0; i < convertedSteps.length; i++) {
         for (let j = 0; j < convertedSteps[i].length; j++) {
-            var homingNum = 0;
             switch(convertedSteps[i][j]) {
                 case 'H':
                     time += 0.4;
@@ -207,11 +204,9 @@ export const calculateTime = (steps, convertedSteps, avgPointingTimeStorage, avg
                 case 'P':
                     var pointingTime = 0;
                     if (i === 0) {
-                        pointingTime = calculateFittsLaw(null, null, steps[i].id);
-                    } else if (i === 1) {
-                        pointingTime = calculateFittsLaw(null, steps[i-1].id, steps[i].id);
+                        pointingTime = calculateFittsLaw(null, steps[i].id);
                     } else {
-                        pointingTime = calculateFittsLaw(steps[i-2].id, steps[i-1].id, steps[i].id);
+                        pointingTime = calculateFittsLaw(steps[i-1].id, steps[i].id);
                     }
                     pointingTimes.push(pointingTime);
                     time += pointingTime;
@@ -220,7 +215,6 @@ export const calculateTime = (steps, convertedSteps, avgPointingTimeStorage, avg
                     time += 0.2;
                     break;
             }
-            homingNums.push(homingNum);
         }
     }
     var pointingTimeSum = 0;
@@ -228,22 +222,8 @@ export const calculateTime = (steps, convertedSteps, avgPointingTimeStorage, avg
         pointingTimeSum += time;
     });
     var avgPointingTime = pointingTimeSum / pointingTimes.length;
-    var newAvgPointingTimeStorage = avgPointingTime;
-    if (avgPointingTimeStorage !== undefined) {
-        newAvgPointingTimeStorage = (avgPointingTimeStorage + avgPointingTime) / 2;
-    }
 
-    var homingNumSum = 0;
-    homingNums.forEach(num => {
-        homingNumSum += num;
-    })
-    var avgHomingNum = homingNumSum / steps.length;
-    var newAvgHomingNumStorage = avgHomingNum;
-    if (avgHomingNumStorage !== undefined) {
-        newAvgHomingNumStorage = (avgHomingNumStorage + avgHomingNum) / 2;
-    }
-
-    return { time: time, pointingTimes: avgPointingTime, homingNums: homingNums, avgPointingTimeStorage: newAvgPointingTimeStorage, avgHomingNumStorage: newAvgHomingNumStorage };
+    return { time: time, pointingTimes: pointingTimes, avgPointingTime: avgPointingTime, homingNum: homingNum };
 }
 
 /**
@@ -252,8 +232,7 @@ export const calculateTime = (steps, convertedSteps, avgPointingTimeStorage, avg
  * @param currentStepId 
  * @returns time
  */
-const calculateFittsLaw = (beforeLastStepId: number, lastStepId: number, currentStepId: number) => {
-    console.log(lastStepId, currentStepId);
+const calculateFittsLaw = (lastStepId: number, currentStepId: number) => {
     // two nodes > calculate fitts law between
     // a + b*log2(d/s + 1)
     var a = 0.05;
@@ -264,41 +243,15 @@ const calculateFittsLaw = (beforeLastStepId: number, lastStepId: number, current
     var lastCenter = null;
     if (lastStepId !== null) {
         var lastUIElement = getNode(lastStepId).parent.children[0];
-        if (beforeLastStepId !== null) {
-            var beforeLastUIElement = getNode(beforeLastStepId).parent.children[0];
-            var reactions = getReactions(beforeLastUIElement.id);
-            if (reactions.length > 0) {
-                reactions.forEach(reaction => {
-                    if (reaction.action.navigation === 'OVERLAY' && reaction.action.destinationId === getFrame(lastUIElement.id).id) {
-                        lastCenter = getCenterOfNodeOnOverlay(getRelativeTransform(beforeLastUIElement.id), reaction.action.overlayRelativePosition, lastUIElement.id);
-                    }
-                });
-            } else {
-                lastCenter = getCenterOfNode(lastUIElement.id);
-            }
-        } else {
-            lastCenter = getCenterOfNode(lastUIElement.id);
-        }
+        lastCenter = getCenterOfNode(lastUIElement.id);
     } else {
         lastCenter = { x: 0, y: 0 };
     }
-    console.log('last center', lastCenter);
 
     // get center of second
     // if second is on an overlay --> use overlayRelativePosition
     var currentUIElement = getNode(currentStepId).parent.children[0];
     var currentCenter = getCenterOfNode(currentUIElement.id);
-    if (lastStepId !== null) {
-        var reactions = getReactions(lastUIElement.id);
-        if (reactions.length > 0) {
-            reactions.forEach(reaction => {
-                if (reaction.action.navigation === 'OVERLAY' && reaction.action.destinationId === getFrame(currentUIElement.id).id) {
-                    currentCenter = getCenterOfNodeOnOverlay(getRelativeTransform(lastUIElement.id), reaction.action.overlayRelativePosition, currentUIElement.id);
-                }
-            });
-        }
-    }
-    console.log('outside', lastStepId, currentCenter);
 
     // calculate x and y for pythagoras
     var x = 0;

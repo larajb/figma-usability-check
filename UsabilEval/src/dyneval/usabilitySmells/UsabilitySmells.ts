@@ -16,8 +16,8 @@ export const usabilitySmellsArray = [
     },
     {
         title: 'Long P',
-        description: 'Das Zurücklegen eines Weges zwischen zwei Interaktionselementen dauert länger als der allgemeine Durchschnitt.',
-        refactoring: 'Es könnte helfen, aufeinander folgende Elemente in Bezug auf die x- und y-Position näher aneinander zu positionieren.',
+        description: 'Das Anvisieren eines Interaktionselements dauert verhältnismäßig lange.',
+        refactoring: 'Es könnte helfen, aufeinander folgende Elemente in Bezug auf die x- und y-Position näher aneinander zu positionieren oder das Interaktionselement zu vergrößern.',
     },
     {
         title: 'Many H',
