@@ -9,7 +9,7 @@
             <button class="button button--secondary" @click="addTask">Erstellen</button>
         </div>
         <div class="type--pos-medium-normal">
-            <p>Wähle im Entwurf ein UI-Element und in der folgenden Auswahl einen Interaktionstypen und füge einen neuen Bearbeitungsschritt zu der oben angegebenen Aufgabe hinzu.</p>
+            <p>Wähle ein UI-Element und einen Interaktionstypen und füge einen neuen Bearbeitungsschritt zu der oben angegebenen Aufgabe hinzu.</p>
             <div class="task-definition__input">
                 <div class="tooltip--bottom" style="width: 100%">
                     <Select id="type-select" :items="[
@@ -418,7 +418,7 @@ export default {
 	}
 
     .scrollable-task-list {
-        max-height: 50%;
+        max-height: 55%;
         overflow-y: scroll;
     }
 

@@ -1,24 +1,25 @@
 <template>
     <div v-show="content !== undefined">
-        <p class="type--pos-medium-normal">Vergleich: {{ content.taskname }}, {{ content.evaluationRuns[0].comparison.taskname }}</p>
+        <p class="type--pos-medium-bold">Vergleich: {{ content.taskname }}, {{ content.evaluationRuns[0].comparison.taskname }}</p>
+        <p class="type--pos-small-normal">Ein Klick auf eine Aufgabe öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
         <div id="goms" class="goms-result" v-if="content.evaluationRuns[0].goms !== null">
             <bar-chart class="task-chart" :chart-data="chartData" :options="chartOptions" @clicked="handleClick($event)" />
             <table v-if="taskToShow === ''">
                 <tr>
-                    <td><Icon icon="timer" /></td>
-                    <td><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
+                    <td align="top"><Icon icon="timer" /></td>
+                    <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td>
+                    <td align="top"></td>
+                    <td align="top">
                         <table class="table type--pos-medium-normal" style="margin-left: -11px">
                             <tr>
-                                <td>{{ content.taskname }}:</td>
-                                <td>{{ content.evaluationRuns[0].goms.gomsTime.toFixed(2) }} s</td>
+                                <td align="top">{{ content.taskname }}:</td>
+                                <td align="top">{{ content.evaluationRuns[0].goms.gomsTime.toFixed(2) }} s</td>
                             </tr>
                             <tr v-if="content.evaluationRuns[0].comparison !== null">
-                                <td>{{ content.evaluationRuns[0].comparison.taskname }}:</td>
-                                <td>{{ content.evaluationRuns[0].comparison.goms.gomsTime.toFixed(2) }} s</td>
+                                <td align="top">{{ content.evaluationRuns[0].comparison.taskname }}:</td>
+                                <td align="top">{{ content.evaluationRuns[0].comparison.goms.gomsTime.toFixed(2) }} s</td>
                             </tr>
                         </table>
                     </td>

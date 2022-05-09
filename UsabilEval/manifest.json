@@ -10,8 +10,8 @@
 	"editorType": ["figma"],
 	"menu": [
 		{"name": "Startseite", "command": "start"},
-		{"name": "Globale Evaluation", "command": "stateval"},
-		{"name": "Lokale Evaluation", "command": "dyneval"}
+		{"name": "Metriken-Evaluation", "command": "stateval"},
+		{"name": "Aufgaben-Evaluation", "command": "dyneval"}
 	],
 	"id": "1094202341925042367"
 }

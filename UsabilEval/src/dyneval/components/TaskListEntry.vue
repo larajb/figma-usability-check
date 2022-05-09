@@ -28,12 +28,18 @@
         </div>
         <div id="task-list" v-show="switchValue === true">
             <div v-for="(step, index) in steps" :key="index" :id="'step-' + step" class="task-step">
-                <IconButton @click="addTaskStep(index)" style="margin-left: 40px" :icon="'plus'" />
+                <IconButton @click="addTaskStep(index)" style="margin-left: 55px" :icon="'plus'" />
                 <div class="task-step-content">
                     <div style="display: flex">
-                        <div style="display: none">
-                            <IconButton @click="moveUp(taskname, step.id)" :icon="'caret-up'" :class="{ 'disabled-button': index === 0 }" />
-                            <IconButton @click="moveDown(taskname, step.id)" :icon="'caret-down'" :class="{ 'disabled-button': index === steps.length-1 }" />
+                        <div>
+                            <!-- <IconButton @click="moveUp(taskname, step.id)" :icon="'caret-up'" :class="{ 'disabled-button': index === 0 }" style="height: 20px" />
+                            <IconButton @click="moveDown(taskname, step.id)" :icon="'caret-down'" :class="{ 'disabled-button': index === steps.length-1 }" style="height: 20px" /> -->
+                            <div class="icon-button" :class="{ 'disabled-button': index === 0 }" style="height: 20px" @click="moveUp(taskname, step.id)">
+                                <div class="icon icon--caret-up"></div>
+                            </div>
+                            <div class="icon-button" :class="{ 'disabled-button': index === steps.length-1 }" style="height: 20px" @click="moveDown(taskname, step.id)">
+                                <div class="icon icon--caret-down"></div>
+                            </div>
                         </div>
                         <div style="display: flex; margin-left: 20px">
                             <div class="numberCircle" :style="{ border: `3px solid ${color}`, color: color }">{{ index + 1 }}</div>

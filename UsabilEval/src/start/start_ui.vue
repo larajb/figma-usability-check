@@ -1,12 +1,12 @@
 <template>
     <div class="start-ui">
         <p class="type--pos-large-bold">Hallo!</p>
-        <p class="type--pos-medium-normal">Mit diesem Plugin kannst du automatische Usability-Evaluationen durchführen und Gestaltungsalternativen vergleichen.<p>
+        <p class="type--pos-medium-normal">Mit diesem Plugin kannst du automatische Usability-Evaluationen durchführen. Du kannst vordefinierte Metriken nutzen oder die Evaluation anhand von selbst definierten Interaktionsfolgen durchführen lassen.<p>
         <img src="../img/usability.jpg" width="300" />
-        <p class="type--pos-medium-normal">Möchtest du den groben Funktionsumfang deines Entwurfes evaluieren?</p>
-        <button class="button button--primary" @click="statEval">Horizontale Evaluation</button>
-        <p class="type--pos-medium-normal">Möchtest du einzelne Bereiche des Entwurfs mit ausgeprägter Funktionstiefe evaluieren?</p>
-        <button class="button button--primary" @click="dynEval">Vertikale Evaluation</button>
+        <p class="type--pos-medium-normal">Möchtest du die Evaluation mit Metriken durchführen?</p>
+        <button class="button button--primary" @click="statEval">Metriken-Evaluation</button>
+        <p class="type--pos-medium-normal">Möchtest du eigene Funktionsabläufe erstellen und evaluieren?</p>
+        <button class="button button--primary" @click="dynEval">Aufgaben-Evaluation</button>
     </div>
 </template>
 
