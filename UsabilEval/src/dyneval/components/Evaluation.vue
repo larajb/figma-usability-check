@@ -36,7 +36,7 @@
                 <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Szenario</span>
             </div>
             <p class="type--pos-medium-normal">
-                Wähle ein weiterer Szenario zum Vergleich mit dem zuvor ausgewählten Szenario. Falls erforderlich definiere es zuerst. (optional)
+                Wähle ein weiteres Szenario zum Vergleich mit dem zuvor ausgewählten Szenario. Falls erforderlich definiere es zuerst. (optional)
             </p>
             <div class="tooltip--bottom" style="width: 100%">
                 <Select id="second-scenario-select" :items="secondScenarios" v-model="secondScenario" />

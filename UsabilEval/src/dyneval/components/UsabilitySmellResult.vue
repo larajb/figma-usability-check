@@ -7,19 +7,19 @@
         <table v-show="showSmell" class="table">
             <tr class="type--pos-medium-normal" v-if="smell.steps.length === 1">
                 <td valign="top">Gefunden in</td>
-                <td>Schritt {{ smell.steps[0] }} ({{ getTimeFromTo(content.evaluationRuns[0].goms.stepsTimes, smell.steps[0]) }})</td>
+                <td align="top">Schritt {{ smell.steps[0] }} ({{ getTimeFromTo(content.evaluationRuns[0].goms.stepsTimes, smell.steps[0]) }})</td>
             </tr>
             <tr class="type--pos-medium-normal" v-else-if="smell.steps.length > 1">
                 <td valign="top">Gefunden in</td>
-                <td>Schritten {{ getAsString(content.evaluationRuns[0].goms.stepsTimes, smell.steps) }}</td>
+                <td align="top">Schritten {{ getAsString(content.evaluationRuns[0].goms.stepsTimes, smell.steps) }}</td>
             </tr>
             <tr class="type--pos-medium-normal">
                 <td valign="top">Erscheinung</td>
-                <td>{{ getDescription(smell.title) }}</td>
+                <td align="top">{{ getDescription(smell.title) }}</td>
             </tr>
             <tr class="type--pos-medium-normal">
                 <td valign="top">Behebung</td>
-                <td>{{ getRefactoring(smell.title) }}</td>
+                <td align="top">{{ getRefactoring(smell.title) }}</td>
             </tr>
         </table>
     </div>

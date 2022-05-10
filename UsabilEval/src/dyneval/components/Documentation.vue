@@ -105,24 +105,24 @@
             </div>
             <table v-if="showAbbreviations" class="table" style="margin-left: 20px">
                 <tr>
-                    <td><p class="type--pos-small-normal">H</p></td>
-                    <td><p class="type--pos-small-normal">Homing: "Homing" bezeichnet bei der Interaktion mit einer Benutzungsoberfläche den Wechsel zwischen der Maus und der Tastatur.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">H</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Homing: "Homing" bezeichnet bei der Interaktion mit einer Benutzungsoberfläche den Wechsel zwischen der Maus und der Tastatur.</p></td>
                 </tr>
                 <tr>
-                    <td><p class="type--pos-small-normal">K</p></td>
-                    <td><p class="type--pos-small-normal">Keystroke: "Keystroke" bezeichnet sowohl Tasten- als auch Mausklicks.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">K</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Keystroke: "Keystroke" bezeichnet sowohl Tasten- als auch Mausklicks.</p></td>
                 </tr>
                 <tr>
-                    <td><p class="type--pos-small-normal">M</p></td>
-                    <td><p class="type--pos-small-normal">Mentally Prepare: "Mentally Prepare" wird bei der Interaktion mit einer Benutzungsoberfläche dort eingefügt, wo ein/e Nutzer*in sich mental auf die folgenden Tätigkeiten vorbereiten muss.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">M</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Mentally Prepare: "Mentally Prepare" wird bei der Interaktion mit einer Benutzungsoberfläche dort eingefügt, wo ein/e Nutzer*in sich mental auf die folgenden Tätigkeiten vorbereiten muss.</p></td>
                 </tr>
                 <tr>
-                    <td><p class="type--pos-small-normal">P</p></td>
-                    <td><p class="type--pos-small-normal">Pointing: "Pointing" bezeichnet den Prozess des Anvisierens eines Interaktionselement. Die Dauer ist dabei abhängig von der Größe des Zielelements und der aktuellen Entfernung des Mauscursors vom Ziel.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">P</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Pointing: "Pointing" bezeichnet den Prozess des Anvisierens eines Interaktionselement. Die Dauer ist dabei abhängig von der Größe des Zielelements und der aktuellen Entfernung des Mauscursors vom Ziel.</p></td>
                 </tr>
                 <tr>
-                    <td><p class="type--pos-small-normal">R</p></td>
-                    <td><p class="type--pos-small-normal">Responding: "Responding" bezeichnet Momente, in denen auf eine Rückmeldung des Systems gewartet werden muss. Hier werden damit vor allem Seitenwechsel markiert.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">R</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Responding: "Responding" bezeichnet Momente, in denen auf eine Rückmeldung des Systems gewartet werden muss. Hier werden damit vor allem Seitenwechsel markiert.</p></td>
                 </tr>
             </table>
         </div>

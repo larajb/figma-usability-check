@@ -1,25 +1,26 @@
 <template>
     <!-- <div v-show="content !== undefined"> -->
     <div>
-        <p class="type--pos-medium-normal">Vergleich: {{ content.scenarioname }}, {{ content.evaluationRuns[0].comparison.scenarioname }}</p>
+        <p class="type--pos-medium-bold">Vergleich: {{ content.scenarioname }}, {{ content.evaluationRuns[0].comparison.scenarioname }}</p>
+        <p class="type--pos-small-normal">Ein Klick auf ein Szenario öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
         <div id="tasks" v-if="content.evaluationRuns[0].gomsTimes !== null">
             <bar-chart class="scenario-chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
             <table v-if="scenarioToShow === ''" class="goms-result">
                 <tr>
-                    <td><Icon icon="timer" /></td>
-                    <td><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
+                    <td align="top"><Icon icon="timer" /></td>
+                    <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td>
+                    <td align="top"></td>
+                    <td align="top">
                         <table class="table type--pos-medium-normal" style="margin-left: -11px">
                             <tr>
-                                <td>{{ content.scenarioname }}:</td>
-                                <td>{{ sumUpTimes(content.evaluationRuns[0].gomsTimes) }} s</td>
+                                <td align="top">{{ content.scenarioname }}:</td>
+                                <td align="top">{{ sumUpTimes(content.evaluationRuns[0].gomsTimes) }} s</td>
                             </tr>
                             <tr v-if="content.evaluationRuns[0].comparison !== null">
-                                <td>{{ content.evaluationRuns[0].comparison.scenarioname }}:</td>
-                                <td>{{ sumUpTimes(content.evaluationRuns[0].comparison.gomsTimes) }} s</td>
+                                <td align="top">{{ content.evaluationRuns[0].comparison.scenarioname }}:</td>
+                                <td align="top">{{ sumUpTimes(content.evaluationRuns[0].comparison.gomsTimes) }} s</td>
                             </tr>
                         </table>
                     </td>

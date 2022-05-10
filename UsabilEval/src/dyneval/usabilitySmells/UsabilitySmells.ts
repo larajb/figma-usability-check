@@ -21,7 +21,7 @@ export const usabilitySmellsArray = [
     },
     {
         title: 'Many H',
-        description: 'Bei der Interaktion mit einer Maus und einer Tastatur sind verhältnismäßig viele Wechsel pro Schritt notwendig.',
+        description: 'Bei der Interaktion mit einer Maus und einer Tastatur sind verhältnismäßig viele Wechsel notwendig.',
         refactoring: 'Ggf. könnte es helfen, die Reihenfolge der Schritte zu ändern oder mehrere Schritte zusammenzufassen. In der Implementierung könnte eine Tabulatorsteuerung helfen.',
     }
 ];

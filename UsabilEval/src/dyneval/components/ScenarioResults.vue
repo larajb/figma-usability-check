@@ -1,7 +1,7 @@
 <template>
     <div v-show="content !== undefined">
-        <p class="type--pos-medium-normal">{{ content.scenarioname }}</p>
-        <p class="type--pos-small-normal">Mit einem Klick auf einen Aufgabenbalken wird eine Detailansicht zu der entsprechenden Aufgabe angezeigt. Um in die Detailansicht des Szenarios zurückzukommen, muss außerhalb der Balken in den Graphen geklickt werden.</p>
+        <p class="type--pos-medium-bold">{{ content.scenarioname }}</p>
+        <p class="type--pos-small-normal">Ein Klick auf eine Aufgabe öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
         <div id="tasks" v-if="content.evaluationRuns[0].gomsTimes !== null">
             <bar-chart class="scenario-chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
         </div>
@@ -9,23 +9,23 @@
             <div id="goms" class="goms-result" v-if="content.evaluationRuns[0].gomsTimes !== null">
                 <table>
                     <tr>
-                        <td><Icon icon="timer" /></td>
-                        <td><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
+                        <td align="top"><Icon icon="timer" /></td>
+                        <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td>
+                        <td align="top"></td>
+                        <td align="top">
                             <table class="table type--pos-medium-normal" style="margin-left: -11px">
                                 <tr>
-                                    <td>{{ content.scenarioname }}:</td>
-                                    <td>{{ sumUpTimes(content.evaluationRuns[0].gomsTimes) }} s</td>
+                                    <td align="top">{{ content.scenarioname }}:</td>
+                                    <td align="top">{{ sumUpTimes(content.evaluationRuns[0].gomsTimes) }} s</td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td>
+                        <td align="top"></td>
+                        <td align="top">
                             <div v-if="content.evaluationRuns.length > 1" style="display: flex">
                                 <p class="type--pos-medium-normal">Historie</p>
                                 <IconButton @click="showHistory = !showHistory" :icon="showHistory ? 'caret-down' : 'caret-right'" />
@@ -33,8 +33,8 @@
                             <div v-show="showHistory">
                                 <table class="table type--pos-medium-normal">
                                     <tr v-for="(run, index) in content.evaluationRuns" :key="index">
-                                        <td>{{ formatDate(run.timestamp) }}:</td>
-                                        <td>{{ sumUpTimes(run.gomsTimes) }} s</td>
+                                        <td align="top">{{ formatDate(run.timestamp) }}:</td>
+                                        <td align="top">{{ sumUpTimes(run.gomsTimes) }} s</td>
                                     </tr>
                                 </table>
                             </div>
@@ -45,12 +45,12 @@
             <div id="smells" class="smells-result-found" v-if="checkSmellPresence(content.evaluationRuns[0].usabilitySmells)">
                 <table>
                     <tr>
-                        <td><Icon icon="warning" /></td>
-                        <td><p class="type--pos-medium-bold">Erweitert für {{ content.scenarioname }}</p></td>
+                        <td align="top"><Icon icon="warning" /></td>
+                        <td align="top"><p class="type--pos-medium-bold">Erweitert für {{ content.scenarioname }}</p></td>
                     </tr>
                     <tr v-for="(smell, index) in content.evaluationRuns[0].usabilitySmells" :key="index">
-                        <td></td>
-                        <td>
+                        <td align="top"></td>
+                        <td align="top">
                             <div style="display: flex">
                                 <p class="type--pos-medium-normal">{{ smell.title }}</p>
                                 <IconButton @click="showSmell = !showSmell" :icon="showSmell ? 'caret-down' : 'caret-right'" />
@@ -58,19 +58,19 @@
                             <table v-show="showSmell" class="table">
                                 <tr class="type--pos-medium-normal" v-if="smell.steps.length === 1">
                                     <td valign="top">Gefunden in</td>
-                                    <td>Übergang {{ smell.steps[0] }}</td>
+                                    <td align="top">Übergang {{ smell.steps[0] }}</td>
                                 </tr>
                                 <tr class="type--pos-medium-normal" v-if="smell.steps.length > 1">
                                     <td valign="top">Gefunden in</td>
-                                    <td>Übergängen {{ getAsString(smell.steps[0]) }}</td>
+                                    <td align="top">Übergängen {{ getAsString(smell.steps[0]) }}</td>
                                 </tr>
                                 <tr class="type--pos-medium-normal">
                                     <td valign="top">Erscheinung</td>
-                                    <td>{{ getDescription(smell.title) }}</td>
+                                    <td align="top">{{ getDescription(smell.title) }}</td>
                                 </tr>
                                 <tr class="type--pos-medium-normal">
                                     <td valign="top">Behebung</td>
-                                    <td>{{ getRefactoring(smell.title) }}</td>
+                                    <td align="top">{{ getRefactoring(smell.title) }}</td>
                                 </tr>
                             </table>
                         </td>
@@ -80,10 +80,10 @@
             <div v-else class="smells-result-not-found">
                 <table>
                     <tr>
-                        <td>
+                        <td align="top">
                             <Icon icon="smiley" />
                         </td>
-                        <td>
+                        <td align="top">
                             <p class="type--pos-medium-normal">Im Szenario wurden keine Hinweismuster auf Usability-Probleme gefunden.</p>
                         </td>
                     </tr>

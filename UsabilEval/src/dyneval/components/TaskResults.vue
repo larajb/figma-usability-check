@@ -8,23 +8,23 @@
             <bar-chart class="task-chart" :chart-data="chartData" :options="chartOptions" />
             <table>
                 <tr>
-                    <td><Icon icon="timer" /></td>
-                    <td><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
+                    <td align="top"><Icon icon="timer" /></td>
+                    <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td>
+                    <td align="top"></td>
+                    <td align="top">
                         <table class="table type--pos-medium-normal" style="margin-left: -11px">
                             <tr>
-                                <td>{{ content.taskname }}:</td>
-                                <td>{{ content.evaluationRuns[0].goms.gomsTime.toFixed(2) }} s</td>
+                                <td align="top">{{ content.taskname }}:</td>
+                                <td align="top">{{ content.evaluationRuns[0].goms.gomsTime.toFixed(2) }} s</td>
                             </tr>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td>
+                    <td align="top"></td>
+                    <td align="top">
                         <div v-if="content.evaluationRuns.length > 1" style="display: flex">
                             <p class="type--pos-medium-normal">Historie</p>
                             <IconButton @click="showHistory = !showHistory" :icon="showHistory ? 'caret-down' : 'caret-right'" />
@@ -32,8 +32,8 @@
                         <div v-show="showHistory">
                             <table class="table type--pos-medium-normal">
                                 <tr v-for="(run, index) in content.evaluationRuns" :key="index">
-                                    <td>{{ formatDate(run.timestamp) }}:</td>
-                                    <td>{{ run.goms.gomsTime.toFixed(2) }} s</td>
+                                    <td align="top">{{ formatDate(run.timestamp) }}:</td>
+                                    <td align="top">{{ run.goms.gomsTime.toFixed(2) }} s</td>
                                 </tr>
                             </table>
                         </div>
@@ -44,12 +44,12 @@
         <div id="smells" class="smells-result-found" v-if="checkSmellPresence(content.evaluationRuns[0].usabilitySmells)">
             <table>
                 <tr>
-                    <td><Icon icon="warning" /></td>
-                    <td><p class="type--pos-medium-bold">Erweitert für {{ content.taskname }}</p></td>
+                    <td align="top"><Icon icon="warning" /></td>
+                    <td align="top"><p class="type--pos-medium-bold">Erweitert für {{ content.taskname }}</p></td>
                 </tr>
                 <tr v-for="(smell, index) in content.evaluationRuns[0].usabilitySmells" :key="index">
-                    <td></td>
-                    <td>
+                    <td align="top"></td>
+                    <td align="top">
                         <usability-smell-result :smell="smell" />
                     </td>
                 </tr>
@@ -58,10 +58,10 @@
         <div v-else class="smells-result-not-found">
             <table>
                 <tr>
-                    <td>
+                    <td align="top">
                         <Icon icon="smiley" />
                     </td>
-                    <td>
+                    <td align="top">
                         <p class="type--pos-medium-normal">In der Aufgabe wurden keine Hinweismuster auf Usability-Probleme gefunden.</p>
                     </td>
                 </tr>
