@@ -154,8 +154,8 @@ export default {
                 this.showError = true;
                 this.errorMessage = 'Bitte wähle eine Startseite aus.';
             } else {
-                // dispatch('evaluate', { selectedMetrics: this.selectedMetrics, selectedFrames: this.selectedFrames, homepage: this.homepageSelection });
                 var containsMultipleFrameMetrics = this.checkForMultipleFrameMetrics();
+                console.log(containsMultipleFrameMetrics, this.selectedFrames);
                 if (containsMultipleFrameMetrics === true && this.selectedFrames.length <= 1) {
                     this.showError = true;
                     this.errorMessage = 'Du hast Metriken ausgewählt, die mehr als einen Frame zur Evaluation benötigen. Bitte wähle mehrere Frames aus.';
@@ -165,15 +165,16 @@ export default {
             }
         },
         checkForMultipleFrameMetrics() {
+            var multipleFrames = false;
             this.selectedMetrics.forEach(metric => {
                 var foundMetric = this.metrics.find((el) => el.title === metric);
                 if (foundMetric !== undefined) {
                     if (foundMetric.multipleFrames) {
-                        return true;
+                        multipleFrames = true;
                     }
                 }
             });
-            return false;
+            return multipleFrames;
         },
         closeError() {
             this.showError = false;

@@ -95,7 +95,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['tasks', 'scenarios']),
+        ...mapState(['tasks', 'scenarios', 'taskToEdit']),
     },
     data() {
         return {
@@ -109,7 +109,16 @@ export default {
     },
     watch: {
         switchValue() {
-            this.$emit('edit', { value: this.switchValue, taskname: this.taskname });
+            if (this.switchValue === true && this.taskToEdit !== this.taskname) {
+                this.$store.commit('taskToEdit', this.taskname);
+            } else if (this.switchValue === false && this.taskToEdit === this.taskname) {
+                this.$store.commit('taskToEdit', '');
+            }
+        },
+        taskToEdit() {
+            if (this.taskToEdit !== this.taskname) {
+                this.switchValue = false;
+            }
         },
         color() {
             this.myStyle.backgroundColor = this.color;

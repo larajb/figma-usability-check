@@ -10,8 +10,8 @@ export const metricsArray = [
     {
         title: 'Schriftkonsistenz',
         description: 'Die Schriftkonsistenz umfasst den Prozentsatz der vordefinierten Schriftformate im Verhältnis zur Gesamtzahl der verwendeten Schriftformate. Ein Schriftformat kann die Schriftfamilie, die Größe, den Stil, die Farbe und andere Schriftmerkmale wie den Zeichenabstand umfassen. Es sollten nur (einige wenige) vordefinierte Schriftformate verwendet werden. Zurzeit können lediglich lokale Styles (innerhalb dieses Entwurfs) zur Evaluation herangezogen werden.',
-        resultSentenceSingle: 'Ein Schriftformat, das im Entwurf verwendet wird, gehört nicht zu den vordefinierten Farben.',
-        resultSentenceMultiple: 'Einige Schriftformate, die im Entwurf verwendet werden, gehören nicht zu den vordefinierten Farben.',
+        resultSentenceSingle: 'Ein Schriftformat, das im Entwurf verwendet wird, gehört nicht zu den vordefinierten Schriftformaten.',
+        resultSentenceMultiple: 'Einige Schriftformate, die im Entwurf verwendet werden, gehören nicht zu den vordefinierten Schriftformaten.',
         thresholds: { green: { min: 100, max: 100 }, yellow: { min: 50, max: 99 }, red: { min: 0, max: 49 } },
         multipleFrames: false,
     },

@@ -14,6 +14,7 @@ export default new Vuex.Store({
         currentScenarioname: '',
         currentPage: 'TaskDefinition',
         evaluationReady: false,
+        taskToEdit: '',
     },
     getters: {
         currentTaskEvaluation(state) {
@@ -52,6 +53,9 @@ export default new Vuex.Store({
         },
         evaluationReady(state, isReady) {
             state.evaluationReady = isReady;
+        },
+        taskToEdit(state, taskname) {
+            state.taskToEdit = taskname;
         },
     },
 })

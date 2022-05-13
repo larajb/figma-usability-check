@@ -19,7 +19,7 @@
                         ]" v-model="typeSelection" />
                     <span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Art des Interaktionselements</span>
                 </div>
-                <button class="button button--secondary" @click="addTaskStep">Hinzufügen</button>
+                <button class="button button--secondary" @click="addTaskStep(null)">Hinzufügen</button>
             </div>
             <div class="tooltip--bottom" style="width: 100%">
                 <input v-show="typeSelection === 'input'" id="input-example" class="input" type="text" placeholder="Beispiel Eingabe" v-model="exampleInput">
@@ -37,7 +37,6 @@
                 @deletedStep="deletedStep($event)"
                 @moveUp="moveStepUp($event)"
                 @moveDown="moveStepDown($event)"
-                @edit="setEditMode($event)"
                 @warning="showWarning($event)" />
         </div>
     </div>
@@ -45,6 +44,7 @@
 
 <script>
 import { dispatch, handleEvent } from '../../uiMessageHandler';
+import { mapState } from 'vuex';
 
 import TaskListEntry from './TaskListEntry.vue';
 import { Select, IconButton } from 'figma-plugin-ds-vue';
@@ -65,15 +65,21 @@ export default {
             showError: false,
             errorMessage: '',
             alreadySet: false,
-            editMode: false,
             index: null,
         }
+    },
+    computed: {
+        ...mapState(['taskToEdit']),
     },
     watch: {
         typeSelection() {
             if (this.typeSelection === 'input') {
                 dispatch('checkInputExample');
             }
+        },
+        taskToEdit() {
+            console.log('task to edit', this.taskToEdit);
+            this.tasknameInput = this.taskToEdit;
         },
     },
     mounted() {
@@ -90,34 +96,42 @@ export default {
             this.addTaskStepToScreen(step);
 		});
 
-        handleEvent('selectionChecked', isNotAnnotationGroup => {
-            if (isNotAnnotationGroup) {
-                switch(this.typeSelection) {
-                    case 'clickElement':
-                        dispatch('checkButtonValidity');
-                        break;
-                    case 'input':
-                        if (this.exampleInput !== '') {
-                            dispatch('checkInputValidity', this.exampleInput);
-                        } else {
-                            this.showError = true;
-                            this.errorMessage = 'Bitte trage ein Beispiel für die Eingabe ein.';
-                        }
-                        break;
-                    case 'link':
-                        dispatch('checkLinkValidity');
-                        break;
+        handleEvent('selectionChecked', selected => {
+            if (selected === 'element') {
+                if (this.typeSelection === '') {
+                    this.showError = true;
+                    this.errorMessage = 'Bitte wähle einen Interaktionstypen aus.'
+                } else {
+                    switch(this.typeSelection) {
+                        case 'clickElement':
+                            dispatch('checkButtonValidity');
+                            break;
+                        case 'input':
+                            if (this.exampleInput !== '') {
+                                dispatch('checkInputValidity', this.exampleInput);
+                            } else {
+                                this.showError = true;
+                                this.errorMessage = 'Bitte trage ein Beispiel für die Eingabe ein.';
+                            }
+                            break;
+                        case 'link':
+                            dispatch('checkLinkValidity');
+                            break;
+                    }
                 }
-            } else {
+            } else if (selected === 'annotation') {
                 this.showError = true;
                 this.errorMessage = 'Du scheinst die Gruppierung von Element und Annotation gewählt zu haben. Bitte wähle nur das Interaktionselement aus.'
+            } else if (selected === null) {
+                this.showError = true;
+                this.errorMessage = 'Bitte wähle ein Interaktionselement aus.'
             }
         });
 
         handleEvent('buttonValidity', validity => {
             if (!validity) {
                 this.showError = true;
-                this.errorMessage = 'Ein Klickelement sollte im Idealfall 44x44 px groß sein.'
+                this.errorMessage = 'Ein Klickelement sollte im Idealfall min. 44x44 px groß sein.'
             }
             this.addValidTaskStep();
         });
@@ -137,6 +151,7 @@ export default {
         handleEvent('linkValidity', validity => {
             if (!validity) {
                 this.showError = true;
+                this.errorMessage = 'Ein Textlink sollte nicht über mehrere Zeilen gehen. Ein grafischer Link sollte im Idealfall min. 44x44 px groß sein.'
             }
             this.addValidTaskStep();
         });
@@ -158,7 +173,8 @@ export default {
                 this.errorMessage = 'Bitte wähle einen Namen für die Aufgabe.';
             }
 		},
-        addTaskStep() {
+        addTaskStep(index) {
+            this.index = index;
             if (this.tasknameInput !== '') {
                 dispatch('checkSelection');
             } else {
@@ -168,9 +184,8 @@ export default {
         },
         addTaskStepAtIndex(index) {
             if (index !== null) {
-                this.index = index;
+                this.addTaskStep(index);
             }
-            this.addTaskStep();
         },
         addValidTaskStep() {
             const taskIndex = this.tasks.findIndex((task) => task.taskname === this.tasknameInput);
@@ -368,14 +383,14 @@ export default {
             this.showError = false;
             this.errorMessage = '';
         },
-        setEditMode(args) {
-            this.editMode = args.value;
-            if (args.value === true) {
-                this.tasknameInput = args.taskname;
-            } else {
-                this.tasknameInput = '';
-            }
-        },
+        // setEditMode(args) {
+        //     this.editMode = args.value;
+        //     if (args.value === true) {
+        //         this.tasknameInput = args.taskname;
+        //     } else {
+        //         this.tasknameInput = '';
+        //     }
+        // },
         showWarning(warning) {
             this.showError = true;
             this.errorMessage = warning;

@@ -65,8 +65,8 @@ export const dynevalView = () => {
      */
 
     handleEvent('checkSelection', async () => {
-        var isNotAnnotationGroup = checkForAnnotationGroup();
-        dispatch('selectionChecked', isNotAnnotationGroup);
+        var selected = checkForAnnotationGroup();
+        dispatch('selectionChecked', selected);
     });
 
     handleEvent('checkStepValidityBefore', async (args) => {

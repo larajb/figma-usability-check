@@ -7,10 +7,13 @@ import { getHeight, getWidth, getParent, getType, getFrame } from "../../figmaAc
  */
 export const checkForAnnotationGroup = () => {
     const selection = getCurrentSelection();
+    var selected = null;
     if (selection !== null && selection.name.endsWith('Annotation') === false) {
-        return true;
+        selected = 'element';
+    } else if (selection !== null && selection.name.endsWith('Annotation') === true) {
+        selected = 'annotation';
     }
-    return false;
+    return selected;
 }
 
 /**
