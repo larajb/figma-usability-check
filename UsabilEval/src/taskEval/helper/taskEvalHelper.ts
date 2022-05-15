@@ -1,6 +1,6 @@
 import { addAnnotationToFile, getCurrentSelection } from "../../figmaAccess/fileContents";
 import { createEllipseNode, createGroupNode, createTextNode } from "../../figmaAccess/nodeCreator";
-import { getHeight, getParent, getRelativeTransform, getType, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
+import { getHeight, getParent, getRelativeTransform, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
 import { checkInputExample } from "./validityHelper";
 
 /**
@@ -98,7 +98,7 @@ export const deleteStepAnnotation = (step, followingSteps) => {
     stepAnnotation.remove();
     if (annotationInput !== '' && parent.children.length === 2) {
         for (let i = 0; i < parent.children.length; i++) {
-            if (getType(parent.children[i].id) === 'TEXT' && parent.children[i].characters === annotationInput) {
+            if (parent.children[i].type === 'TEXT' && parent.children[i].characters === annotationInput) {
                 parent.children[i].remove();
             }
         }
@@ -117,9 +117,9 @@ export const deleteStepAnnotation = (step, followingSteps) => {
     if (followingSteps !== undefined) {
         followingSteps.forEach(step => {
             var stepNode = figma.getNodeById(step.id);
-            if (getType(stepNode.id) === 'GROUP') {
+            if (stepNode.type === 'GROUP') {
                 for (let i = 0; i < stepNode.children.length; i++) {
-                    if (getType(stepNode.children[i].id) === 'TEXT') {
+                    if (stepNode.children[i].type === 'TEXT') {
                         var current = parseInt(stepNode.children[i].characters);
                         setText(stepNode.children[i], {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, String(current - 1));
                     }
@@ -136,9 +136,9 @@ export const deleteStepAnnotation = (step, followingSteps) => {
  */
 export const updateStepAnnotation = (annotationId, number) => {
     var annotation = figma.getNodeById(annotationId);
-    if (getType(annotationId) === 'GROUP') {
+    if (annotation.type === 'GROUP') {
         for (let i = 0; i < annotation.children.length; i++) {
-            if(getType(annotation.children[i].id) === 'TEXT') {
+            if(annotation.children[i].type === 'TEXT') {
                 setText(annotation.children[i], {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, String(number));
             }
         }

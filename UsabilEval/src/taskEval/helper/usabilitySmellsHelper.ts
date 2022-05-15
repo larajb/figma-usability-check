@@ -1,4 +1,3 @@
-import { getNode } from "../../figmaAccess/fileContents";
 import { getFrame, getPage, getParent } from "../../figmaAccess/nodeProperties";
 
 /**

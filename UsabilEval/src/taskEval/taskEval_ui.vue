@@ -1,5 +1,5 @@
 <template>
-  	<div class="dyneval-ui">
+  	<div class="taskEval-ui">
 		<div style="display: flex; margin-bottom: 20px;">
 			<div class="tooltip--bottom">
 				<IconButton @click="backToStart" :icon="'back'" style="margin-top: -8px; margin-bottom: 0px;" />
@@ -127,7 +127,7 @@ export default {
 	@import "../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 	@import "../tooltips.scss";
 
-	.dyneval-ui {
+	.taskEval-ui {
 		padding: 10px;
 	}
 

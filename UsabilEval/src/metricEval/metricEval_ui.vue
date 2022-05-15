@@ -1,5 +1,5 @@
 <template>
-  	<div class="stateval-ui">
+  	<div class="metricEval-ui">
 		<div style="display: flex">
 			<div class="tooltip--bottom">
 				<IconButton @click="backToStart" :icon="'back'" style="margin-top: -8px; margin-bottom: 0px;" />
@@ -120,7 +120,7 @@ export default {
 	@import "../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 	@import "../tooltips.scss";
 
-	.stateval-ui {
+	.metricEval-ui {
 		padding: 10px;
 	}
 

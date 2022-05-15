@@ -1,4 +1,3 @@
-import { getNode } from "../../figmaAccess/fileContents";
 import { getCenterOfNode, getFrame, getWidth } from "../../figmaAccess/nodeProperties";
 
 /**

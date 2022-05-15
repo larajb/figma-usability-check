@@ -1,19 +1,19 @@
-import { dynevalView } from './dyneval/dynevalHandler';
 import { startView } from './start/startHandler';
-import { statevalView } from './stateval/statevalHandler';
+import { metricEvalView } from './metricEval/metricEvalHandler';
+import { taskEvalView } from './taskEval/taskEvalHandler';
 
 switch(figma.command) {
     case 'start':
         figma.showUI(__uiFiles__.start);
         startView();
         break;
-    case 'stateval':
-        figma.showUI(__uiFiles__.stateval);
-        statevalView();
+    case 'metricEval':
+        figma.showUI(__uiFiles__.metricEval);
+        metricEvalView();
         break;
-    case 'dyneval':
-        figma.showUI(__uiFiles__.dyneval);
-        dynevalView();
+    case 'taskEval':
+        figma.showUI(__uiFiles__.taskEval);
+        taskEvalView();
         break;
 }
 figma.ui.resize(450, 550);

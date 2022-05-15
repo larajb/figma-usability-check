@@ -1,12 +1,12 @@
 import { dispatch, handleEvent } from '../codeMessageHandler';
 import { checkButtonValidity, checkForAnnotationGroup, checkInputExample, checkInputValidity, checkLinkValidity, checkValidity } from './helper/validityHelper';
-import { createExampletext, createTaskAnnotation, deleteStepAnnotation, getElementToAnnotation, updateStepAnnotation } from './helper/dynevalHelper';
+import { createExampletext, createTaskAnnotation, deleteStepAnnotation, getElementToAnnotation, updateStepAnnotation } from './helper/taskEvalHelper';
 import { checkUsabilitySmells, distantContent, highWebsiteElementDistance } from './helper/usabilitySmellsHelper';
 import { startView } from '../start/startHandler';
 import { getCurrentSelection } from '../figmaAccess/fileContents';
 import { calculateTime, convertToOperators, getTimeForOperators, getTimeForSteps } from './helper/gomsHelper';
 
-export const dynevalView = () => {
+export const taskEvalView = () => {
 
     handleEvent('backToStart', () => {
         figma.showUI(__uiFiles__.start);

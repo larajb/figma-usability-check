@@ -1,18 +1,18 @@
 import { handleEvent } from '../codeMessageHandler';
 
-import { dynevalView } from '../dyneval/dynevalHandler';
-import { statevalView } from '../stateval/statevalHandler';
+import { metricEvalView } from '../metricEval/metricEvalHandler';
+import { taskEvalView } from '../taskEval/taskEvalHandler';
 
 export const startView = () => {
-    handleEvent('showStatEval', () => {
-        figma.showUI(__uiFiles__.stateval);
-        statevalView();
+    handleEvent('showMetricEval', () => {
+        figma.showUI(__uiFiles__.metricEval);
+        metricEvalView();
         figma.ui.resize(450, 550);
     });
 
-    handleEvent('showDynEval', () => {
-        figma.showUI(__uiFiles__.dyneval);
-        dynevalView();
+    handleEvent('showTaskEval', () => {
+        figma.showUI(__uiFiles__.taskEval);
+        taskEvalView();
         figma.ui.resize(450, 550);
     })
 }
