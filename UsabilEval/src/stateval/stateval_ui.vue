@@ -29,7 +29,7 @@
 			<p class="type--pos-large-bold">
 				Globale Evaluation
 			</p>
-			<metric-selection v-show="currentPage === 'MetricsSelection'" class="scrollable" :metrics="metrics" />
+			<metric-selection v-show="currentPage === 'MetricsSelection'" :metrics="metrics" />
 			<evaluation v-show="currentPage === 'Evaluation'" @results="setResults($event)" />
 			<results v-show="currentPage === 'Results'" :results="results" />
 			<documentation v-show="currentPage === 'Documentation'" />
@@ -123,11 +123,6 @@ export default {
 	.stateval-ui {
 		padding: 10px;
 	}
-
-	.scrollable {
-        max-height: 90%;
-        overflow-y: scroll;
-    }
 
 	.disabled {
 		pointer-events: none;
