@@ -1,5 +1,5 @@
 import { getCurrentSelection } from "../../figmaAccess/fileContents";
-import { getHeight, getWidth, getParent, getType, getFrame } from "../../figmaAccess/nodeProperties";
+import { getHeight, getWidth, getParent, getFrame } from "../../figmaAccess/nodeProperties";
 
 /**
  * This is a function to check if the selected element is an annotation group.
@@ -132,7 +132,7 @@ export const checkLinkValidity = async () => {
     var isText = false;
     var isImageOrShape = false;
     var selection = getCurrentSelection();
-    if (getType(selection.id) === 'TEXT') {
+    if (selection.type === 'TEXT') {
         isText = true;
     } else {
         isImageOrShape = true;

@@ -52,20 +52,6 @@ export const getHeight = (nodeId) => {
 }
 
 /**
- * This is a function to get the type of a given node.
- * @param nodeId
- * @returns type
- */
-export const getType = (nodeId) => {
-    var type = null;
-    var node = figma.getNodeById(nodeId);
-    if ('type' in node) {
-        type = node.type;
-    }
-    return type;
-}
-
-/**
  * This is a function to get the parent node of a given node.
  * @param nodeId 
  * @returns parent

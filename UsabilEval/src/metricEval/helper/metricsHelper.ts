@@ -1,4 +1,4 @@
-import { getReactions, getType } from "../../figmaAccess/nodeProperties";
+import { getReactions } from "../../figmaAccess/nodeProperties";
 
 /**
  * This is a function to evaluate the color consistency above multiple frames in a document.
@@ -18,21 +18,23 @@ export const localColorConsistency = (frames) => {
     var nodeFills = [];
     frames.forEach(frame => {
         const frameNode = figma.getNodeById(frame.id);
-        const nodes = frameNode.findAll();
-        nodes.forEach(node => {
-            if (!node.name.startsWith('Annotation')) {
-                if ('fills' in node) {
-                    const index = nodeFills.findIndex((nodeFill) => JSON.stringify(nodeFill.fill) === JSON.stringify(node.fills));
-                    if (containsBlackOrWhite(node.fills) === false && containsImage(node.fills) === false && node.fills.length > 0) {
-                        if (index < 0) {
-                            nodeFills.push({ nodes: [node.id], fill: node.fills });
-                        } else if (index >= 0) {
-                            nodeFills[index].nodes.push(node.id);
+        if (frameNode.type === 'FRAME') {
+            const nodes = frameNode.findAll();
+            nodes.forEach(node => {
+                if (!node.name.startsWith('Annotation')) {
+                    if ('fills' in node) {
+                        const index = nodeFills.findIndex((nodeFill) => JSON.stringify(nodeFill.fill) === JSON.stringify(node.fills));
+                        if (containsBlackOrWhite(node.fills) === false && containsImage(node.fills) === false && node.fills.length > 0) {
+                            if (index < 0) {
+                                nodeFills.push({ nodes: [node.id], fill: node.fills });
+                            } else if (index >= 0) {
+                                nodeFills[index].nodes.push(node.id);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
     });
     var notPredefined = [];
     nodeFills.forEach(nodeFill => {
@@ -64,20 +66,22 @@ export const localFontConsistency = (frames) => {
     var nodeTextStyles = [];
     frames.forEach(frame => {
         const frameNode = figma.getNodeById(frame.id);
-        const nodes = frameNode.findAll();
-        nodes.forEach(node => {
-            if (!node.name.startsWith('Annotation')) {
-                if (getType(node.id) === 'TEXT') {
-                    var fontNameAndSize = { fontName: node.fontName, fontSize: node.fontSize };
-                    var index = nodeTextStyles.findIndex((style) => JSON.stringify(style.fontStyle) === JSON.stringify(fontNameAndSize));
-                    if (index < 0) {
-                        nodeTextStyles.push({ nodes: [node.id], fontStyle: fontNameAndSize });
-                    } else if (index >= 0) {
-                        nodeTextStyles[index].nodes.push(node.id);
+        if (frameNode.type === 'FRAME') {
+            const nodes = frameNode.findAll();
+            nodes.forEach(node => {
+                if (!node.name.startsWith('Annotation')) {
+                    if (node.type === 'TEXT') {
+                        var fontNameAndSize = { fontName: node.fontName, fontSize: node.fontSize };
+                        var index = nodeTextStyles.findIndex((style) => JSON.stringify(style.fontStyle) === JSON.stringify(fontNameAndSize));
+                        if (index < 0) {
+                            nodeTextStyles.push({ nodes: [node.id], fontStyle: fontNameAndSize });
+                        } else if (index >= 0) {
+                            nodeTextStyles[index].nodes.push(node.id);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     });
     var notPredefined = [];
     nodeTextStyles.forEach(textStyle => {
@@ -100,16 +104,18 @@ export const fontSize = (frames) => {
     var textsWithSmallerFontSize = [];
     frames.forEach(frame => {
         const frameNode = figma.getNodeById(frame.id);
-        const textNodes = frameNode.findAll(node => node.type === 'TEXT');
-        textNodes.forEach(text => {
-            if (text.fontSize < 12) {
-                var name = text.name;
-                if (name.length > 30) {
-                    name = (name.slice(0, 30)) + '...';
+        if (frameNode.type === 'FRAME') {
+            const textNodes = frameNode.findAll(node => node.type === 'TEXT');
+            textNodes.forEach(text => {
+                if (text.fontSize < 12) {
+                    var name = text.name;
+                    if (name.length > 30) {
+                        name = (name.slice(0, 30)) + '...';
+                    }
+                    textsWithSmallerFontSize.push({ id: text.id, name: name });
                 }
-                textsWithSmallerFontSize.push({ id: text.id, name: name });
-            }
-        });
+            });
+        }
     });
     return { value: null, nodes: textsWithSmallerFontSize };
 }
@@ -127,17 +133,19 @@ export const homepageReference = (selectedFrames, homepageId) => {
         var isFound = false;
         if (frame.id !== homepageId) {
             var frameNode = figma.getNodeById(frame.id);
-            const nodes = frameNode.findAll();
-            nodes.forEach(node => {
-                var reactions = getReactions(node.id);
-                if (reactions.length > 0) {
-                    reactions.forEach(reaction => {
-                        if (reaction.action !== null && reaction.action.destinationId === homepageId) {
-                            isFound = true;
-                        }
-                    });
-                }
-            });
+            if (frameNode.type === 'FRAME') {
+                const nodes = frameNode.findAll();
+                nodes.forEach(node => {
+                    var reactions = getReactions(node.id);
+                    if (reactions.length > 0) {
+                        reactions.forEach(reaction => {
+                            if (reaction.action !== null && reaction.action.destinationId === homepageId) {
+                                isFound = true;
+                            }
+                        });
+                    }
+                });
+            }
         } else {
             var isFound = true;
         }
@@ -162,17 +170,19 @@ export const orphanPages = (selectedFrames) => {
         var isFound = false;
         selectedFrames.forEach(frame2 => {
             const frameNode2 = figma.getNodeById(frame2.id);
-            const nodes = frameNode2.findAll();
-            nodes.forEach(node => {
-                var reactions = getReactions(node.id);
-                if (reactions.length > 0) {
-                    reactions.forEach(reaction => {
-                        if (reaction.action !== null && reaction.action.destinationId === targetId) {
-                            isFound = true;
-                        }
-                    });
-                }
-            });
+            if (frameNode2.type === 'FRAME') {
+                const nodes = frameNode2.findAll();
+                nodes.forEach(node => {
+                    var reactions = getReactions(node.id);
+                    if (reactions.length > 0) {
+                        reactions.forEach(reaction => {
+                            if (reaction.action !== null && reaction.action.destinationId === targetId) {
+                                isFound = true;
+                            }
+                        });
+                    }
+                });
+            }
         });
         if(isFound === false) {
             orphanPages.push({ id: frame1.id, name: frame1.name });

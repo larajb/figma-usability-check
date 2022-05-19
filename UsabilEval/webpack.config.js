@@ -10,8 +10,8 @@ module.exports = (env, argv) => ({
 
 	entry: {
 		start_ui: './src/start/start_ui.ts',
-		stateval_ui: './src/stateval/stateval_ui.ts',
-		dyneval_ui: './src/dyneval/dyneval_ui.ts',
+		stateval_ui: './src/metricEval/metricEval_ui.ts',
+		dyneval_ui: './src/taskEval/taskEval_ui.ts',
 		code: './src/code.ts' // The entry point for your plugin code
 	},
 
@@ -76,8 +76,8 @@ module.exports = (env, argv) => ({
 		new RemovePlugin({
 			after: { include: [
 				'dist/start_ui.js',
-				'dist/stateval_ui.js',
-				'dist/dyneval_ui.js'
+				'dist/metricEval_ui.js',
+				'dist/taskEval_ui.js'
 			] }
 		}),
 		new HtmlWebpackPlugin({
@@ -87,16 +87,16 @@ module.exports = (env, argv) => ({
 			chunks: ['start_ui'],
 		}),
 		new HtmlWebpackPlugin({
-			template: './src/stateval/stateval_ui.html',
-			filename: 'stateval_ui.html',
+			template: './src/metricEval/metricEval_ui.html',
+			filename: 'metricEval_ui.html',
 			inlineSource: '.(js)$',
-			chunks: ['stateval_ui'],
+			chunks: ['metricEval_ui'],
 		}),
 		new HtmlWebpackPlugin({
-			template: './src/dyneval/dyneval_ui.html',
-			filename: 'dyneval_ui.html',
+			template: './src/taskEval/taskEval_ui.html',
+			filename: 'taskEval_ui.html',
 			inlineSource: '.(js)$',
-			chunks: ['dyneval_ui'],
+			chunks: ['taskEval_ui'],
 		}),
 		new HtmlWebpackInlineSourcePlugin()
 	],

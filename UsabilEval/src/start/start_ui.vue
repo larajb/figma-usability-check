@@ -17,10 +17,10 @@ export default {
     name: 'Start',
     methods: {
         statEval() {
-            dispatch('showStatEval');
+            dispatch('showMetricEval');
         },
         dynEval() {
-            dispatch('showDynEval');
+            dispatch('showTaskEval');
         }
     }
 }

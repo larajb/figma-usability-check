@@ -2,7 +2,7 @@ import { dispatch, handleEvent } from '../codeMessageHandler';
 import { startView } from '../start/startHandler';
 import { fontSize, homepageReference, localColorConsistency, localFontConsistency, orphanPages } from './helper/metricsHelper';
 
-export const statevalView = () => {
+export const metricEvalView = () => {
 
     // to navigate back to the start page
     handleEvent('backToStart', () => {
@@ -24,11 +24,13 @@ export const statevalView = () => {
     // to get all frames of a page
     handleEvent('getFrames', (pageId) => {
         const page = figma.getNodeById(pageId);
-        const frames = page.findAll(node => node.type === 'FRAME');
         var frameObjects = [];
-        frames.forEach(frame => {
-            frameObjects.push({ name: frame.name, id: frame.id });
-        })
+        if (page.type === 'PAGE') {
+            const frames = page.findAll(node => node.type === 'FRAME');
+            frames.forEach(frame => {
+                frameObjects.push({ name: frame.name, id: frame.id });
+            })
+        }
         dispatch('frames', frameObjects);
     });
 

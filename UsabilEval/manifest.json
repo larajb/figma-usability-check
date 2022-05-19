@@ -4,14 +4,14 @@
 	"main": "dist/code.js",
 	"ui": {
 		"start": "dist/start_ui.html",
-		"stateval": "dist/stateval_ui.html",
-		"dyneval": "dist/dyneval_ui.html"
+		"metricEval": "dist/metricEval_ui.html",
+		"taskEval": "dist/taskEval_ui.html"
 	},
 	"editorType": ["figma"],
 	"menu": [
 		{"name": "Startseite", "command": "start"},
-		{"name": "Metriken-Evaluation", "command": "stateval"},
-		{"name": "Aufgaben-Evaluation", "command": "dyneval"}
+		{"name": "Metriken-Evaluation", "command": "metricEval"},
+		{"name": "Aufgaben-Evaluation", "command": "taskEval"}
 	],
 	"id": "1094202341925042367"
 }
