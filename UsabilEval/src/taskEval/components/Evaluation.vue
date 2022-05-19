@@ -57,7 +57,6 @@
 
 <script>
 import { dispatch, handleEvent } from '../../uiMessageHandler';
-import { v4 as uuidv4 } from 'uuid';
 import { Select, Radio, IconButton } from 'figma-plugin-ds-vue';
 import { mapState } from 'vuex';
 

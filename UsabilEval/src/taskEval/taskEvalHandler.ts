@@ -1,10 +1,10 @@
 import { dispatch, handleEvent } from '../codeMessageHandler';
-import { checkButtonValidity, checkForAnnotationGroup, checkInputExample, checkInputValidity, checkLinkValidity, checkValidity } from './helper/validityHelper';
 import { createExampletext, createTaskAnnotation, deleteStepAnnotation, getElementToAnnotation, updateStepAnnotation } from './helper/taskEvalHelper';
+import { checkButtonValidity, checkForAnnotationGroup, checkInputExample, checkInputValidity, checkLinkValidity, checkValidity } from './helper/validityHelper';
+import { calculateTime, convertToOperators, getTimeForOperators, getTimeForSteps } from './helper/gomsHelper';
 import { checkUsabilitySmells, distantContent, highWebsiteElementDistance } from './helper/usabilitySmellsHelper';
 import { startView } from '../start/startHandler';
 import { getCurrentSelection } from '../figmaAccess/fileContents';
-import { calculateTime, convertToOperators, getTimeForOperators, getTimeForSteps } from './helper/gomsHelper';
 
 export const taskEvalView = () => {
 

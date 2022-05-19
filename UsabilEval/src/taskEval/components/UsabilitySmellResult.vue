@@ -27,7 +27,7 @@
 
 <script>
 import { IconButton } from 'figma-plugin-ds-vue';
-import { usabilitySmellsArray } from '../usabilitySmells/usabilitySmells';
+import { usabilitySmellsArray } from '../usabilitySmells/usabilitySmellsArray';
 
 export default {
     name: 'UsabilitySmellResult',

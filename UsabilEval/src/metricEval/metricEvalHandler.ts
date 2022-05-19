@@ -1,6 +1,6 @@
 import { dispatch, handleEvent } from '../codeMessageHandler';
 import { startView } from '../start/startHandler';
-import { fontSize, homepageReference, localColorConsistency, localFontConsistency, orphanPages } from './helper/metricsHelper';
+import { fontSize, homepageReference, localColorConsistency, localFontConsistency, orphanPages } from './helper/metricEvalHelper';
 
 export const metricEvalView = () => {
 

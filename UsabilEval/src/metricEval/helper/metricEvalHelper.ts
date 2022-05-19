@@ -192,11 +192,6 @@ export const orphanPages = (selectedFrames) => {
     return { value: orphanPagesValue, nodes: orphanPages };
 }
 
-
-/********************
- * HELPER
- ********************/
-
 /**
  * This is a function to check if a fills object only contains the colors black or white.
  * @param fills 
