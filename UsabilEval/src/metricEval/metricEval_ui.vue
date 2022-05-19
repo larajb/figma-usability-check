@@ -27,7 +27,7 @@
 		</div>
 		<div>
 			<p class="type--pos-large-bold">
-				Globale Evaluation
+				Metriken-Evaluation
 			</p>
 			<metric-selection v-show="currentPage === 'MetricsSelection'" :metrics="metrics" />
 			<evaluation v-show="currentPage === 'Evaluation'" @results="setResults($event)" />

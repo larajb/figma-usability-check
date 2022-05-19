@@ -1,11 +1,21 @@
 <template>
     <div>
-        <p class="type--pos-medium-normal">Wähle einen Namen für eine neue Aufgabe und erstelle sie.</p>
+        <p class="type--pos-medium-normal">Wähle den Namen und die Plattform für eine neue Aufgabe und erstelle sie.</p>
         <div class="task-definition__input">
-            <div class="tooltip--bottom" style="width: 100%">
-				<input id="taskname" class="input" type="text" placeholder="Aufgabe" v-model="tasknameInput">
-				<span class="type--pos-small-normal tooltiptext--bottom">Eingabe Aufgabenname</span>
-			</div>
+            <div style="display: flex; width: 100%">
+                <div class="tooltip--bottom" style="width: 100%">
+                    <input id="taskname" class="input" type="text" placeholder="Aufgabe" v-model="tasknameInput">
+                    <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Aufgabenname</span>
+                </div>
+                <div class="tooltip--bottom" style="width: 100%">
+                    <Select id="platform-select" :items="[
+                        { label: 'Desktop', key: 'desktop' },
+                        { label: 'Mobil', key: 'mobile' },
+                        { label: 'Desktop + Mobil', key: 'desktop+mobile' }
+                    ]" v-model="platformSelection" />
+                    <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Plattform</span>
+                </div>
+            </div>
             <button class="button button--secondary" @click="addTask">Erstellen</button>
         </div>
         <div class="type--pos-medium-normal">
@@ -62,6 +72,7 @@ export default {
             tasknameInput: '',
             exampleInput: '',
             typeSelection: '',
+            platformSelection: '',
             showError: false,
             errorMessage: '',
             alreadySet: false,

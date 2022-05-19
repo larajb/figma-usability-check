@@ -10,8 +10,8 @@ module.exports = (env, argv) => ({
 
 	entry: {
 		start_ui: './src/start/start_ui.ts',
-		stateval_ui: './src/metricEval/metricEval_ui.ts',
-		dyneval_ui: './src/taskEval/taskEval_ui.ts',
+		metricEval_ui: './src/metricEval/metricEval_ui.ts',
+		taskEval_ui: './src/taskEval/taskEval_ui.ts',
 		code: './src/code.ts' // The entry point for your plugin code
 	},
 

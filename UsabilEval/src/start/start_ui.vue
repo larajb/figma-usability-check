@@ -4,9 +4,9 @@
         <p class="type--pos-medium-normal">Mit diesem Plugin kannst du automatische Usability-Evaluationen durchführen. Du kannst vordefinierte Metriken nutzen oder die Evaluation anhand von selbst definierten Interaktionsfolgen durchführen lassen.<p>
         <img src="../img/usability.jpg" width="300" />
         <p class="type--pos-medium-normal">Möchtest du die Evaluation mit Metriken durchführen?</p>
-        <button class="button button--primary" @click="statEval">Metriken-Evaluation</button>
+        <button class="button button--primary" @click="metricEval">Metriken-Evaluation</button>
         <p class="type--pos-medium-normal">Möchtest du eigene Funktionsabläufe erstellen und evaluieren?</p>
-        <button class="button button--primary" @click="dynEval">Aufgaben-Evaluation</button>
+        <button class="button button--primary" @click="taskEval">Aufgaben-Evaluation</button>
     </div>
 </template>
 
@@ -16,10 +16,10 @@ import { dispatch } from '../uiMessageHandler';
 export default {
     name: 'Start',
     methods: {
-        statEval() {
+        metricEval() {
             dispatch('showMetricEval');
         },
-        dynEval() {
+        taskEval() {
             dispatch('showTaskEval');
         }
     }

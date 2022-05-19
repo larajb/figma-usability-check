@@ -225,7 +225,7 @@ export const taskEvalView = () => {
         var scenarioSmells = [];
         var highWebsiteElementDistanceResult = highWebsiteElementDistance(scenarioSteps);
         if (highWebsiteElementDistanceResult.isFound) {
-            scenarioSmells.push({ title: 'High Website Element Distance', isFound: highWebsiteElementDistanceResult.isFound, values: highWebsiteElementDistanceResult.values, steps: highWebsiteElementDistanceResult.steps })
+            scenarioSmells.push({ title: 'Hohe Website-Element-Abstände', isFound: highWebsiteElementDistanceResult.isFound, values: highWebsiteElementDistanceResult.values, steps: highWebsiteElementDistanceResult.steps })
         }
         var distantContentFound = false;
         var distantContentValues = [];
@@ -238,7 +238,7 @@ export const taskEvalView = () => {
                 distantContentSteps.push(transition.transitionNum);
             }
         })
-        scenarioSmells.push({ title: 'Distant Content', isFound: distantContentFound, values: distantContentValues, steps: distantContentSteps });
+        scenarioSmells.push({ title: 'Entfernter Inhalt', isFound: distantContentFound, values: distantContentValues, steps: distantContentSteps });
         dispatch('scenarioEvaluationResult', { taskEvaluationHistory: args.history, gomsTimes: result, usabilitySmells: scenarioSmells });
     })
 
@@ -311,7 +311,7 @@ export const taskEvalView = () => {
         var scenarioSmells = [];
         var highWebsiteElementDistanceResult = highWebsiteElementDistance(scenarioSteps);
         if (highWebsiteElementDistanceResult.isFound) {
-            scenarioSmells.push({ title: 'High Website Element Distance', isFound: highWebsiteElementDistanceResult.isFound, values: highWebsiteElementDistanceResult.values, steps: highWebsiteElementDistanceResult.steps })
+            scenarioSmells.push({ title: 'Hohe Website-Element-Abstände', isFound: highWebsiteElementDistanceResult.isFound, values: highWebsiteElementDistanceResult.values, steps: highWebsiteElementDistanceResult.steps })
         }
         var distantContentFound = false;
         var distantContentValues = [];
@@ -325,7 +325,7 @@ export const taskEvalView = () => {
             }
         })
         if (distantContentFound) {
-            scenarioSmells.push({ title: 'Distant Content', isFound: distantContentFound, values: distantContentValues, steps: distantContentSteps });
+            scenarioSmells.push({ title: 'Entfernter Inhalt', isFound: distantContentFound, values: distantContentValues, steps: distantContentSteps });
         }
         dispatch('comparisonScenarioEvaluationResult', { taskEvaluationHistory: args.history, gomsTimes: result, usabilitySmells: scenarioSmells });
     })

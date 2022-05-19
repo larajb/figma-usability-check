@@ -30,7 +30,7 @@
 			</div>
 		</div>
 		<p class="type--pos-large-bold">
-			Dynamische Evaluation
+			Aufgaben-Evaluation
 		</p>
 		<task-definition v-show="currentPage === 'TaskDefinition'" />
 		<scenario-definition v-show="currentPage === 'ScenarioDefinition'" />

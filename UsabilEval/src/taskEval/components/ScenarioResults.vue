@@ -204,11 +204,12 @@ export default {
             return formattedDate;
         },
         getDescription(title) {
-            const index = this.usabilitySmells.findIndex((smell) => smell.title === title);
+            const index = this.usabilitySmells.findIndex(smell => smell.title === title);
+            console.log(this.usabilitySmells, title, index);
             return this.usabilitySmells[index].description;
         },
         getRefactoring(title) {
-            const index = this.usabilitySmells.findIndex((smell) => smell.title === title);
+            const index = this.usabilitySmells.findIndex(smell => smell.title === title);
             return this.usabilitySmells[index].refactoring;
         },
         getAsString(transitions) {
