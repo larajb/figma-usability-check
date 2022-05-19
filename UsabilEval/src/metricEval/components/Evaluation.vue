@@ -155,7 +155,6 @@ export default {
                 this.errorMessage = 'Bitte wähle eine Startseite aus.';
             } else {
                 var containsMultipleFrameMetrics = this.checkForMultipleFrameMetrics();
-                console.log(containsMultipleFrameMetrics, this.selectedFrames);
                 if (containsMultipleFrameMetrics === true && this.selectedFrames.length <= 1) {
                     this.showError = true;
                     this.errorMessage = 'Du hast Metriken ausgewählt, die mehr als einen Frame zur Evaluation benötigen. Bitte wähle mehrere Frames aus.';

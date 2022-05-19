@@ -205,7 +205,6 @@ export default {
         },
         getDescription(title) {
             const index = this.usabilitySmells.findIndex(smell => smell.title === title);
-            console.log(this.usabilitySmells, title, index);
             return this.usabilitySmells[index].description;
         },
         getRefactoring(title) {
