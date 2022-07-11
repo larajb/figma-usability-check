@@ -1,14 +1,14 @@
 <template>
     <div>
         <div>
-            <p class="type--pos-medium-normal">Wähle die Seite auf der sich die Frames befinden, die du evaluieren möchtest.</p>
+            <p class="type--pos-medium-normal">Select the page on which the frames you want to evaluate are located.</p>
             <div class="tooltip--bottom" style="width: 100%">
                 <Select id="page-select" style="width: 100%" :items="pagesItems" v-model="pageSelection" />
-                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Frames</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Selection Frames</span>
             </div>
             <div v-show="frames.length > 0">
-                <p class="type--pos-medium-normal">Wähle den/die Frame(s), der/die evaluiert werden soll(en).</p>
-                <Checkbox v-model="selectAllFrames">Alle anwählen/abwählen</Checkbox>
+                <p class="type--pos-medium-normal">Select the frame(s) to be evaluated.</p>
+                <Checkbox v-model="selectAllFrames">Select/deselect all</Checkbox>
                 <div class="evaluation__frames-list">
                     <div v-for="(frame, index) in frames" :key="index">
                         <frame :frame="frame" @selected="setSelected($event)" />
@@ -16,10 +16,10 @@
                 </div>
             </div>
             <div v-show="homepageMetricSelected">
-                <p class="type--pos-medium-normal">Du hast die Metrik <i>Verweis auf Startseite</i> gewählt. Wähle zur Evaluation dieser Metrik einen Frame als Startseite.</p>
+                <p class="type--pos-medium-normal">You have selected the metric <i>Reference to homepage</i>. To evaluate this metric, select a frame as the homepage.</p>
                 <div class="tooltip--bottom" style="width: 100%">
                     <Select id="homepage-select" style="width 100%" :items="framesItems" v-model="homepageSelection" />
-                    <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Startseite</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Select homepage</span>
                 </div>
             </div>
         </div>
@@ -128,7 +128,7 @@ export default {
             this.$store.commit('selectedFrames', this.selectedFrames);
         },
         selectedMetrics() {
-            const index = this.selectedMetrics.findIndex((metric) => metric === 'Verweis auf Startseite');
+            const index = this.selectedMetrics.findIndex((metric) => metric === 'Reference to homepage');
             if (index >= 0) {
                 this.homepageMetricSelected = true;
             } else {
@@ -152,12 +152,12 @@ export default {
             this.$store.commit('evaluationReady', false);
             if (this.homepageMetricSelected && this.homepageSelection === '') {
                 this.showError = true;
-                this.errorMessage = 'Bitte wähle eine Startseite aus.';
+                this.errorMessage = 'Please select a homepage.';
             } else {
                 var containsMultipleFrameMetrics = this.checkForMultipleFrameMetrics();
                 if (containsMultipleFrameMetrics === true && this.selectedFrames.length <= 1) {
                     this.showError = true;
-                    this.errorMessage = 'Du hast Metriken ausgewählt, die mehr als einen Frame zur Evaluation benötigen. Bitte wähle mehrere Frames aus.';
+                    this.errorMessage = 'You have selected metrics that require more than one frame for evaluation. Please select more than one frame.';
                 } else {
                     dispatch('evaluate', { selectedMetrics: this.selectedMetrics, selectedFrames: this.selectedFrames, homepage: this.homepageSelection });
                 }

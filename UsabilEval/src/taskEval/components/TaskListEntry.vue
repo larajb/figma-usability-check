@@ -8,13 +8,13 @@
             <div style="display: flex">
                 <div class="tooltip--bottom">
                     <IconButton @click="deleteTask" :icon="'trash'" />
-                    <span class="type--pos-small-normal tooltiptext--bottom">Aufgabe löschen</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Delete task</span>
                 </div>
                 <div class="tooltip--bottom">
                     <Toggle v-model="switchValue">
-                        Bearbeiten
+                        Edit
                     </Toggle>
-                    <span class="type--pos-small-normal tooltiptext--bottom">Schritte in Aufgabe bearbeiten</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Edit steps in task</span>
                 </div>
             </div>
         </div>
@@ -47,18 +47,18 @@
                     <div class="task-list-entry__step-settings">
                         <div class="tooltip--bottom">
                             <IconButton @click="deleteStep(step)" :icon="'trash'" />
-                            <span class="type--pos-small-normal tooltiptext--bottom">Aufgabenschritt löschen</span>
+                            <span class="type--pos-small-normal tooltiptext--bottom">Delete task step</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div v-if="steps.length > 0" style="display: flex; margin-left: 40px; margin-top: 20px;">
-                <p class="type--pos-small-normal">Kopieren nach</p>
+                <p class="type--pos-small-normal">Copy to</p>
                 <div class="tooltip--bottom" style="width: 50%">
                     <Select id="copy-select" :items="taskList" v-model="selectedToCopy" />
-                    <span class="type--pos-small-normal tooltiptext--bottom">Ziel zum Kopieren der Aufgabenschritte</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Aim to copy the task steps</span>
                 </div>
-                <button class="button button--secondary" @click="copyTaskSteps">Kopieren</button>
+                <button class="button button--secondary" @click="copyTaskSteps">Copy</button>
             </div>
         </div>
     </div>
@@ -152,7 +152,7 @@ export default {
                 for (let i = 0; i < scenario.tasks.length; i++) {
                     if (scenario.tasks[i].taskname === this.taskname) {
                         isFound = true;
-                        this.$emit('warning', 'Diese Aufgabe kann nicht gelöscht werden, da sie in einem Szenario verwendet wird.');
+                        this.$emit('warning', 'This task cannot be deleted because it is used in a scenario.');
                         return;
                     }
                 }
@@ -176,7 +176,7 @@ export default {
                                 dispatch('deleteStep', { taskname: this.taskname, step: step, followingSteps: followingSteps });
                                 this.$emit('deletedStep', { taskname: this.taskname, id: step.id });
                             } else {
-                                this.$emit('warning', 'Dieser Schritt kann nicht gelöscht werden, da vom vorherigen der nachfolgende nicht erreicht werden kann.');
+                                this.$emit('warning', 'This step cannot be deleted because the following step cannot be reached from the previous one.');
                             }
                         });
                     } else {
@@ -209,9 +209,9 @@ export default {
                 case 'link':
                     return 'Link';
                 case 'clickElement':
-                    return 'Klickelement';
+                    return 'Click element';
                 case 'input':
-                    return 'Eingabe';
+                    return 'Input';
             }
         }
     },

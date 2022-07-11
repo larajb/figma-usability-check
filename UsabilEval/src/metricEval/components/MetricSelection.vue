@@ -1,37 +1,37 @@
 <template>
     <div>
-        <p class="type--pos-medium-normal">Wähle eine oder mehrere Metrik(en) für die Evaluation aus und wechsel anschließend auf den Reiter "Evaluation".</p>
-        <p class="type--pos-small-normal">Nutze ein Evaluationsprofil, um eine vordefinierte Gruppierung von Metriken für die Evaluation auszuwählen.</p>
+        <p class="type--pos-medium-normal">Select one or more metrics for evaluation and then switch to the "Evaluation" tab.</p>
+        <p class="type--pos-small-normal">Use an evaluation profile to select a predefined grouping of metrics for evaluation.</p>
         <div style="display: flex">
-            <p class="type--pos-medium-normal">Evaluationsprofil:</p>
+            <p class="type--pos-medium-normal">Evaluation profile:</p>
             <div class="tooltip--bottom" style="width: 100%">
                 <Select id="evaluation-profile-select" style="width: 100%" :items="evaluationProfilesItems" v-model="evaluationProfileSelection" />
-                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Evaluationsprofil</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Selection evaluation profile</span>
             </div>
         </div>
-        <Checkbox v-model="selectAllMetrics">Alle anwählen/abwählen</Checkbox>
+        <Checkbox v-model="selectAllMetrics">Select/deselect all</Checkbox>
 		<div class="metric-selection__metrics-list">
 			<div v-for="(metric, index1) in metrics" :key="index1">
 				<metric :metric="metric" @selected="setSelected($event)" />
 			</div>
 		</div>
         <div>
-            <p class="type--pos-small-normal">Erstelle ein eigenes Evaluationsprofil aus deiner aktuellen Metrikenauswahl.</p>
+            <p class="type--pos-small-normal">Create your own evaluation profile from your current metrics selection.</p>
             <div style="display: flex">
                 <div class="tooltip--bottom" style="width: 100%">
-                    <input id="evaluationProfile" class="input" type="text" placeholder="Evaluationsprofil" v-model="profilename">
-                    <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Evaluationsprofil-Name</span>
+                    <input id="evaluationProfile" class="input" type="text" placeholder="Evaluation profile" v-model="profilename">
+                    <span class="type--pos-small-normal tooltiptext--bottom">Enter evaluation profile name</span>
                 </div>
-                <button class="button button--secondary" @click="createProfile">Erstellen</button>
+                <button class="button button--secondary" @click="createProfile">Create</button>
             </div>
             <div v-show="customEvaluationProfiles.length > 0">
-                <p class="type--pos-small-normal">Wähle ein Evaluationsprofil aus und lösche es, um es aus der Liste der Evaluationsprofile zu entfernen.</p>
+                <p class="type--pos-small-normal">Select an evaluation profile and delete it to remove it from the list of evaluation profiles.</p>
                 <div style="display: flex">
                     <div class="tooltip--bottom" style="width: 100%">
                         <Select id="evaluation-profile-delete-select" style="width: 100%" :items="customEvaluationProfilesItems" v-model="evaluationProfileDeleteSelection" />
-                        <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Evaluationsprofil zum Löschen</span>
+                        <span class="type--pos-small-normal tooltiptext--bottom">Select evaluation profile to delete</span>
                     </div>
-                    <button class="button button--secondary" @click="deleteProfile">Löschen</button>
+                    <button class="button button--secondary" @click="deleteProfile">Delete</button>
                 </div>
             </div>
         </div>

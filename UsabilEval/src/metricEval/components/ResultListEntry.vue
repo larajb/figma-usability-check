@@ -3,15 +3,15 @@
         <div style="display: flex">
             <div v-if="getColorValue(result.metric, result) === 'green'" class="tooltip--right">
                 <Icon icon="resolve-filled" class="icon--green" />
-                <span class="type--pos-small-normal tooltiptext--right">Keine Verstöße gefunden</span>
+                <span class="type--pos-small-normal tooltiptext--right">No violations found</span>
             </div>
             <div v-else-if="getColorValue(result.metric, result) === 'yellow'" class="tooltip--right">
                 <Icon icon="warning" class="icon--yellow" />
-                <span class="type--pos-small-normal tooltiptext--right">Wenige Verstöße gefunden</span>
+                <span class="type--pos-small-normal tooltiptext--right">Few violations found</span>
             </div>
             <div v-else-if="getColorValue(result.metric, result) === 'red'" class="tooltip--right">
                 <Icon icon="warning" class="icon--red" />
-                <span class="type--pos-small-normal tooltiptext--right">Einige Verstöße gefunden</span>
+                <span class="type--pos-small-normal tooltiptext--right">Some violations found</span>
             </div>
             <p class="type--pos-medium-bold">{{ result.metric }}</p>
         </div>
@@ -43,8 +43,8 @@
             <div v-else-if="result.type === 'comparison'">
                 <table class="result-list-entry__table" style="margin-left: -11px">
                     <tr>
-                        <td class="type--pos-medium-bold">Häufigste Formatierung</td>
-                        <td class="type--pos-medium-bold">Abweichungen</td>
+                        <td class="type--pos-medium-bold">Most common formatting</td>
+                        <td class="type--pos-medium-bold">Deviations</td>
                     </tr>
                     <tr v-for="(element, index2) in result.nodes" :key="index2">
                         <td class="result-list-entry__table-cell" :class="[ isHistory ? '' : 'result-list-entry--hoverable' ]">

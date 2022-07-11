@@ -1,31 +1,31 @@
 <template>
     <div>
-        <p class="type--pos-medium-normal">Wähle den Namen und die Plattform für eine neue Aufgabe und erstelle sie.</p>
+        <p class="type--pos-medium-normal">Choose the name and platform for a new task and create it.</p>
         <div class="task-definition__input">
             <div style="display: flex; width: 100%">
                 <div class="tooltip--bottom" style="width: 100%">
-                    <input id="taskname" class="input" type="text" placeholder="Aufgabe" v-model="tasknameInput">
-                    <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Aufgabenname</span>
+                    <input id="taskname" class="input" type="text" placeholder="Task" v-model="tasknameInput">
+                    <span class="type--pos-small-normal tooltiptext--bottom">Enter task name</span>
                 </div>
             </div>
-            <button class="button button--secondary" @click="addTask">Erstellen</button>
+            <button class="button button--secondary" @click="addTask">Create</button>
         </div>
         <div class="type--pos-medium-normal">
-            <p>Wähle ein UI-Element und einen Interaktionstypen und füge einen neuen Bearbeitungsschritt zu der oben angegebenen Aufgabe hinzu.</p>
+            <p>Select a UI element and interaction type and add a new editing step to the task specified above.</p>
             <div class="task-definition__input">
                 <div class="tooltip--bottom" style="width: 100%">
                     <Select id="type-select" :items="[
-                            { label: 'Eingabefeld', key: 'input' },
-                            { label: 'Klickelement', key: 'clickElement' },
+                            { label: 'Input', key: 'input' },
+                            { label: 'Click element', key: 'clickElement' },
                             { label: 'Link', key: 'link' }
                         ]" v-model="typeSelection" />
-                    <span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Art des Interaktionselements</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Selecting the type of interaction element</span>
                 </div>
-                <button class="button button--secondary" @click="addTaskStep(null)">Hinzufügen</button>
+                <button class="button button--secondary" @click="addTaskStep(null)">Add</button>
             </div>
             <div class="tooltip--bottom" style="width: 100%">
                 <input v-show="typeSelection === 'input'" id="input-example" class="input" type="text" placeholder="Beispiel Eingabe" v-model="exampleInput">
-                <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Beispiel für ein Interaktionselement des Typs 'Eingabe'</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Input example of an interaction element of the 'Input' type</span>
             </div>
             <div v-show="showError" class="task-definition__error-note">
                 <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
@@ -102,7 +102,7 @@ export default {
             if (selected === 'element') {
                 if (this.typeSelection === '') {
                     this.showError = true;
-                    this.errorMessage = 'Bitte wähle einen Interaktionstypen aus.'
+                    this.errorMessage = 'Please select an interaction type.'
                 } else {
                     switch(this.typeSelection) {
                         case 'clickElement':
@@ -113,7 +113,7 @@ export default {
                                 dispatch('checkInputValidity', this.exampleInput);
                             } else {
                                 this.showError = true;
-                                this.errorMessage = 'Bitte trage ein Beispiel für die Eingabe ein.';
+                                this.errorMessage = 'Please enter an example of the input.';
                             }
                             break;
                         case 'link':
@@ -123,17 +123,17 @@ export default {
                 }
             } else if (selected === 'annotation') {
                 this.showError = true;
-                this.errorMessage = 'Du scheinst die Gruppierung von Element und Annotation gewählt zu haben. Bitte wähle nur das Interaktionselement aus.'
+                this.errorMessage = 'You seem to have selected the grouping of element and annotation. Please select only the interaction element.'
             } else if (selected === null) {
                 this.showError = true;
-                this.errorMessage = 'Bitte wähle ein Interaktionselement aus.'
+                this.errorMessage = 'Please select an interaction element.'
             }
         });
 
         handleEvent('buttonValidity', validity => {
             if (!validity) {
                 this.showError = true;
-                this.errorMessage = 'Ein Klickelement sollte im Idealfall min. 44x44 px groß sein.'
+                this.errorMessage = 'A click element should ideally be at least 44x44 px.'
             }
             this.addValidTaskStep();
         });
@@ -146,14 +146,14 @@ export default {
         handleEvent('inputValidity', validity => {
             if (!validity) {
                 this.showError = true;
-                this.errorMessage = 'Die Größe des Eingabefeldes sollte angepasst werden, da der angegebenen Beispielinhalt nicht hinein passt.'
+                this.errorMessage = 'The size of the input field should be adjusted because the given example content does not fit into it.'
             }
             this.addValidTaskStep();
         });
         handleEvent('linkValidity', validity => {
             if (!validity) {
                 this.showError = true;
-                this.errorMessage = 'Ein Textlink sollte nicht über mehrere Zeilen gehen. Ein grafischer Link sollte im Idealfall min. 44x44 px groß sein.'
+                this.errorMessage = 'A text link should not extend over several lines. A graphic link should ideally be at least 44x44 px.'
             }
             this.addValidTaskStep();
         });
@@ -166,13 +166,13 @@ export default {
                     this.tasks.push({ taskname: this.tasknameInput, color: this.getRandomColor(), steps: [] });
                 } else {
                     this.showError = true;
-                    this.errorMessage = 'Es existiert bereits eine Aufgabe mit diesem Namen. Füge dieser Aufgabe weitere Bearbeitungsschritte hinzu oder wähle einen anderen Namen.'
+                    this.errorMessage = 'A task with this name already exists. Add further processing steps to this task or choose a different name.'
                 }
                 this.setTaskStorage();
                 this.$store.commit('tasks', this.tasks);
             } else {
                 this.showError = true;
-                this.errorMessage = 'Bitte wähle einen Namen für die Aufgabe.';
+                this.errorMessage = 'Please choose a name for the task.';
             }
 		},
         addTaskStep(index) {
@@ -181,7 +181,7 @@ export default {
                 dispatch('checkSelection');
             } else {
                 this.showError = true;
-                this.errorMessage = 'Bitte wähle eine Aufgabe aus, um einen Schritt hinzuzufügen.';
+                this.errorMessage = 'Please select a task to add a step.';
             }
         },
         addTaskStepAtIndex(index) {
@@ -203,7 +203,7 @@ export default {
                             return;
                         } else {
                             this.showError = true;
-                            this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum voherigen Schritt bzw. zu der vorherigen Seite besteht.';
+                            this.errorMessage = 'The step could not be added because there is no connection to the previous step or page.';
                         }
                     });
                 } else {
@@ -219,7 +219,7 @@ export default {
                             return;
                         } else {
                             this.showError = true;
-                            this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum nachfolgenden Schritt bzw. zu der nachfolgenden Seite besteht.';
+                            this.errorMessage = 'The step could not be added because there is no connection to the following step or page.';
                         }
                     });
                 } else if (this.index > 0) {
@@ -233,12 +233,12 @@ export default {
                                     return;
                                 } else {
                                     this.showError = true;
-                                    this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum nachfolgenden Schritt bzw. zu der nachfolgenden Seite besteht.';
+                                    this.errorMessage = 'The step could not be added because there is no connection to the following step or page.';
                                 }
                             });
                         } else {
                             this.showError = true;
-                            this.errorMessage = 'Der Schritt konnte nicht hinzugefügt werden, da keine Verbindung zum vorherigen Schritt bzw. zu der vorherigen Seite besteht.';
+                            this.errorMessage = 'The step could not be added because there is no connection to the previous step or page.';
                         }
                     });
                 }
@@ -300,7 +300,7 @@ export default {
                                                 this.$store.commit('tasks', this.tasks);
                                             } else {
                                                 this.showError = true;
-                                                this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem vorangehenden (nach Verschieben) Schritt.';
+                                                this.errorMessage = 'The machining steps could not be swapped. There is no connection between the moved and the previous (after moving) step.';
                                             }
                                         });
                                     } else {
@@ -312,7 +312,7 @@ export default {
                                     }
                                 } else {
                                     this.showError = true;
-                                    this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem darauffolgenden (nach Verschieben) Schritt.';
+                                    this.errorMessage = 'The machining steps could not be swapped. There is no connection between the moved and the following (after moving) step.';
                                 }
                             });
                         }
@@ -343,7 +343,7 @@ export default {
                                                 this.$store.commit('tasks', this.tasks);
                                             } else {
                                                 this.showError = true;
-                                                this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem vorangehenden (nach Verschieben) Schritt.';
+                                                this.errorMessage = 'The machining steps could not be swapped. There is no connection between the moved and the previous (after moving) step.';
                                             }
                                         });
                                     } else {
@@ -355,7 +355,7 @@ export default {
                                     }
                                 } else {
                                     this.showError = true;
-                                    this.errorMessage = 'Die Bearbeitungsschritte konnten nicht getauscht werden. Es liegt keine Verbindung zwischen dem verschobenen und dem darauffolgenden (nach Verschieben) Schritt.';
+                                    this.errorMessage = 'The machining steps could not be swapped. There is no connection between the moved and the following (after moving) step.';
                                 }
                             });
                             break;

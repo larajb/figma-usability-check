@@ -1,38 +1,38 @@
 export const evaluationProfilesArray = [
     {
-        title: 'Attraktivität',
+        title: 'Attractiveness',
         metrics: [
-            'Farbkonsistenz',
-            'Schriftkonsistenz',
+            'Color consistency',
+            'Font consistency',
         ],
     },
     {
-        title: 'Konsistenz',
+        title: 'Consistency',
         metrics: [
-            'Farbkonsistenz',
-            'Schriftkonsistenz',
+            'Color consistency',
+            'Font consistency',
         ],
     },
     {
-        title: 'Lesbarkeit',
+        title: 'Readability',
         metrics: [
-            'Schriftkonsistenz',
-            'Schriftgröße',
+            'Font consistency',
+            'Font size',
         ],
     },
     {
-        title: 'Präsentation',
+        title: 'Presentation',
         metrics: [
-            'Farbkonsistenz',
-            'Schriftkonsistenz',
-            'Schriftgröße',
+            'Color consistency',
+            'Font consistency',
+            'Font size',
         ],
     },
     {
-        title: 'Navigierbarkeit',
+        title: 'Navigability',
         metrics: [
-            'Verweis auf Startseite',
-            'Verwaiste Seiten',
+            'Reference to homepage',
+            'Orphan pages',
         ],
     },
 ]

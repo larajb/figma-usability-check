@@ -3,34 +3,34 @@
 		<div style="display: flex; margin-bottom: 20px;">
 			<div class="tooltip--bottom">
 				<IconButton @click="backToStart" :icon="'back'" style="margin-top: -8px; margin-bottom: 0px;" />
-				<span class="type--pos-small-normal tooltiptext--bottom">Zurück zum Start</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Back to start</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-aufgaben" class="type--pos-medium-normal taskEval-ui__menu taskEval-ui__menu--first" @click="setCurrentPage('TaskDefinition')">Aufgaben</div>
-				<span class="type--pos-small-normal tooltiptext--bottom">Aufgabendefinition</span>
+				<div id="select-aufgaben" class="type--pos-medium-normal taskEval-ui__menu taskEval-ui__menu--first" @click="setCurrentPage('TaskDefinition')">Tasks</div>
+				<span class="type--pos-small-normal tooltiptext--bottom">Task definition</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-szenarien" class="type--pos-medium-normal taskEval-ui__menu" @click="setCurrentPage('ScenarioDefinition')">Szenarien</div>
-				<span class="type--pos-small-normal tooltiptext--bottom">Szenariendefinition</span>
+				<div id="select-szenarien" class="type--pos-medium-normal taskEval-ui__menu" @click="setCurrentPage('ScenarioDefinition')">Scenarios</div>
+				<span class="type--pos-small-normal tooltiptext--bottom">Scenario definition</span>
 			</div>
 			<div class="tooltip--bottom">
 				<div id="select-evaluation" class="type--pos-medium-normal taskEval-ui__menu" :class="{'taskEval-ui--disabled': (tasks.length === 0) && (scenarios.length === 0)}" @click="setCurrentPage('Evaluation')">Evaluation</div>
-				<span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Aufgaben/Szenarien zur Evaluation</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Selection of tasks/scenarios for evaluation</span>
 			</div>
 			<div class="tooltip--bottom">
 				<div id="select-ergebnisse" class="type--pos-medium-normal taskEval-ui__menu" :class="{'taskEval-ui--disabled': evaluationReady === false }" @click="setResultsPage">
-					Ergebnisse
+					Results
 					<div :class="{ 'taskEval-ui__notification': showNotification }"></div>
 				</div>
-				<span class="type--pos-small-normal tooltiptext--bottom">Darstellung der Evaluationsergebnisse</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Presentation of the evaluation results</span>
 			</div>
 			<div class="tooltip--bottom">
 				<IconButton id="select-dokumentation" @click="setCurrentPage('Documentation')" :icon="'library'" style="margin-top: -8px; margin-bottom: 0px;" />
-				<span class="type--pos-small-normal tooltiptext--bottom">Dokumentation/Hilfe zur Nutzung des Plugins</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Documentation/help for using the plugin</span>
 			</div>
 		</div>
 		<p class="type--pos-large-bold">
-			Aufgaben-Evaluation
+			Task evaluation
 		</p>
 		<task-definition v-show="currentPage === 'TaskDefinition'" />
 		<scenario-definition v-show="currentPage === 'ScenarioDefinition'" />

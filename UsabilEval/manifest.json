@@ -9,9 +9,9 @@
 	},
 	"editorType": ["figma"],
 	"menu": [
-		{"name": "Startseite", "command": "start"},
-		{"name": "Metriken-Evaluation", "command": "metricEval"},
-		{"name": "Aufgaben-Evaluation", "command": "taskEval"}
+		{"name": "Startpage", "command": "start"},
+		{"name": "Metrics Evaluation", "command": "metricEval"},
+		{"name": "Task Evaluation", "command": "taskEval"}
 	],
 	"id": "1094202341925042367"
 }

@@ -1,13 +1,13 @@
 <template>
     <div v-show="content !== undefined">
-        <p class="type--pos-medium-bold">Vergleich: {{ content.taskname }}, {{ content.evaluationRuns[0].comparison.taskname }}</p>
-        <p class="type--pos-small-normal">Ein Klick auf eine Aufgabe öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
+        <p class="type--pos-medium-bold">Comparison: {{ content.taskname }}, {{ content.evaluationRuns[0].comparison.taskname }}</p>
+        <p class="type--pos-small-normal">A click on a task opens a detailed view. A click on the background of the diagram closes the detailed view.</p>
         <div id="goms" class="task-results-comparison__goms" v-if="content.evaluationRuns[0].goms !== null">
             <bar-chart class="task-results-comparison__chart" :chart-data="chartData" :options="chartOptions" @clicked="handleClick($event)" />
             <table v-if="taskToShow === ''">
                 <tr>
                     <td align="top"><Icon icon="timer" /></td>
-                    <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
+                    <td align="top"><p class="type--pos-medium-bold">Duration of goal achievement:</p></td>
                 </tr>
                 <tr>
                     <td align="top"></td>
@@ -114,7 +114,7 @@ export default {
             this.content.evaluationRuns[0].goms.stepsTimes.forEach(stepTime => {
                 index ++;
                 this.chartData.datasets.push({
-                    label: 'Schritt' + index.toString(),
+                    label: 'Step' + index.toString(),
                     data: [[time.toFixed(2), (time + stepTime).toFixed(2)], [0, 0]],
                     backgroundColor: firstTask.color,
                 });
@@ -126,7 +126,7 @@ export default {
             this.content.evaluationRuns[0].comparison.goms.stepsTimes.forEach(stepTime => {
                 index ++;
                 this.chartData.datasets.push({
-                    label: 'Schritt' + index.toString(),
+                    label: 'Step' + index.toString(),
                     data: [[0, 0], [time.toFixed(2), (time + stepTime).toFixed(2)]],
                     backgroundColor: secondTask.color,
                 });

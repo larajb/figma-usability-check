@@ -1,11 +1,11 @@
 <template>
     <div>
-        <p class="type--pos-medium-normal">Im Folgenden werden die Ergebnisse deiner Evaluation der Frames <i>{{ getSelectedFramesAsString() }}</i> dargestellt</p>
+        <p class="type--pos-medium-normal">The following are the results of your evaluation of the frames <i>{{ getSelectedFramesAsString() }}</i></p>
         <div v-for="(result, index) in results" :key="index">
             <result-list-entry :result="result"></result-list-entry>
         </div>
         <div style="display: flex; margin-top: 20px" v-if="foundResults.length > 0">
-            <p class="type--pos-medium-bold">Vorherige Evaluationen dieser Frames</p>
+            <p class="type--pos-medium-bold">Previous evaluations of these frames</p>
             <IconButton @click="showHistory = !showHistory" :icon="showHistory ? 'caret-down' : 'caret-right'" />
         </div>
         <div v-if="showHistory" style="margin-left: 20px">

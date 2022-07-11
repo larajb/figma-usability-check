@@ -52,25 +52,25 @@ export const metricEvalView = () => {
         var results = [];
         args.selectedMetrics.forEach(metric => {
             switch (metric) {
-                case 'Farbkonsistenz':
+                case 'Color consistency':
                     var localColorConsistencyResult = localColorConsistency(args.selectedFrames);
-                    results.push({ metric: 'Farbkonsistenz', value: localColorConsistencyResult.value, nodes: localColorConsistencyResult.nodes, type: 'colorStyle' });
+                    results.push({ metric: 'Color consistency', value: localColorConsistencyResult.value, nodes: localColorConsistencyResult.nodes, type: 'colorStyle' });
                     break;
-                case 'Schriftkonsistenz':
+                case 'Font consistency':
                     var localFontConsistencyResult = localFontConsistency(args.selectedFrames);
-                    results.push({ metric: 'Schriftkonsistenz', value: localFontConsistencyResult.value, nodes: localFontConsistencyResult.nodes, type: 'fontStyle' });
+                    results.push({ metric: 'Font consistency', value: localFontConsistencyResult.value, nodes: localFontConsistencyResult.nodes, type: 'fontStyle' });
                     break;
-                case 'Verweis auf Startseite':
+                case 'Reference to homepage':
                     var homepageReferenceResult = homepageReference(args.selectedFrames, args.homepage);
-                    results.push({ metric: 'Verweis auf Startseite', value: homepageReferenceResult.value, nodes: homepageReferenceResult.nodes, type: 'single' });
+                    results.push({ metric: 'Reference to homepage', value: homepageReferenceResult.value, nodes: homepageReferenceResult.nodes, type: 'single' });
                     break;
-                case 'Verwaiste Seiten':
+                case 'Orphan pages':
                     var orphanPagesResult = orphanPages(args.selectedFrames);
-                    results.push({ metric: 'Verwaiste Seiten', value: orphanPagesResult.value, nodes: orphanPagesResult.nodes, type: 'single' });
+                    results.push({ metric: 'Orphan pages', value: orphanPagesResult.value, nodes: orphanPagesResult.nodes, type: 'single' });
                     break;
-                case 'Schriftgröße':
+                case 'Font size':
                     var fontSizeResult = fontSize(args.selectedFrames);
-                    results.push({ metric: 'Schriftgröße', value: fontSizeResult.value, nodes: fontSizeResult.nodes, type: 'single' });
+                    results.push({ metric: 'Font size', value: fontSizeResult.value, nodes: fontSizeResult.nodes, type: 'single' });
                     break;
             }
         });

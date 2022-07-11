@@ -1,12 +1,12 @@
 <template>
     <div class="start-ui">
-        <p class="type--pos-large-bold">Hallo!</p>
-        <p class="type--pos-medium-normal">Mit diesem Plugin kannst du automatische Usability-Evaluationen durchführen. Du kannst vordefinierte Metriken nutzen oder die Evaluation anhand von selbst definierten Interaktionsfolgen durchführen lassen.<p>
+        <p class="type--pos-large-bold">Hello!</p>
+        <p class="type--pos-medium-normal">With this plugin you can perform automatic usability evaluations. You can use predefined metrics or have the evaluation carried out on the basis of self-defined interaction sequences.<p>
         <img src="../img/usability.jpg" width="300" />
-        <p class="type--pos-medium-normal">Möchtest du die Evaluation mit Metriken durchführen?</p>
-        <button class="button button--primary" @click="metricEval">Metriken-Evaluation</button>
-        <p class="type--pos-medium-normal">Möchtest du eigene Funktionsabläufe erstellen und evaluieren?</p>
-        <button class="button button--primary" @click="taskEval">Aufgaben-Evaluation</button>
+        <p class="type--pos-medium-normal">Do you want to do the evaluation with metrics?</p>
+        <button class="button button--primary" @click="metricEval">Metrics evaluation</button>
+        <p class="type--pos-medium-normal">Would you like to create and evaluate your own functional processes?</p>
+        <button class="button button--primary" @click="taskEval">Task evaluation</button>
     </div>
 </template>
 

@@ -1,27 +1,27 @@
 export const usabilitySmellsArray = [
     {
-        title: 'Zu viele Schichten',
-        description: 'Die Anwendung besitzt zu viele Fenster und der/die Benutzer/in muss fünf oder mehr Fenster durchlaufen.',
-        refactoring: 'Es könnte helfen Verknüpfungen zu allen relevanten Fenstern (bspw. über ein Menü) zu erstellen.'
+        title: 'Too many layers',
+        description: 'The application has too many windows and the user has to go through five or more windows.',
+        refactoring: 'It could help to create links to all relevant windows (e.g. via a menu).'
     },
     {
-        title: 'Hohe Website-Element-Abstände',
-        description: 'Elemente einer Webseite, die zur Erledigung einer Aufgabe notwendig sind, sollten möglichst nah aneinander positioniert werden.',
-        refactoring: 'Es könnte helfen, die Elemente näher aneinander zu positionieren, bspw. auf die gleiche Seite zu bringen.',
+        title: 'High website element distance',
+        description: 'Elements of a web page that are necessary to complete a task should be positioned as close to each other as possible.',
+        refactoring: 'It might help to position the elements closer together, e.g. on the same side.',
     },
     {
-        title: 'Entfernter Inhalt',
-        description: 'Auf diesem Navigationspfad wird ein Fenster schnell überschritten und nur zu Navigation verwendet.',
-        refactoring: 'Links zu entfernten Inhalten können helfen.',
+        title: 'Distant content',
+        description: 'On this navigation path, a window is quickly exceeded and only used for navigation.',
+        refactoring: 'Links to distant content can help.',
     },
     {
-        title: 'Langes Anvisieren',
-        description: 'Das Anvisieren eines Interaktionselements dauert verhältnismäßig lange.',
-        refactoring: 'Es könnte helfen, aufeinander folgende Elemente in Bezug auf die x- und y-Position näher aneinander zu positionieren oder das Interaktionselement zu vergrößern.',
+        title: 'Long pointing',
+        description: 'Targeting an interaction element takes a relatively long time.',
+        refactoring: 'It might help to position successive elements closer to each other in terms of x and y position or to enlarge the interaction element.',
     },
     {
-        title: 'Viele Maus-Tastatur-Wechsel',
-        description: 'Bei der Interaktion mit einer Maus und einer Tastatur sind verhältnismäßig viele Wechsel notwendig.',
-        refactoring: 'Ggf. könnte es helfen, die Reihenfolge der Schritte zu ändern oder mehrere Schritte zusammenzufassen. In der Implementierung könnte eine Tabulatorsteuerung helfen.',
+        title: 'Many mouse-keyboard changes',
+        description: 'When interacting with a mouse and a keyboard, a relatively large number of changes are necessary.',
+        refactoring: 'If necessary, it could help to change the order of the steps or to combine several steps. In the implementation, a tab control could help.',
     }
 ];

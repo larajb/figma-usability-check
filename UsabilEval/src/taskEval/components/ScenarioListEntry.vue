@@ -7,7 +7,7 @@
             <div style="display: flex;">
                 <div class="tooltip--bottom">
                     <IconButton @click="deleteScenario" :icon="'trash'" />
-                    <span class="type--pos-small-normal tooltiptext--bottom">Szenario löschen</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Delete scenario</span>
                 </div>
             </div>
         </div>

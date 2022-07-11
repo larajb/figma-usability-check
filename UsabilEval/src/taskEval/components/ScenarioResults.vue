@@ -1,7 +1,7 @@
 <template>
     <div v-show="content !== undefined">
         <p class="type--pos-medium-bold">{{ content.scenarioname }}</p>
-        <p class="type--pos-small-normal">Ein Klick auf eine Aufgabe öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
+        <p class="type--pos-small-normal">A click on a task opens a detailed view. A click on the background of the diagram closes the detailed view.</p>
         <div id="tasks" v-if="content.evaluationRuns[0].gomsTimes !== null">
             <bar-chart class="scenario-result__chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
         </div>
@@ -10,7 +10,7 @@
                 <table>
                     <tr>
                         <td align="top"><Icon icon="timer" /></td>
-                        <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
+                        <td align="top"><p class="type--pos-medium-bold">Duration of goal achievement</p></td>
                     </tr>
                     <tr>
                         <td align="top"></td>
@@ -46,7 +46,7 @@
                 <table>
                     <tr>
                         <td align="top"><Icon icon="warning" /></td>
-                        <td align="top"><p class="type--pos-medium-bold">Erweitert für {{ content.scenarioname }}</p></td>
+                        <td align="top"><p class="type--pos-medium-bold">Extended for {{ content.scenarioname }}</p></td>
                     </tr>
                     <tr v-for="(smell, index) in content.evaluationRuns[0].usabilitySmells" :key="index">
                         <td align="top"></td>
@@ -63,7 +63,7 @@
                             <Icon icon="smiley" />
                         </td>
                         <td align="top">
-                            <p class="type--pos-medium-normal">In dem Szenario wurden keine Hinweise auf Usability-Probleme gefunden.</p>
+                            <p class="type--pos-medium-normal">No indications of usability problems were found in the scenario.</p>
                         </td>
                     </tr>
                 </table>

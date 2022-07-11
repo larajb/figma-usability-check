@@ -1,13 +1,13 @@
 <template>
     <div>
-        <p class="type--pos-medium-bold">Vergleich: {{ content.scenarioname }}, {{ content.evaluationRuns[0].comparison.scenarioname }}</p>
-        <p class="type--pos-small-normal">Ein Klick auf ein Szenario öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
+        <p class="type--pos-medium-bold">Comparison: {{ content.scenarioname }}, {{ content.evaluationRuns[0].comparison.scenarioname }}</p>
+        <p class="type--pos-small-normal">A click on a scenario opens a detailed view. A click on the background of the diagram closes the detailed view.</p>
         <div id="tasks" class="scenario-results-comparison__goms" v-if="content.evaluationRuns[0].gomsTimes !== null">
             <bar-chart class="scenario-results-comparison__chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
             <table v-if="scenarioToShow === ''">
                 <tr>
                     <td align="top"><Icon icon="timer" /></td>
-                    <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
+                    <td align="top"><p class="type--pos-medium-bold">Duration of goal achievement:</p></td>
                 </tr>
                 <tr>
                     <td align="top"></td>

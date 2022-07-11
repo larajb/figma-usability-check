@@ -1,54 +1,37 @@
 <template>
     <div class="documentation--scrollable">
-        <p class="type--pos-medium-bold">Anleitung zur Nutzung des Plugins</p>
+        <p class="type--pos-medium-bold">Instructions for using the plugin</p>
         <p class="type--pos-medium-normal">
-            Dieses Plugin dient zur Usability-Evaluation von UI-Entwürfen. Die Evaluation erfolgt dabei auf Basis von Aufgaben und Szenarien. Eine Aufgabe beschreibt eine 
-            Zusammenstellung einzelner Interaktionen zur Erreichung eines Ziels. Übergeordnet können Szenarien definiert werden, die mehrere Aufgaben kombinieren. Damit können 
-            komplexere Interaktionsfolgen untersucht werden.
+            This plugin is used for the usability evaluation of UI designs. The evaluation is based on tasks and scenarios. A task describes a of individual interactions to achieve a goal. Higher-level scenarios can be defined that combine several tasks. In this way complex sequences of interactions can be investigated.
             <br>
             <br>
-            Für eine korrekte Evaluation durch das Plugin sollte das Prototyping-System von Figma genutzt werden.
+            For a correct evaluation by the plugin, Figma's prototyping system should be used.
         </p>
         <div id="tasks">
             <div style="display: flex;">
-                <p class="type--pos-medium-bold">Aufgabendefinition</p>
+                <p class="type--pos-medium-bold">Task definition</p>
                 <IconButton @click="showTaskDefinition = !showTaskDefinition" :icon="showTaskDefinition ? 'caret-down' : 'caret-right'" />
             </div>
             <div v-if="showTaskDefinition" style="margin-left: 20px">
                 <p class="type--pos-medium-normal">
-                    Auf der Seite unter dem Reiter <i>Aufgaben</i> können einzelne Aufgaben erzeugt, bearbeitet und gelöscht werden. Zur Erzeugung einer Aufgabe muss in dem ersten 
-                    Eingabefeld eine Name eingegeben werden. Ein Klick auf den Button <i>Erstellen</i> fügt die Aufgabe hinzu, sofern der Name noch nicht verwendet wird. Nachdem eine 
-                    neue Aufgabe hinzugefügt wurde, können ihr Bearbeitungsschritte hinzugefügt werden. Ein Bearbeitungsschritt ist die Interaktion mit einem Interaktionselement. Das 
-                    Plugin sieht die Verwendung der folgenden drei Interaktionselemente vor:
+                    On the page under the tab <i>Tasks</i>, individual tasks can be created, edited and deleted. To create a task, a name must be entered in the first input field. A click on the <i>Create</i> button adds the task if the name is not already used. After a new task has been added, editing steps can be added to it. An editing step is the interaction with an interaction element. The plugin provides for the use of the following three interaction elements:
                     <ul>
-                        <li>Eingabe</li>
-                        <li>Klickelement</li>
+                        <li>Input</li>
+                        <li>Click element</li>
                         <li>Link</li>
                     </ul>
-                    Um einen Bearbeitungsschritt hinzuzufügen, muss innerhalb des Entwurfes ein Interaktionselements und im Plugin der Interaktionstyp ausgewählt werden. 
-                    Anschließend kann der Bearbeitungsschritt über den Button <i>Hinzufügen</i> hinzugefügt werden. Der Bearbeitungsschritt wird dann der Aufgabe hinzugefügt, 
-                    dessen Name im Eingabefeld darüber steht. Um die Reihenfolge der Bearbeitungsschritte zu ändern oder einen einzelnen Bearbeitungsschritt zu entfernen, muss in den 
-                    Bearbeitungsmodus gewechselt werden, indem der Schieberegler an der entsprechenden Aufgabe aktiviert wird. Innerhalb des Bearbeitungsmodus können außerdem die 
-                    Bearbeitungsschritte in eine andere Aufgabe kopiert werden. Um eine ganze Aufgabe zu löschen, muss das Papierkorb-Icon neben dem Aufgabennnamen in der 
-                    Aufgabenliste geklickt werden.
-                    <br>
-                    <br>
-                    Hinweis: Eine Aufgabe sollte nicht in einem Overlay starten.
+                    To add an editing step, an interaction element must be selected within the design and the interaction type in the plugin. Then the processing step can be added via the <i>Add</i> button. The processing step is then added to the task whose name is in the input field above it. To change the order of the editing steps or to remove an individual editing step, it is necessary to switch to editing mode by activating the slider at the corresponding task. Within the editing mode, the editing steps can also be copied into another task. To delete an entire task, click the trash can icon next to the task name in the task list.
                 </p>
             </div>
         </div>
         <div id="scenarios">
             <div style="display: flex;">
-                <p class="type--pos-medium-bold">Szenariendefinition</p>
+                <p class="type--pos-medium-bold">Scenario definition</p>
                 <IconButton @click="showScenarioDefinition = !showScenarioDefinition" :icon="showScenarioDefinition ? 'caret-down' : 'caret-right'" />
             </div>
             <div v-if="showScenarioDefinition" style="margin-left: 20px">
                 <p class="type--pos-medium-normal">
-                    Wenn eine oder mehrere Aufgaben definiert wurden, können über den Reiter <i>Szenarien</i> Szenarien erstellt werden. Szenarien dienen dazu mehrere Aufgaben, die 
-                    zur Erreichung eines gemeinsamen Ziels beitragen, zu gruppieren. Dazu muss zuerst ein Szenario erstellt werden, indem im ersten Eingabefeld auf der entsprechenden 
-                    Seite ein Name eingefügt wird und anschließend mit Klick auf den Button <i>Erstellen</i> erzeugt wird. Wenn es noch kein Szenario mit diesem Namen gibt, wird 
-                    das neue Szenario in der Szenarienliste im unteren Bereich des Fensters dargestellt. Nun kann bzw. können über die Auswahl eine oder mehrere Aufgaben (nacheinander) 
-                    ausgewählt und zu deinem Szenario hinzugefügt werden.
+                    If one or more tasks have been defined, scenarios can be created via the <i>Scenarios</i> tab. Scenarios are used to group several tasks that contribute to achieving a common goal. To do this, a scenario must first be created by inserting a name in the first input field on the corresponding page and then creating it by clicking on the <i>Create</i> button. If there is no scenario with this name yet, the new scenario is displayed in the scenario list in the lower part of the window. Now one or more tasks can be selected (one after the other) via the selection and added to your scenario.
                 </p>
             </div>
         </div>
@@ -59,76 +42,64 @@
             </div>
             <div v-if="showEvaluation" style="margin-left: 20px">
                 <p class="type--pos-medium-normal">
-                    Die Evaluation kann entweder auf Aufgaben- oder Szenarienebene durchgeführt werden.
+                    The evaluation can be carried out either at task or scenario level.
                     <br>
                     <br>
-                    Zur Evaluation einer Aufgabe muss unter dem Reiter <i>Evaluation</i> die <i>Aufgaben-Evaluation</i> ausgewählt werden. Dort können eine oder zwei Aufgaben zur 
-                    Evaluation ausgewählt werden. Werden zwei Aufgaben gewählt, dient die zweite als Vergleichsaufgabe. Beide Aufgaben werden vollständig evaluiert (Vorhersage für 
-                    die Bearbeitungsdauer, Suche nach Hinweismustern für Usability-Probleme). Die Darstellung der Ergebnisse konzentriert sich aber auf die Evaluation der ersten 
-                    Aufgabe mit Informationen zum Vergleich der beiden Aufgaben.
+                    To evaluate a task, the task evaluation must be selected under the tab <i>Evaluation</i>. There, one or two tasks can be selected for evaluation. If two tasks are selected, the second one serves as a comparison task. Both tasks are evaluated completely (prediction for processing time, search for clues for usability problems). The presentation of the results, however, focuses on the evaluation of the first task with information on the comparison of the two tasks.
                     <br>
                     <br>
-                    Zur Evaluation eines Szenarios muss unter dem Reiter <i>Evaluation</i> die <i>Szenarien-Evaluation</i> ausgewählt werden. Dort kann anschließend ein Szenario zur 
-                    Evaluation ausgesucht werden. Die Evaluation erfolgt auf Basis der einzelnen Aufgaben. Ergänzend dazu werden die Übergangsbereiche zwischen den Aufgaben 
-                    untersucht.
+                    To evaluate a scenario, the scenario evaluation must be selected under the <i>Evaluation</i> tab. A scenario can then be selected for evaluation. The evaluation is done on the basis of the individual tasks. In addition, the transition areas between the tasks are examined.
                 </p>
             </div>
         </div>
         <div id="results">
             <div style="display: flex;">
-                <p class="type--pos-medium-bold">Ergebnisdarstellung</p>
+                <p class="type--pos-medium-bold">Presentation of results</p>
                 <IconButton @click="showResults = !showResults" :icon="showResults ? 'caret-down' : 'caret-right'" />
             </div>
             <div v-if="showResults" style="margin-left: 20px">
                 <p class="type--pos-medium-normal">
-                    Nach der Evaluation können die Ergebnisse unter dem Reiter <i>Ergebnisse</i> eingesehen werden.
+                    After the evaluation, the results can be viewed under the <i>Results</i> tab.
                     <br>
                     <br>
-                    Bei der Evaluation einer Aufgabe wird eine zeitliche Übersicht über die verschiedenen zur Bearbeitung der Aufgabe notwendigen Aktionen dargestellt. Darunter wird 
-                    die Zeit zur Bearbeitung der Aufgabe angegeben. Falls eine Vergleichsaufgabe angegeben wurde, wird auch ihre Dauer hier angezeigt. Falls Hinweismuster auf 
-                    Usability-Probleme gefunden wurden, werden sie unter der Darstellung der Bearbeitungsdauer aufgelistet. Falls sich das Hinweismuster auf einen bestimmten 
-                    Bearbeitungsschritt bezieht, wird dieser neben einer Beschreibung des Problems und einem Hinweis zur Behebung hier angegeben.
+                    When evaluating a task, a time overview of the different actions necessary to complete the task is shown. Below this, the time needed to complete the task is indicated. If a comparison task was specified, its duration is also shown here. If clue patterns for usability problems were found, they are listed under the representation of the processing time. If the hint pattern refers to a specific processing step, it is indicated here along with a description of the problem and a hint on how to solve it.
                     <br>
                     <br>
-                    Die folgenden Hinweismuster können zur Zeit durch das Plugin gefunden werden:
+                    The following clue patterns can currently be found through the plugin:
                     <ul>
                         <li v-for="(smell, index) in usabilitySmells" :key="index">{{ smell.title }}</li>
                     </ul>
                     <br>
                     <br>
-                    Bei der Evaluation eines Szenarios wird ein Balkendiagramm dargestellt, in dem die Bearbeitungsdauer des gesamten Szenarios dargestellt wird. Dabei werden die 
-                    Zeiten der einzelnen Aufgaben farblich unterschieden. Der Klick auf den Balken einer Aufgabe öffnet darunter die Detailansicht der Evaluation, die der zuvor 
-                    beschrieben Ansicht bei der Aufgabenevaluation entspricht. Wenn keine Aufgabe ausgewählt ist, wird unter dem Balkendiagramm die Gesamtbearbeitungsdauer und 
-                    die in den Übergängen gefundenen Hinweismuster dargestellt. Um aus der Aufgabenansicht wieder auf die Szenarienansicht zurück zu kommen, muss innerhalb den 
-                    Graphen außerhalb der Aufgabenbalken geklickt werden.
+                    When evaluating a scenario, a bar chart is displayed showing the processing time of the entire scenario. The times of the individual tasks are differentiated by colour. Clicking on the bar of a task opens the detailed view of the evaluation below it, which corresponds to the view described above for task evaluation. If no task is selected, the total processing time and the clue patterns found in the transitions are shown below the bar chart. To return from the task view to the scenario view, click inside the graph outside the task bars.
                 </p>
             </div>
         </div>
         <div id="abbreviations">
             <div style="display: flex;">
-                <p class="type--pos-medium-bold">Verwendete Abkürzungen</p>
+                <p class="type--pos-medium-bold">Abbreviations used</p>
                 <IconButton @click="showAbbreviations = !showAbbreviations" :icon="showAbbreviations ? 'caret-down' : 'caret-right'" />
             </div>
             <table v-if="showAbbreviations" class="documentation__table" style="margin-left: 20px">
                 <tr>
                     <td valign="top"><p class="type--pos-small-normal">H</p></td>
-                    <td valign="top"><p class="type--pos-small-normal">Homing: "Homing" bezeichnet bei der Interaktion mit einer Benutzungsoberfläche den Wechsel zwischen der Maus und der Tastatur.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Homing: "Homing" refers to switching between the mouse and keyboard when interacting with a user interface.</p></td>
                 </tr>
                 <tr>
                     <td valign="top"><p class="type--pos-small-normal">K</p></td>
-                    <td valign="top"><p class="type--pos-small-normal">Keystroke: "Keystroke" bezeichnet sowohl Tasten- als auch Mausklicks.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Keystroke: "Keystroke" refers to both key and mouse clicks.</p></td>
                 </tr>
                 <tr>
                     <td valign="top"><p class="type--pos-small-normal">M</p></td>
-                    <td valign="top"><p class="type--pos-small-normal">Mentally Prepare: "Mentally Prepare" wird bei der Interaktion mit einer Benutzungsoberfläche dort eingefügt, wo ein/e Nutzer*in sich mental auf die folgenden Tätigkeiten vorbereiten muss.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Mentally Prepare: "Mentally Prepare" is inserted during interaction with a user interface where a user needs to mentally prepare for the following activities.</p></td>
                 </tr>
                 <tr>
                     <td valign="top"><p class="type--pos-small-normal">P</p></td>
-                    <td valign="top"><p class="type--pos-small-normal">Pointing: "Pointing" bezeichnet den Prozess des Anvisierens eines Interaktionselement. Die Dauer ist dabei abhängig von der Größe des Zielelements und der aktuellen Entfernung des Mauscursors vom Ziel.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Pointing: "Pointing" refers to the process of targeting an interaction element. The duration depends on the size of the target element and the current distance of the mouse cursor from the target.</p></td>
                 </tr>
                 <tr>
                     <td valign="top"><p class="type--pos-small-normal">R</p></td>
-                    <td valign="top"><p class="type--pos-small-normal">Responding: "Responding" bezeichnet Momente, in denen auf eine Rückmeldung des Systems gewartet werden muss. Hier werden damit vor allem Seitenwechsel markiert.</p></td>
+                    <td valign="top"><p class="type--pos-small-normal">Responding: "Responding" refers to moments in which a response from the system must be waited for. Here, it is mainly used to mark page changes.</p></td>
                 </tr>
             </table>
         </div>

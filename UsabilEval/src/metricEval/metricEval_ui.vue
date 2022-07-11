@@ -3,31 +3,31 @@
 		<div style="display: flex">
 			<div class="tooltip--bottom">
 				<IconButton @click="backToStart" :icon="'back'" style="margin-top: -8px; margin-bottom: 0px;" />
-				<span class="type--pos-small-normal tooltiptext--bottom">Zurück zum Start</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Back to start</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-metriken" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('MetricsSelection')">Metriken</div>
-				<span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Metriken für die Evaluation</span>
+				<div id="select-metriken" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" @click="setCurrentPage('MetricsSelection')">Metrics</div>
+				<span class="type--pos-small-normal tooltiptext--bottom">Selection of metrics for the evaluation</span>
 			</div>
 			<div class="tooltip--bottom">
 				<div id="select-evaluation" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" :class="{'metricEval-ui--disabled': selectedMetrics.length === 0 }" @click="setCurrentPage('Evaluation')">Evaluation</div>
-				<span class="type--pos-small-normal tooltiptext--bottom">Festlegung der Frames für die Evaluation</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Determining the frames for the evaluation</span>
 			</div>
 			<div class="tooltip--bottom">
 				<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'metricEval-ui--disabled': evaluationReady === false }" @click="setResultsPage">
-					Ergebnisse
+					Results
 					<div :class="{ 'metricEval-ui__notification': showNotification }"></div>
 				</div>
-				<span class="type--pos-small-normal tooltiptext--bottom">Darstellung der Evaluationsergebnisse</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Presentation of the evaluation results</span>
 			</div>
 			<div class="tooltip--bottom">
 				<IconButton id="select-dokumentation" @click="setCurrentPage('Documentation')" :icon="'library'" style="margin-top: -8px; margin-bottom: 0px;" />
-				<span class="type--pos-small-normal tooltiptext--bottom">Dokumentation/Hilfe zur Nutzung des Plugins</span>
+				<span class="type--pos-small-normal tooltiptext--bottom">Documentation/help for using the plugin</span>
 			</div>
 		</div>
 		<div>
 			<p class="type--pos-large-bold">
-				Metriken-Evaluation
+				Metrics evaluation
 			</p>
 			<metric-selection v-show="currentPage === 'MetricsSelection'"  class="scrollable" :metrics="metrics" />
 			<evaluation v-show="currentPage === 'Evaluation'"  class="scrollable" @results="setResults($event)" />

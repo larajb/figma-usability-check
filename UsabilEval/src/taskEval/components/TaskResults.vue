@@ -9,7 +9,7 @@
             <table>
                 <tr>
                     <td align="top"><Icon icon="timer" /></td>
-                    <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
+                    <td align="top"><p class="type--pos-medium-bold">Duration of goal achievement:</p></td>
                 </tr>
                 <tr>
                     <td align="top"></td>
@@ -26,7 +26,7 @@
                     <td align="top"></td>
                     <td align="top">
                         <div v-if="content.evaluationRuns.length > 1" style="display: flex">
-                            <p class="type--pos-medium-normal">Historie</p>
+                            <p class="type--pos-medium-normal">History</p>
                             <IconButton @click="showHistory = !showHistory" :icon="showHistory ? 'caret-down' : 'caret-right'" />
                         </div>
                         <div v-show="showHistory">
@@ -45,7 +45,7 @@
             <table>
                 <tr>
                     <td align="top"><Icon icon="warning" /></td>
-                    <td align="top"><p class="type--pos-medium-bold">Erweitert für {{ content.taskname }}</p></td>
+                    <td align="top"><p class="type--pos-medium-bold">Extended for {{ content.taskname }}</p></td>
                 </tr>
                 <tr v-for="(smell, index) in content.evaluationRuns[0].usabilitySmells" :key="index">
                     <td align="top"></td>
@@ -62,7 +62,7 @@
                         <Icon icon="smiley" />
                     </td>
                     <td align="top">
-                        <p class="type--pos-medium-normal">Bei der Aufgabe wurden keine Hinweise auf Usability-Probleme gefunden.</p>
+                        <p class="type--pos-medium-normal">No evidence of usability problems was found in the task.</p>
                     </td>
                 </tr>
             </table>

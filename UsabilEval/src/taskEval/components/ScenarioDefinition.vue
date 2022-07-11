@@ -1,25 +1,25 @@
 <template>
     <div>
-        <p class="type--pos-medium-normal">Wähle einen Namen für ein neues Szenario und erstelle es.</p>
+        <p class="type--pos-medium-normal">Choose a name for a new scenario and create it.</p>
         <div class="scenario-definition__input">
             <div class="tooltip--bottom" style="width: 100%">
-                <input id="scenarioname" class="input" type="text" placeholder="Szenario" v-model="scenarionameInput">
-                <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Szenarioname</span>
+                <input id="scenarioname" class="input" type="text" placeholder="Scenario" v-model="scenarionameInput">
+                <span class="type--pos-small-normal tooltiptext--bottom">Enter scenario name</span>
             </div>
-            <button class="button button--secondary" @click="addScenario">Erstellen</button>
+            <button class="button button--secondary" @click="addScenario">Create</button>
         </div>
         <div>
-            <p class="type--pos-medium-normal">Wähle eine Aufgabe und füge sie dem oben angegebenen Szenario hinzu.</p>
+            <p class="type--pos-medium-normal">Select a task and add it to the scenario above.</p>
             <div class="scenario-definition__input">
                 <div class="tooltip--bottom" style="width: 100%">
                     <Select id="task-select" :items="tasksList" v-model="task" />
-                    <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Aufgabe</span>
+                    <span class="type--pos-small-normal tooltiptext--bottom">Selection task</span>
                 </div>
-                <button class="button button--secondary" @click="addTask">Hinzufügen</button>
+                <button class="button button--secondary" @click="addTask">Add</button>
             </div>
             <div class="tooltip--bottom">
-                <button class="type--pos-small-normal scenario-definition__button--link-look" @click="handleClick">Aufgabe definieren</button>
-                <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Aufgabendefinition</span>
+                <button class="type--pos-small-normal scenario-definition__button--link-look" @click="handleClick">Define task</button>
+                <span class="type--pos-small-normal tooltiptext--bottom">Back to the task definition</span>
             </div>
         </div>
         <div v-show="showError" class="scenario-definition__error-note">
@@ -91,7 +91,7 @@ export default {
                 this.scenarios.push({ scenarioname: this.scenarionameInput, tasks: [] });
             } else {
                 this.showError = true;
-                this.errorMessage = 'Es existiert bereits ein Szenario mit diesem Namen. Füge diesem Szenario weitere Aufgaben hinzu oder wähle einen anderen Namen.'
+                this.errorMessage = 'A scenario with this name already exists. Add more tasks to this scenario or choose another name.'
             }
             
             this.setScenarioStorage();
@@ -117,7 +117,7 @@ export default {
                         return;
                     } else {
                         this.showError = true;
-                        this.errorMessage = 'Die beiden Aufgaben können nicht direkt nacheinander durchgeführt werden. Bitte füge eine Übergangsaufgabe hinzu.';
+                        this.errorMessage = 'The two tasks cannot be done directly one after the other. Please add a transition task.';
                     }
                 });
             } else {

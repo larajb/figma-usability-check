@@ -1,50 +1,50 @@
 <template>
     <div class="type--pos-medium-normal">
         <div style="margin-bottom: 20px;">
-            <p class="type--pos-medium-normal">Wähle die Art der Evaluation.</p>
+            <p class="type--pos-medium-normal">Choose the type of evaluation.</p>
             <div class="tooltip--bottom">
-                <Radio :items="[{ label: 'Aufgabenevaluation', value: 'task' }, { label: 'Szenarienevaluation', value: 'scenario' }]" v-model="evaluationTypeValue" />
-                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Evaluationsart</span>
+                <Radio :items="[{ label: 'Task evaluation', value: 'task' }, { label: 'Scenario evaluation', value: 'scenario' }]" v-model="evaluationTypeValue" />
+                <span class="type--pos-small-normal tooltiptext--bottom">Selection of the evaluation type</span>
             </div>
 		</div>
         <div v-if="evaluationType === 'task'">
             <p class="type--pos-medium-normal">
-                Wähle eine Aufgabe zur Evaluation.
+                Choose a task for evaluation.
             </p>
             <div class="tooltip--bottom" style="width: 100%">
                 <Select id="first-task-select" :items="firstTasks" v-model="firstTask" />
-                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Aufgabe</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Selection task</span>
             </div>
             <p class="type--pos-medium-normal">
-                Wähle eine weitere Aufgabe zum Vergleich mit der zuvor ausgewählten Aufgabe. Falls erforderlich definiere sie zuerst. (optional)
+                Select another task to compare with the previously selected task. If necessary, define it first. (optional)
             </p>
             <div class="tooltip--bottom" style="width: 100%">
                 <Select id="second-task-select" :items="secondTasks" v-model="secondTask" />
-                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Vergleichsaufgabe</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Comparison task selection</span>
             </div>
             <div class="tooltip--bottom">
-                <button class="type--pos-small-normal evaluation__button--link-look" @click="$store.commit('currentPage', 'TaskDefinition')">Aufgabe definieren</button>
-                <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Aufgabendefinition</span>
+                <button class="type--pos-small-normal evaluation__button--link-look" @click="$store.commit('currentPage', 'TaskDefinition')">Define task</button>
+                <span class="type--pos-small-normal tooltiptext--bottom">Back to the task definition</span>
             </div>
         </div>
         <div v-else-if="evaluationType === 'scenario'">
             <p class="type--pos-medium-normal">
-                Wähle ein Szenario zur Evaluation.
+                Choose a scenario for evaluation.
             </p>
             <div class="tooltip--bottom" style="width: 100%">
                 <Select id="first-scenario-select" :items="firstScenarios" v-model="firstScenario" />
-                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Szenario</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Scenario selection</span>
             </div>
             <p class="type--pos-medium-normal">
-                Wähle ein weiteres Szenario zum Vergleich mit dem zuvor ausgewählten Szenario. Falls erforderlich definiere es zuerst. (optional)
+                Select another scenario to compare with the previously selected scenario. If necessary, define it first. (optional)
             </p>
             <div class="tooltip--bottom" style="width: 100%">
                 <Select id="second-scenario-select" :items="secondScenarios" v-model="secondScenario" />
-                <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Vergleichsszenario</span>
+                <span class="type--pos-small-normal tooltiptext--bottom">Comparison scenario selection</span>
             </div>
             <div class="tooltip--bottom">
-                <button class="type--pos-small-normal evaluation__button--link-look" @click="$store.commit('currentPage', 'ScenarioDefinition')">Szenario definieren</button>
-                <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Szenariendefinition</span>
+                <button class="type--pos-small-normal evaluation__button--link-look" @click="$store.commit('currentPage', 'ScenarioDefinition')">Define scenario</button>
+                <span class="type--pos-small-normal tooltiptext--bottom">Back to the scenario definition</span>
             </div>
         </div>
         <button class="button button--primary" style="margin-top: 10px" @click="startEvaluation">Start</button>
@@ -119,24 +119,24 @@ export default {
         },
     },
     mounted() {
-        // this.getTaskEvaluationHistory();
-        // this.getScenarioEvaluationHistory();
+        this.getTaskEvaluationHistory();
+        this.getScenarioEvaluationHistory();
 
-        // handleEvent('currentTaskEvaluationStorage', storage => {
-        //     if (storage !== undefined) {
-        //         this.taskEvaluationHistory = storage;
-        //         this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
-        //     }
-        // });
+        handleEvent('currentTaskEvaluationStorage', storage => {
+            if (storage !== undefined) {
+                this.taskEvaluationHistory = storage;
+                this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
+            }
+        });
 
-        // handleEvent('currentScenarioEvaluationStorage', storage => {
-        //     if (storage !== undefined) {
-        //         this.scenarioEvaluationHistory = storage;
-        //         this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
-        //     }
-        // });
-        dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
-        dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
+        handleEvent('currentScenarioEvaluationStorage', storage => {
+            if (storage !== undefined) {
+                this.scenarioEvaluationHistory = storage;
+                this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
+            }
+        });
+        // dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
+        // dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
 
         handleEvent('taskEvaluationResult', result => {
             this.setTaskEvaluationHistory(this.firstTask, result.goms, result.usabilitySmells);
