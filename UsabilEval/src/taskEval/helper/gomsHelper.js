@@ -1,4 +1,4 @@
-import { getCenterOfNode, getFrame, getWidth } from "../../figmaAccess/nodeProperties";
+import { getCenterOfNode, getFrame } from "../../figmaAccess/fileContentGetters";
 /**
  * This is a function to convert task steps to an array of steps containing operators.
  * @param task
@@ -49,6 +49,11 @@ export const getTimeForOperators = (steps, convertedSteps) => {
     }
     return operatorTimes;
 };
+/**
+ * This is a function to get the time for each step of a task.
+ * @param operatorTimes
+ * @returns stepsTimes
+ */
 export const getTimeForSteps = (operatorTimes) => {
     var stepsTimes = [];
     operatorTimes.forEach(step => {
@@ -150,7 +155,6 @@ const placeMentallyPreparingOperator = (convertedSteps) => {
                     j++;
                     break;
                 case 'P':
-                    // TODO: check if and how it can be adapted
                     resultString = resultString.slice(0, j) + 'M' + resultString.slice(j);
                     j++;
                     break;
@@ -160,11 +164,9 @@ const placeMentallyPreparingOperator = (convertedSteps) => {
         }
         convertedSteps[i] = resultString;
     }
-    // Ms entfernen, wenn geistige Vorbereitung bereits in einem vorangegangenen Schritt
     for (let i = 0; i < convertedSteps.length; i++) {
         convertedSteps[i] = convertedSteps[i].replace('MPMK', 'MPK');
     }
-    // M löschen, wenn von R überlagert
     for (let i = 0; i < convertedSteps.length; i++) {
         convertedSteps[i] = convertedSteps[i].replace('RM', 'R');
         if (convertedSteps[i][-1] === 'R' && convertedSteps[i + 1][0] === 'M') {
@@ -177,7 +179,7 @@ const placeMentallyPreparingOperator = (convertedSteps) => {
  * This is a function to calculate the time for an array of steps consisting of goms operators.
  * @param steps
  * @param convertedSteps
- * @returns time
+ * @returns Object
  */
 export const calculateTime = (steps, convertedSteps) => {
     var pointingTimes = [];
@@ -227,12 +229,8 @@ export const calculateTime = (steps, convertedSteps) => {
  * @returns time
  */
 const calculateFittsLaw = (lastStepId, currentStepId) => {
-    // two nodes > calculate fitts law between
-    // a + b*log2(d/s + 1)
     var a = 0.05;
     var b = 0.05;
-    // get center of first
-    // if last undefined = center of page or upper left edge
     var lastCenter = null;
     if (lastStepId !== null) {
         var lastUIElement = figma.getNodeById(lastStepId).parent.children[0];
@@ -241,11 +239,8 @@ const calculateFittsLaw = (lastStepId, currentStepId) => {
     else {
         lastCenter = { x: 0, y: 0 };
     }
-    // get center of second
-    // if second is on an overlay --> use overlayRelativePosition
     var currentUIElement = figma.getNodeById(currentStepId).parent.children[0];
     var currentCenter = getCenterOfNode(currentUIElement.id);
-    // calculate x and y for pythagoras
     var x = 0;
     var y = 0;
     if (lastCenter.x <= currentCenter.x) {
@@ -260,11 +255,8 @@ const calculateFittsLaw = (lastStepId, currentStepId) => {
     else {
         y = Math.abs(lastCenter.y - currentCenter.y);
     }
-    // calculate distance
     var distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-    // get target width
-    var targetWidth = getWidth(currentStepId);
-    // calculate Fitts Law
+    var targetWidth = currentUIElement.width;
     var time = a + b * Math.log2(distance / targetWidth + 1);
     return time;
 };

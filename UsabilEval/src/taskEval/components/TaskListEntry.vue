@@ -1,8 +1,8 @@
 <template>
     <div :id="'annotation-' + taskname">
-        <div class="task-definition__annotation-header">
-            <div :id="'annotation-title-' + taskname" class="task-definition__annotation-header-title">
-                <div class="task-definition__annotation-header-title-colorsquare" :style="myStyle"></div>
+        <div class="task-list-entry__annotation-header">
+            <div :id="'annotation-title-' + taskname" class="task-list-entry__annotation-header-title">
+                <div class="task-list-entry__annotation-header-title-colorsquare" :style="myStyle"></div>
                 <p class="type--pos-medium-normal">{{ taskname }}</p>
             </div>
             <div style="display: flex">
@@ -19,34 +19,32 @@
             </div>
         </div>
         <div id="task-list" v-show="switchValue === false">
-            <div v-for="(step, index) in steps" :key="index" :id="'step-' + step" class="task-step">
+            <div v-for="(step, index) in steps" :key="index" :id="'step-' + step" class="task-list-entry__step">
                 <div style="display: flex;">
-                    <div class="numberCircle" :style="{ border: `3px solid ${color}`, color: color }">{{ index + 1 }}</div>
+                    <div class="task-list-entry__number-circle" :style="{ border: `3px solid ${color}`, color: color }">{{ index + 1 }}</div>
                     <p class="type--pos-medium-normal">{{ getStepType(step.type) }} - {{ step.name.length > 15 ? step.name.substr(0, 15) + '..' : step.name }}</p>
                 </div>
             </div>
         </div>
         <div id="task-list" v-show="switchValue === true">
-            <div v-for="(step, index) in steps" :key="index" :id="'step-' + step" class="task-step">
+            <div v-for="(step, index) in steps" :key="index" :id="'step-' + step" class="task-list-entry__step">
                 <IconButton @click="addTaskStep(index)" style="margin-left: 55px" :icon="'plus'" />
-                <div class="task-step-content">
+                <div class="task-list-entry__step-content">
                     <div style="display: flex">
                         <div>
-                            <!-- <IconButton @click="moveUp(taskname, step.id)" :icon="'caret-up'" :class="{ 'disabled-button': index === 0 }" style="height: 20px" />
-                            <IconButton @click="moveDown(taskname, step.id)" :icon="'caret-down'" :class="{ 'disabled-button': index === steps.length-1 }" style="height: 20px" /> -->
-                            <div class="icon-button" :class="{ 'disabled-button': index === 0 }" style="height: 20px" @click="moveUp(taskname, step.id)">
+                            <div class="icon-button" :class="{ 'task-list-entry__disabled-button': index === 0 }" style="height: 20px" @click="moveUp(taskname, step.id)">
                                 <div class="icon icon--caret-up"></div>
                             </div>
-                            <div class="icon-button" :class="{ 'disabled-button': index === steps.length-1 }" style="height: 20px" @click="moveDown(taskname, step.id)">
+                            <div class="icon-button" :class="{ 'task-list-entry__disabled-button': index === steps.length-1 }" style="height: 20px" @click="moveDown(taskname, step.id)">
                                 <div class="icon icon--caret-down"></div>
                             </div>
                         </div>
                         <div style="display: flex; margin-left: 20px">
-                            <div class="numberCircle" :style="{ border: `3px solid ${color}`, color: color }">{{ index + 1 }}</div>
+                            <div class="task-list-entry__number-circle" :style="{ border: `3px solid ${color}`, color: color }">{{ index + 1 }}</div>
                             <p class="type--pos-medium-normal">{{ getStepType(step.type) }} - {{ step.name.length > 6 ? step.name.substr(0, 6) + '..' : step.name }}</p>
                         </div>
                     </div>
-                    <div class="task-step-settings">
+                    <div class="task-list-entry__step-settings">
                         <div class="tooltip--bottom">
                             <IconButton @click="deleteStep(step)" :icon="'trash'" />
                             <span class="type--pos-small-normal tooltiptext--bottom">Aufgabenschritt löschen</span>
@@ -223,25 +221,25 @@ export default {
 <style lang='scss'>
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .task-definition__annotation-header {
+    .task-list-entry__annotation-header {
         margin-top: 20px;
 		margin-bottom: 20px;
 		display: flex;
 		justify-content: space-between;
 	}
 
-    .task-definition__annotation-header-title {
+    .task-list-entry__annotation-header-title {
 		display: flex;
 	}
 
-    .task-definition__annotation-header-title-colorsquare {
+    .task-list-entry__annotation-header-title-colorsquare {
 		width: 15px;
 		height: 15px;
 		margin-right: 15px;
 		border-radius: 10px;
 	}
 
-    .numberCircle {
+    .task-list-entry__number-circle {
         border-radius: 50%;
         width: 36px;
         height: 36px;
@@ -251,23 +249,23 @@ export default {
         text-align: center;
     }
 
-    .task-step {
+    .task-list-entry__step {
         width: 70%;
 		margin-left: 15%;
     }
 
-    .task-step-content {
+    .task-list-entry__step-content {
         display: flex;
 		justify-content: space-between;
         vertical-align: middle;
     }
 
-    .task-step-settings {
+    .task-list-entry__step-settings {
 		display: flex;
         vertical-align: middle;
 	}
 
-    .disabled-button {
+    .task-list-entry__disabled-button {
         pointer-events: none;
         opacity: 0.4;
     }

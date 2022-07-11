@@ -1,5 +1,5 @@
 <template>
-    <div class="scrollable-result-list">
+    <div class="results__scrollable-list">
         <div v-if="evaluationType === 'scenario' && $store.getters.currentScenarioEvaluation !== undefined">
             <scenario-results-comparison 
                 v-if="$store.getters.currentScenarioEvaluation.evaluationRuns[0].gomsTimes !== null && $store.getters.currentScenarioEvaluation.evaluationRuns[0].comparison !== null"
@@ -40,7 +40,7 @@ export default {
 <style lang='scss'>
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .scrollable-result-list {
+    .results__scrollable-list {
         max-height: 80%;
         overflow-y: scroll;
     }

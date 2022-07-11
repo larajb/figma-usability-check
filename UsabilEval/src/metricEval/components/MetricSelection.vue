@@ -10,7 +10,7 @@
             </div>
         </div>
         <Checkbox v-model="selectAllMetrics">Alle anwählen/abwählen</Checkbox>
-		<div class="metrics-list">
+		<div class="metric-selection__metrics-list">
 			<div v-for="(metric, index1) in metrics" :key="index1">
 				<metric :metric="metric" @selected="setSelected($event)" />
 			</div>
@@ -161,7 +161,7 @@ export default {
 	@import "../../figma-ui/figma-plugin-ds";
     @import "../../../node_modules/figma-plugin-ds-vue/dist/figma-plugin-ds-vue.css";
 
-    .metrics-list {
+    .metric-selection__metrics-list {
         width: 80%;
         margin-left: 20px;
         margin-top: 10px;

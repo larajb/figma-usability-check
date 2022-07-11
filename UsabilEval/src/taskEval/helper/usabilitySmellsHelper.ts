@@ -1,4 +1,4 @@
-import { getFrame, getPage, getParent } from "../../figmaAccess/nodeProperties";
+import { getFrame, getPage } from "../../figmaAccess/fileContentGetters";
 
 /**
  * This is a function to check some usability smells saved in a js file.
@@ -10,7 +10,7 @@ import { getFrame, getPage, getParent } from "../../figmaAccess/nodeProperties";
  * @returns result
  */
  export const checkUsabilitySmells = (steps, avgPointingTime, avgHomingNum, pointingTimes, homingNum) => {
-    var results = [];            // smells = [ { title: ..., value: ... }, ... ]
+    var results = [];
 
     var tooManyLayersResult = tooManyLayers(steps);
     if (tooManyLayersResult.isFound) {
@@ -68,14 +68,13 @@ export const tooManyLayers = (steps) => {
 export const highWebsiteElementDistance = (steps) => {
     var result = { isFound: false, values: [], steps: [] };
     var distanceSum = 0.0;
-    // calculate sum of distances
     for (let i = 1; i < steps.length; i++) {
         var currentNode = figma.getNodeById(steps[i].id);
         var beforeNode = figma.getNodeById(steps[i-1].id);
         var containSame = currentNode.reactions.some(r=> beforeNode.reactions.includes(r));
         if (currentNode.id === beforeNode.id || containSame) {
             distanceSum += 0.0;
-        } else if (getParent(currentNode.id) === getParent(beforeNode.id)) {
+        } else if (currentNode.parent === beforeNode.parent) {
             distanceSum += 0.2;
         } else if (getFrame(currentNode.id) === getFrame(beforeNode.id)) {
             distanceSum += 0.5;

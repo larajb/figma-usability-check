@@ -1,5 +1,5 @@
 <template>
-    <div class="scrollable-docs">
+    <div class="documentation--scrollable">
         <p class="type--pos-medium-bold">Anleitung zur Nutzung des Plugins</p>
         <p class="type--pos-medium-normal">
             Dieses Plugin dient zur Usability-Evaluation von UI-Entwürfen anhand von einigen Metriken. Zur Evaluation können eine oder mehrere Metriken ausgewählt werden. 
@@ -123,7 +123,7 @@ export default {
 <style lang="scss">
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .scrollable-docs {
+    .documentation--scrollable {
         max-height: 80%;
         overflow-y: scroll;
     }

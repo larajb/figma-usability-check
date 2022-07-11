@@ -1,6 +1,5 @@
-import { addAnnotationToFile, getCurrentSelection } from "../../figmaAccess/fileContents";
-import { createEllipseNode, createGroupNode, createTextNode } from "../../figmaAccess/nodeCreator";
-import { getHeight, getParent, getRelativeTransform, setRelativeTransform, setText } from "../../figmaAccess/nodeProperties";
+import { getCurrentSelection } from "../../figmaAccess/fileContentGetters";
+import { createEllipseNode, createGroupNode, createTextNode, addAnnotationToFile, setText } from "../../figmaAccess/fileContentSetters";
 import { checkInputExample } from "./validityHelper";
 
 /**
@@ -14,8 +13,8 @@ export const createExampletext = (input, taskname) => {
     if (result === null) {
         var selection = getCurrentSelection();
         if (selection !== null) {
-            var selectionRelTransform = getRelativeTransform(selection.id);
-            var selectionHeight = getHeight(selection.id);
+            var selectionRelTransform = selection.relativeTransform;
+            var selectionHeight = selection.height;
 
             var text = createTextNode('Annotation - ' + taskname + ' - Eingabebeispiel', {r: 0, g: 0, b: 1}, null, input)
             setRelativeTransform(text, selectionRelTransform[0][2] + 10, selectionRelTransform[1][2] + selectionHeight / 2 - text.height / 2)
@@ -23,7 +22,6 @@ export const createExampletext = (input, taskname) => {
             addAnnotationToFile(selection, text);
         }
     }
-
     return true;
 }
 
@@ -49,8 +47,8 @@ export const createTaskAnnotation = (taskname, numSteps, color, selection = null
        currentSelection = getCurrentSelection();
     }
     if (currentSelection !== null) {
-        var selectionRelTransform = getRelativeTransform(currentSelection.id);
-        var selectionParent = getParent(currentSelection.id);
+        var selectionRelTransform = currentSelection.relativeTransform;
+        var selectionParent = currentSelection.parent;
 
         var ellipse = createEllipseNode('Annotation - ' + taskname, 24, 24, convertedColor);
         var text = createTextNode('Annotation - ' + taskname + ' - Text', {r: 1, g: 1, b: 1}, {r: 0, g: 0, b: 0}, stepNumber)
@@ -94,7 +92,7 @@ export const createTaskAnnotation = (taskname, numSteps, color, selection = null
 export const deleteStepAnnotation = (step, followingSteps) => {
     var stepAnnotation = figma.getNodeById(step.id);
     var annotationInput = step.input;
-    var parent = getParent(step.id);
+    var parent = stepAnnotation.parent;
     stepAnnotation.remove();
     if (annotationInput !== '' && parent.children.length === 2) {
         for (let i = 0; i < parent.children.length; i++) {
@@ -152,7 +150,7 @@ export const updateStepAnnotation = (annotationId, number) => {
  */
 export const getElementToAnnotation = (id) => {
     var annotation = figma.getNodeById(id);
-    var parent = getParent(annotation.id);
+    var parent = annotation.parent;
     var selection = parent.children[0];
     return selection;
 }
@@ -172,3 +170,15 @@ const convertColor = (color) => {
         b: parseInt(colorSplitted[2]) / 255,
     }
 }
+
+/**
+ * This is a function to set the relative Transformation of a given node.
+ * @param nodeId 
+ * @param xTransformation 
+ * @param yTransformation 
+ */
+ export const setRelativeTransform = (node, xTransformation, yTransformation) => {
+    node.x = xTransformation;
+    node.y = yTransformation;
+}
+

@@ -6,21 +6,21 @@
 				<span class="type--pos-small-normal tooltiptext--bottom">Zurück zum Start</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-aufgaben" class="type--pos-medium-normal menu menu-first" @click="setCurrentPage('TaskDefinition')">Aufgaben</div>
+				<div id="select-aufgaben" class="type--pos-medium-normal taskEval-ui__menu taskEval-ui__menu--first" @click="setCurrentPage('TaskDefinition')">Aufgaben</div>
 				<span class="type--pos-small-normal tooltiptext--bottom">Aufgabendefinition</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-szenarien" class="type--pos-medium-normal menu" @click="setCurrentPage('ScenarioDefinition')">Szenarien</div>
+				<div id="select-szenarien" class="type--pos-medium-normal taskEval-ui__menu" @click="setCurrentPage('ScenarioDefinition')">Szenarien</div>
 				<span class="type--pos-small-normal tooltiptext--bottom">Szenariendefinition</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-evaluation" class="type--pos-medium-normal menu" :class="{'disabled': (tasks.length === 0) && (scenarios.length === 0)}" @click="setCurrentPage('Evaluation')">Evaluation</div>
+				<div id="select-evaluation" class="type--pos-medium-normal taskEval-ui__menu" :class="{'taskEval-ui--disabled': (tasks.length === 0) && (scenarios.length === 0)}" @click="setCurrentPage('Evaluation')">Evaluation</div>
 				<span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Aufgaben/Szenarien zur Evaluation</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-ergebnisse" class="type--pos-medium-normal menu" :class="{'disabled': evaluationReady === false }" @click="setResultsPage">
+				<div id="select-ergebnisse" class="type--pos-medium-normal taskEval-ui__menu" :class="{'taskEval-ui--disabled': evaluationReady === false }" @click="setResultsPage">
 					Ergebnisse
-					<div :class="{ 'notification': showNotification }"></div>
+					<div :class="{ 'taskEval-ui__notification': showNotification }"></div>
 				</div>
 				<span class="type--pos-small-normal tooltiptext--bottom">Darstellung der Evaluationsergebnisse</span>
 			</div>
@@ -131,20 +131,20 @@ export default {
 		padding: 10px;
 	}
 
-	.disabled {
+	.taskEval-ui--disabled {
 		pointer-events: none;
 		opacity: 0.4;
 	}
 
-	.menu {
+	.taskEval-ui__menu {
 		margin-right: 20px
 	}
 
-	.menu-first {
+	.taskEval-ui__menu--first {
 		margin-left: 5px;
 	}
 
-	.notification {
+	.taskEval-ui__notification {
 		width: 10px;
 		height: 10px;
 		border-radius: 50%;

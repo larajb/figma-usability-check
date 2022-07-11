@@ -18,13 +18,13 @@
         <div style="margin-left: 40px">
             <p class="type--pos-medium-normal">{{ getResultSentence() }}</p>
             <div v-if="result.type === 'colorStyle'">
-                <table class="table" style="margin-left: -11px">
+                <table class="result-list-entry__table" style="margin-left: -11px">
                     <tr v-for="(element, index2) in result.nodes" :key="index2">
                         <td align="top">
-                            <div v-if="element.fill.length === 1" class="result-colorsquare" :style="{ backgroundColor: convertSingleColor(element.fill[0].color, element.fill[0].opacity) }"></div>
-                            <div v-if="element.fill.length > 1" class="result-colorsquare" :style="{ background: convertMultipleColor(element.fill) }"></div>
+                            <div v-if="element.fill.length === 1" class="result-list-entry__colorsquare" :style="{ backgroundColor: convertSingleColor(element.fill[0].color, element.fill[0].opacity) }"></div>
+                            <div v-if="element.fill.length > 1" class="result-list-entry__colorsquare" :style="{ background: convertMultipleColor(element.fill) }"></div>
                         </td>
-                        <td class="table-cell" :class="[ isHistory ? '' : 'hoverable' ]" @click="isHistory ? null : select(element.nodes)">
+                        <td class="result-list-entry__table-cell" :class="[ isHistory ? '' : 'result-list-entry--hoverable' ]" @click="isHistory ? null : select(element.nodes)">
                             <div v-if="element.fill.length === 1"><p class="type--pos-medium-normal">{{ getSingleColorString(element.fill[0].color, element.fill[0].opacity) }}</p></div>
                             <div v-if="element.fill.length > 1"><p class="type--pos-medium-normal">{{ getMultipleColorString(element.fill) }}</p></div>
                         </td>
@@ -32,22 +32,22 @@
                 </table>
             </div>
             <div v-if="result.type === 'fontStyle'">
-                <table class="table" style="margin-left: -11px">
+                <table class="result-list-entry__table" style="margin-left: -11px">
                     <tr v-for="(element, index2) in result.nodes" :key="index2">
-                        <td class="table-cell" :class="[ isHistory ? '' : 'hoverable' ]" @click="isHistory ? null : select(element.nodes)">
+                        <td class="result-list-entry__table-cell" :class="[ isHistory ? '' : 'result-list-entry--hoverable' ]" @click="isHistory ? null : select(element.nodes)">
                             <p class="type--pos-medium-normal">{{ getFontStyleString(element.fontStyle) }}</p>
                         </td>
                     </tr>
                 </table>
             </div>
             <div v-else-if="result.type === 'comparison'">
-                <table class="table" style="margin-left: -11px">
+                <table class="result-list-entry__table" style="margin-left: -11px">
                     <tr>
                         <td class="type--pos-medium-bold">Häufigste Formatierung</td>
                         <td class="type--pos-medium-bold">Abweichungen</td>
                     </tr>
                     <tr v-for="(element, index2) in result.nodes" :key="index2">
-                        <td class="table-cell" :class="[ isHistory ? '' : 'hoverable' ]">
+                        <td class="result-list-entry__table-cell" :class="[ isHistory ? '' : 'result-list-entry--hoverable' ]">
                             <div v-if="element.probablyCorrect.id.length > 1" @click="isHistory ? null : select(element.probablyCorrect.id)">
                                 <p class="type--pos-medium-normal">{{ element.probablyCorrect.name[0] }}</p>
                             </div>
@@ -55,7 +55,7 @@
                                 <p>-</p>
                             </div>
                         </td>
-                        <td class="table-cell" :class="[ isHistory ? '' : 'hoverable' ]">
+                        <td class="result-list-entry__table-cell" :class="[ isHistory ? '' : 'result-list-entry--hoverable' ]">
                             <div v-if="element.probablyCorrect.id.length > 1" @click="isHistory ? null : select(element.probablyNotCorrect.id)">
                                 <p class="type--pos-medium-normal">{{ element.probablyNotCorrect.name.join(', ') }}</p>
                             </div>
@@ -67,9 +67,9 @@
                 </table>
             </div>
             <div v-else-if="result.type === 'single'">
-                <table class="table" style="margin-left: -11px">
+                <table class="result-list-entry__table" style="margin-left: -11px">
                     <tr v-for="(element, index2) in result.nodes" :key="index2">
-                        <td class="table-cell" :class="[ isHistory ? '' : 'hoverable' ]" @click="isHistory ? null : select([element.id])">
+                        <td class="result-list-entry__table-cell" :class="[ isHistory ? '' : 'result-list-entry--hoverable' ]" @click="isHistory ? null : select([element.id])">
                             <p class="type--pos-medium-normal">{{ element.name }}</p>
                         </td>
                     </tr>
@@ -175,7 +175,7 @@ export default {
 <style lang="scss">
     @import "../../figma-ui/figma-plugin-ds";
 
-    .result-colorsquare {
+    .result-list-entry__colorsquare {
 		width: 15px;
 		height: 15px;
 		margin-right: 15px;
@@ -183,18 +183,18 @@ export default {
         border: 0.5px solid black;
 	}
 
-    .table-cell {
+    .result-list-entry__table {
+		border-spacing: 10px;
+	}
+
+    .result-list-entry__table-cell {
         height: 30px;
         padding-left: 10px;
         padding-right: 10px;
         vertical-align: center
     }
     
-    .hoverable:hover {
+    .result-list-entry--hoverable:hover {
         border: 1px solid #0084f8;
     }
-
-    .table {
-		border-spacing: 10px;
-	}
 </style>

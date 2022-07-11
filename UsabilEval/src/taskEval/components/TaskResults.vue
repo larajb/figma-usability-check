@@ -1,11 +1,11 @@
 <template>
     <div v-show="content !== undefined">
         <div style="display: flex">
-            <div class="result-colorsquare" :style="{ backgroundColor: content.color }"></div>
+            <div class="task-results__colorsquare" :style="{ backgroundColor: content.color }"></div>
             <p class="type--pos-medium-normal">{{ content.taskname }}</p>
         </div>
-        <div id="goms" class="goms-result" v-if="content.evaluationRuns[0].goms !== null">
-            <bar-chart class="task-chart" :chart-data="chartData" :options="chartOptions" />
+        <div id="goms" class="task-results__goms" v-if="content.evaluationRuns[0].goms !== null">
+            <bar-chart class="task-results__chart" :chart-data="chartData" :options="chartOptions" />
             <table>
                 <tr>
                     <td align="top"><Icon icon="timer" /></td>
@@ -14,7 +14,7 @@
                 <tr>
                     <td align="top"></td>
                     <td align="top">
-                        <table class="table type--pos-medium-normal" style="margin-left: -11px">
+                        <table class="task-results__table type--pos-medium-normal" style="margin-left: -11px">
                             <tr>
                                 <td align="top">{{ content.taskname }}:</td>
                                 <td align="top">{{ content.evaluationRuns[0].goms.gomsTime.toFixed(2) }} s</td>
@@ -30,7 +30,7 @@
                             <IconButton @click="showHistory = !showHistory" :icon="showHistory ? 'caret-down' : 'caret-right'" />
                         </div>
                         <div v-show="showHistory">
-                            <table class="table type--pos-medium-normal">
+                            <table class="task-results__table type--pos-medium-normal">
                                 <tr v-for="(run, index) in content.evaluationRuns" :key="index">
                                     <td align="top">{{ formatDate(run.timestamp) }}:</td>
                                     <td align="top">{{ run.goms.gomsTime.toFixed(2) }} s</td>
@@ -41,7 +41,7 @@
                 </tr>
             </table>
         </div>
-        <div id="smells" class="smells-result-found" v-if="checkSmellPresence(content.evaluationRuns[0].usabilitySmells)">
+        <div id="smells" class="task-results__found-smells" v-if="checkSmellPresence(content.evaluationRuns[0].usabilitySmells)">
             <table>
                 <tr>
                     <td align="top"><Icon icon="warning" /></td>
@@ -50,19 +50,19 @@
                 <tr v-for="(smell, index) in content.evaluationRuns[0].usabilitySmells" :key="index">
                     <td align="top"></td>
                     <td align="top">
-                        <usability-smell-result :smell="smell" />
+                        <usability-smell-result :smell="smell" :type="'task'" />
                     </td>
                 </tr>
             </table>
         </div>
-        <div v-else class="smells-result-not-found">
+        <div v-else class="task-results__not-found-smells">
             <table>
                 <tr>
                     <td align="top">
                         <Icon icon="smiley" />
                     </td>
                     <td align="top">
-                        <p class="type--pos-medium-normal">In der Aufgabe wurden keine Hinweismuster auf Usability-Probleme gefunden.</p>
+                        <p class="type--pos-medium-normal">Bei der Aufgabe wurden keine Hinweise auf Usability-Probleme gefunden.</p>
                     </td>
                 </tr>
             </table>
@@ -211,35 +211,35 @@ export default {
 <style lang="scss">
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .result-colorsquare {
+    .task-results__colorsquare {
 		width: 15px;
 		height: 15px;
 		margin-right: 15px;
 		border-radius: 10px;
 	}
 
-    .goms-result {
+    .task-results__goms {
         width: 80%;
 		margin-left: 10%;
         vertical-align: middle;
     }
 
-    .smells-result-found {
+    .task-results__found-smells {
         width: 85%;
 		margin-left: 10%;
         vertical-align: middle;
     }
 
-    .smells-result-not-found {
+    .task-results__not-found-smells {
         margin-left: 10%;
         width: 80%;
     }
 
-    .table {
+    .task-results__table {
 		border-spacing: 10px;
 	}
 
-    .task-chart {
+    .task-results__chart {
         width: 100%;
         height: 25%;
     }

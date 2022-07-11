@@ -13,16 +13,15 @@ import { checkButtonValidity, checkForAnnotationGroup, checkInputExample, checkI
 import { calculateTime, convertToOperators, getTimeForOperators, getTimeForSteps } from './helper/gomsHelper';
 import { checkUsabilitySmells, distantContent, highWebsiteElementDistance } from './helper/usabilitySmellsHelper';
 import { startView } from '../start/startHandler';
-import { getCurrentSelection } from '../figmaAccess/fileContents';
+import { getCurrentSelection } from '../figmaAccess/fileContentGetters';
 export const taskEvalView = () => {
+    // to navigate back to the start page
     handleEvent('backToStart', () => {
         figma.showUI(__uiFiles__.start);
         startView();
         figma.ui.resize(450, 550);
     });
-    /**
-     * Create, update and delete annotations
-     */
+    // to add a task step
     handleEvent('addTaskStep', (args) => {
         if (args.type === 'input') {
             var isAdded = createExampletext(args.input, args.taskname);
@@ -38,6 +37,7 @@ export const taskEvalView = () => {
             dispatch('taskStepAdded', { taskname: args.taskname, id: taskAnnotation.id, name: selection.name });
         }
     });
+    // to add multiple task steps
     handleEvent('addTaskSteps', (args) => {
         var addedSteps = [];
         for (let i = 0; i < args.steps.length; i++) {
@@ -47,14 +47,17 @@ export const taskEvalView = () => {
         }
         dispatch('taskStepsAdded', { taskname: args.taskname, steps: addedSteps });
     });
+    // to delete a task step
     handleEvent('deleteStep', (args) => {
         deleteStepAnnotation(args.step, args.followingSteps);
     });
+    // to delete multiple task steps
     handleEvent('deleteSteps', (args) => {
         for (let i = 0; i < args.steps.length; i++) {
             deleteStepAnnotation(args.steps[i], undefined);
         }
     });
+    // to update task step number after changing the order or deleting a step
     handleEvent('updateStepNumbers', (tasks) => {
         for (let i = 0; i < tasks.length; i++) {
             for (let j = 0; j < tasks[i].steps.length; j++) {
@@ -62,33 +65,37 @@ export const taskEvalView = () => {
             }
         }
     });
-    /**
-     * Check the validity of connections between task steps and the validity of ui element charactertistics.
-     */
+    // to check if a selection is an annotation
     handleEvent('checkSelection', () => __awaiter(void 0, void 0, void 0, function* () {
         var selected = checkForAnnotationGroup();
         dispatch('selectionChecked', selected);
     }));
+    // to check if a connection between a new step and the last existing step of a task is valid
     handleEvent('checkStepValidityBefore', (args) => __awaiter(void 0, void 0, void 0, function* () {
         var validity = yield checkValidity(args);
         dispatch('validityBefore', validity);
     }));
+    // to check if a connection between a new task and the last existing task of a scenario is valid
     handleEvent('checkValidityBefore', (args) => __awaiter(void 0, void 0, void 0, function* () {
         var validity = yield checkValidity(args);
         dispatch('validityBefore', validity);
     }));
+    // to check if a connection between a new step and the following step of a task is valid
     handleEvent('checkStepValidityAfter', (args) => __awaiter(void 0, void 0, void 0, function* () {
         var validity = yield checkValidity(args);
         dispatch('validityAfter', validity);
     }));
+    // to check if a button is valid
     handleEvent('checkButtonValidity', () => __awaiter(void 0, void 0, void 0, function* () {
         var validity = yield checkButtonValidity();
         dispatch('buttonValidity', validity);
     }));
+    // to check if an input field already contains an example
     handleEvent('checkInputExample', () => __awaiter(void 0, void 0, void 0, function* () {
         var result = yield checkInputExample();
         dispatch('inputExampleCheck', result);
     }));
+    // to check if an input field is valid
     handleEvent('checkInputValidity', (input) => __awaiter(void 0, void 0, void 0, function* () {
         var validity = false;
         if (input !== null) {
@@ -99,13 +106,12 @@ export const taskEvalView = () => {
         }
         dispatch('inputValidity', validity);
     }));
+    // to check if a link is valid
     handleEvent('checkLinkValidity', () => __awaiter(void 0, void 0, void 0, function* () {
         var validity = yield checkLinkValidity();
         dispatch('linkValidity', validity);
     }));
-    /**
-     * Evaluation
-     */
+    // to evaluate a task
     handleEvent('evaluateTask', (task) => __awaiter(void 0, void 0, void 0, function* () {
         var avgPointingTime = yield figma.clientStorage.getAsync('pointingTime');
         var avgHomingNum = yield figma.clientStorage.getAsync('homingNum');
@@ -124,6 +130,7 @@ export const taskEvalView = () => {
         }
         dispatch('taskEvaluationResult', { goms: { gomsTime: gomsResult.time, operatorTimes: operatorTimes, stepsTimes: stepsTimes }, usabilitySmells: smells });
     }));
+    // to evaluate a comparison task
     handleEvent('evaluateTaskComparison', (task) => __awaiter(void 0, void 0, void 0, function* () {
         var avgPointingTime = yield figma.clientStorage.getAsync('pointingTime');
         var avgHomingNum = yield figma.clientStorage.getAsync('homingNum');
@@ -142,6 +149,7 @@ export const taskEvalView = () => {
         }
         dispatch('comparisonTaskEvaluationResult', { goms: { gomsTime: gomsResult.time, operatorTimes: operatorTimes, stepsTimes: stepsTimes }, usabilitySmells: smells });
     }));
+    // to evaluate a scenario
     handleEvent('evaluateScenario', (args) => __awaiter(void 0, void 0, void 0, function* () {
         var result = [];
         var scenarioSteps = [];
@@ -229,6 +237,7 @@ export const taskEvalView = () => {
         scenarioSmells.push({ title: 'Entfernter Inhalt', isFound: distantContentFound, values: distantContentValues, steps: distantContentSteps });
         dispatch('scenarioEvaluationResult', { taskEvaluationHistory: args.history, gomsTimes: result, usabilitySmells: scenarioSmells });
     }));
+    // to evaluate a comparison scenario
     handleEvent('evaluateScenarioComparison', (args) => __awaiter(void 0, void 0, void 0, function* () {
         var result = [];
         var scenarioSteps = [];
@@ -318,9 +327,7 @@ export const taskEvalView = () => {
         }
         dispatch('comparisonScenarioEvaluationResult', { taskEvaluationHistory: args.history, gomsTimes: result, usabilitySmells: scenarioSmells });
     }));
-    /**
-     * Get and set storage.
-     */
+    // to get the storage containing all defined tasks
     handleEvent('getTaskStorage', () => __awaiter(void 0, void 0, void 0, function* () {
         var tasks = undefined;
         yield figma.clientStorage.getAsync('tasks').then((value) => {
@@ -328,9 +335,11 @@ export const taskEvalView = () => {
         });
         dispatch('currentTaskStorage', tasks);
     }));
+    // to set the task storage
     handleEvent('setTaskStorage', (tasks) => __awaiter(void 0, void 0, void 0, function* () {
         yield figma.clientStorage.setAsync('tasks', tasks);
     }));
+    // to get the storage containing all defined scenarios
     handleEvent('getScenarioStorage', () => __awaiter(void 0, void 0, void 0, function* () {
         var scenarios = undefined;
         yield figma.clientStorage.getAsync('scenarios').then((value) => {
@@ -338,9 +347,11 @@ export const taskEvalView = () => {
         });
         dispatch('currentScenarioStorage', scenarios);
     }));
+    // to set the scenario storage
     handleEvent('setScenarioStorage', (scenarios) => __awaiter(void 0, void 0, void 0, function* () {
         yield figma.clientStorage.setAsync('scenarios', scenarios);
     }));
+    // to get the storage containing all task evaluations
     handleEvent('getTaskEvaluationStorage', () => __awaiter(void 0, void 0, void 0, function* () {
         var evaluationStorage = undefined;
         yield figma.clientStorage.getAsync('taskEvaluation').then((value) => {
@@ -348,6 +359,11 @@ export const taskEvalView = () => {
         });
         dispatch('currentTaskEvaluationStorage', evaluationStorage);
     }));
+    // to set the task evaluation storage
+    handleEvent('setTaskEvaluationStorage', (storage) => __awaiter(void 0, void 0, void 0, function* () {
+        yield figma.clientStorage.setAsync('taskEvaluation', storage);
+    }));
+    // to get the storage containing all scenario evaluations
     handleEvent('getScenarioEvaluationStorage', () => __awaiter(void 0, void 0, void 0, function* () {
         var evaluationStorage = undefined;
         yield figma.clientStorage.getAsync('scenarioEvaluation').then((value) => {
@@ -355,9 +371,7 @@ export const taskEvalView = () => {
         });
         dispatch('currentScenarioEvaluationStorage', evaluationStorage);
     }));
-    handleEvent('setTaskEvaluationStorage', (storage) => __awaiter(void 0, void 0, void 0, function* () {
-        yield figma.clientStorage.setAsync('taskEvaluation', storage);
-    }));
+    // to set the scenario evaluation storage
     handleEvent('setScenarioEvaluationStorage', (storage) => __awaiter(void 0, void 0, void 0, function* () {
         yield figma.clientStorage.setAsync('scenarioEvaluation', storage);
     }));

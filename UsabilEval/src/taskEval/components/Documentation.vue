@@ -1,5 +1,5 @@
 <template>
-    <div class="scrollable-docs">
+    <div class="documentation--scrollable">
         <p class="type--pos-medium-bold">Anleitung zur Nutzung des Plugins</p>
         <p class="type--pos-medium-normal">
             Dieses Plugin dient zur Usability-Evaluation von UI-Entwürfen. Die Evaluation erfolgt dabei auf Basis von Aufgaben und Szenarien. Eine Aufgabe beschreibt eine 
@@ -21,8 +21,8 @@
                     neue Aufgabe hinzugefügt wurde, können ihr Bearbeitungsschritte hinzugefügt werden. Ein Bearbeitungsschritt ist die Interaktion mit einem Interaktionselement. Das 
                     Plugin sieht die Verwendung der folgenden drei Interaktionselemente vor:
                     <ul>
-                        <li>Button</li>
                         <li>Eingabe</li>
+                        <li>Klickelement</li>
                         <li>Link</li>
                     </ul>
                     Um einen Bearbeitungsschritt hinzuzufügen, muss innerhalb des Entwurfes ein Interaktionselements und im Plugin der Interaktionstyp ausgewählt werden. 
@@ -87,7 +87,13 @@
                     Bei der Evaluation einer Aufgabe wird eine zeitliche Übersicht über die verschiedenen zur Bearbeitung der Aufgabe notwendigen Aktionen dargestellt. Darunter wird 
                     die Zeit zur Bearbeitung der Aufgabe angegeben. Falls eine Vergleichsaufgabe angegeben wurde, wird auch ihre Dauer hier angezeigt. Falls Hinweismuster auf 
                     Usability-Probleme gefunden wurden, werden sie unter der Darstellung der Bearbeitungsdauer aufgelistet. Falls sich das Hinweismuster auf einen bestimmten 
-                    Bearbeitungsschritt bezieht, wird dieser neben einer Beschreibung des Problems und einem Hin-weis zur Behebung hier angegeben.
+                    Bearbeitungsschritt bezieht, wird dieser neben einer Beschreibung des Problems und einem Hinweis zur Behebung hier angegeben.
+                    <br>
+                    <br>
+                    Die folgenden Hinweismuster können zur Zeit durch das Plugin gefunden werden:
+                    <ul>
+                        <li v-for="(smell, index) in usabilitySmells" :key="index">{{ smell.title }}</li>
+                    </ul>
                     <br>
                     <br>
                     Bei der Evaluation eines Szenarios wird ein Balkendiagramm dargestellt, in dem die Bearbeitungsdauer des gesamten Szenarios dargestellt wird. Dabei werden die 
@@ -103,7 +109,7 @@
                 <p class="type--pos-medium-bold">Verwendete Abkürzungen</p>
                 <IconButton @click="showAbbreviations = !showAbbreviations" :icon="showAbbreviations ? 'caret-down' : 'caret-right'" />
             </div>
-            <table v-if="showAbbreviations" class="table" style="margin-left: 20px">
+            <table v-if="showAbbreviations" class="documentation__table" style="margin-left: 20px">
                 <tr>
                     <td valign="top"><p class="type--pos-small-normal">H</p></td>
                     <td valign="top"><p class="type--pos-small-normal">Homing: "Homing" bezeichnet bei der Interaktion mit einer Benutzungsoberfläche den Wechsel zwischen der Maus und der Tastatur.</p></td>
@@ -131,6 +137,7 @@
 
 <script>
 import { IconButton } from 'figma-plugin-ds-vue';
+import { usabilitySmellsArray } from '../usabilitySmells/usabilitySmellsArray';
 
 export default {
     name: 'Documentation',
@@ -144,6 +151,7 @@ export default {
             showEvaluation: false,
             showResults: false,
             showAbbreviations: false,
+            usabilitySmells: usabilitySmellsArray,
         }
     }
 }
@@ -152,12 +160,12 @@ export default {
 <style lang="scss">
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .table {
-		border-spacing: 10px;
-	}
-
-    .scrollable-docs {
+    .documentation--scrollable {
         max-height: 80%;
         overflow-y: scroll;
     }
+
+    .documentation__table {
+		border-spacing: 10px;
+	}
 </style>

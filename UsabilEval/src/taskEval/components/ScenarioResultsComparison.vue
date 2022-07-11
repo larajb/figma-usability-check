@@ -1,11 +1,10 @@
 <template>
-    <!-- <div v-show="content !== undefined"> -->
     <div>
         <p class="type--pos-medium-bold">Vergleich: {{ content.scenarioname }}, {{ content.evaluationRuns[0].comparison.scenarioname }}</p>
         <p class="type--pos-small-normal">Ein Klick auf ein Szenario öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
-        <div id="tasks" v-if="content.evaluationRuns[0].gomsTimes !== null">
-            <bar-chart class="scenario-chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
-            <table v-if="scenarioToShow === ''" class="goms-result">
+        <div id="tasks" class="scenario-results-comparison__goms" v-if="content.evaluationRuns[0].gomsTimes !== null">
+            <bar-chart class="scenario-results-comparison__chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
+            <table v-if="scenarioToShow === ''">
                 <tr>
                     <td align="top"><Icon icon="timer" /></td>
                     <td align="top"><p class="type--pos-medium-bold">Dauer der Zielerreichung</p></td>
@@ -13,7 +12,7 @@
                 <tr>
                     <td align="top"></td>
                     <td align="top">
-                        <table class="table type--pos-medium-normal" style="margin-left: -11px">
+                        <table class="scenario-results-comparison__table type--pos-medium-normal" style="margin-left: -11px">
                             <tr>
                                 <td align="top">{{ content.scenarioname }}:</td>
                                 <td align="top">{{ sumUpTimes(content.evaluationRuns[0].gomsTimes) }} s</td>
@@ -155,9 +154,19 @@ export default {
 <style lang="scss">
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .scenario-chart {
+    .scenario-results-comparison__goms {
+        width: 80%;
+		margin-left: 10%;
+        vertical-align: middle;
+    }
+
+    .scenario-results-comparison__chart {
         width: 80%;
         height: 20%;
         margin: 0 auto;
     }
+
+    .scenario-results-comparison__table {
+		border-spacing: 10px;
+	}
 </style>

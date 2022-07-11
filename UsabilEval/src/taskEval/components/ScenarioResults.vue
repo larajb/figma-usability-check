@@ -3,10 +3,10 @@
         <p class="type--pos-medium-bold">{{ content.scenarioname }}</p>
         <p class="type--pos-small-normal">Ein Klick auf eine Aufgabe öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
         <div id="tasks" v-if="content.evaluationRuns[0].gomsTimes !== null">
-            <bar-chart class="scenario-chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
+            <bar-chart class="scenario-result__chart" :chartData="chartData" :options="chartOptions" @clicked="handleClick($event)" />
         </div>
         <div v-if="taskToShow === ''">
-            <div id="goms" class="goms-result" v-if="content.evaluationRuns[0].gomsTimes !== null">
+            <div id="goms" class="scenario-result__goms" v-if="content.evaluationRuns[0].gomsTimes !== null">
                 <table>
                     <tr>
                         <td align="top"><Icon icon="timer" /></td>
@@ -15,7 +15,7 @@
                     <tr>
                         <td align="top"></td>
                         <td align="top">
-                            <table class="table type--pos-medium-normal" style="margin-left: -11px">
+                            <table class="scenario-result__table type--pos-medium-normal" style="margin-left: -11px">
                                 <tr>
                                     <td align="top">{{ content.scenarioname }}:</td>
                                     <td align="top">{{ sumUpTimes(content.evaluationRuns[0].gomsTimes) }} s</td>
@@ -31,7 +31,7 @@
                                 <IconButton @click="showHistory = !showHistory" :icon="showHistory ? 'caret-down' : 'caret-right'" />
                             </div>
                             <div v-show="showHistory">
-                                <table class="table type--pos-medium-normal">
+                                <table class="scenario-result__table type--pos-medium-normal">
                                     <tr v-for="(run, index) in content.evaluationRuns" :key="index">
                                         <td align="top">{{ formatDate(run.timestamp) }}:</td>
                                         <td align="top">{{ sumUpTimes(run.gomsTimes) }} s</td>
@@ -42,7 +42,7 @@
                     </tr>
                 </table>
             </div>
-            <div id="smells" class="smells-result-found" v-if="checkSmellPresence(content.evaluationRuns[0].usabilitySmells)">
+            <div id="smells" class="scenario-result__found-smells" v-if="checkSmellPresence(content.evaluationRuns[0].usabilitySmells)">
                 <table>
                     <tr>
                         <td align="top"><Icon icon="warning" /></td>
@@ -51,40 +51,19 @@
                     <tr v-for="(smell, index) in content.evaluationRuns[0].usabilitySmells" :key="index">
                         <td align="top"></td>
                         <td align="top">
-                            <div style="display: flex">
-                                <p class="type--pos-medium-normal">{{ smell.title }}</p>
-                                <IconButton @click="showSmell = !showSmell" :icon="showSmell ? 'caret-down' : 'caret-right'" />
-                            </div>
-                            <table v-show="showSmell" class="table">
-                                <tr class="type--pos-medium-normal" v-if="smell.steps.length === 1">
-                                    <td valign="top">Gefunden in</td>
-                                    <td align="top">Übergang {{ smell.steps[0] }}</td>
-                                </tr>
-                                <tr class="type--pos-medium-normal" v-if="smell.steps.length > 1">
-                                    <td valign="top">Gefunden in</td>
-                                    <td align="top">Übergängen {{ getAsString(smell.steps[0]) }}</td>
-                                </tr>
-                                <tr class="type--pos-medium-normal">
-                                    <td valign="top">Erscheinung</td>
-                                    <td align="top">{{ getDescription(smell.title) }}</td>
-                                </tr>
-                                <tr class="type--pos-medium-normal">
-                                    <td valign="top">Behebung</td>
-                                    <td align="top">{{ getRefactoring(smell.title) }}</td>
-                                </tr>
-                            </table>
+                            <usability-smell-result :smell="smell" :type="'scenario'" />
                         </td>
                     </tr>
                 </table>
             </div>
-            <div v-else class="smells-result-not-found">
+            <div v-else class="scenario-result__not-found-smells">
                 <table>
                     <tr>
                         <td align="top">
                             <Icon icon="smiley" />
                         </td>
                         <td align="top">
-                            <p class="type--pos-medium-normal">Im Szenario wurden keine Hinweismuster auf Usability-Probleme gefunden.</p>
+                            <p class="type--pos-medium-normal">In dem Szenario wurden keine Hinweise auf Usability-Probleme gefunden.</p>
                         </td>
                     </tr>
                 </table>
@@ -104,7 +83,7 @@ import BarChart from './BarChart';
 import { mapState } from 'vuex';
 import TaskResults from './TaskResults.vue';
 import { Icon, IconButton } from 'figma-plugin-ds-vue';
-import { usabilitySmellsArray } from '../usabilitySmells/usabilitySmellsArray';
+import UsabilitySmellResult from './UsabilitySmellResult.vue';
 
 export default {
     name: 'ScenarioResults',
@@ -113,6 +92,7 @@ export default {
         TaskResults,
         Icon,
         IconButton,
+        UsabilitySmellResult,
     },
     props: {
         content: {
@@ -125,7 +105,6 @@ export default {
     },
     data() {
         return {
-            usabilitySmells: usabilitySmellsArray,
             showHistory: false,
             showSmell: false,
             chartData: null,
@@ -203,35 +182,6 @@ export default {
             var formattedDate = date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + minutes;
             return formattedDate;
         },
-        getDescription(title) {
-            const index = this.usabilitySmells.findIndex(smell => smell.title === title);
-            return this.usabilitySmells[index].description;
-        },
-        getRefactoring(title) {
-            const index = this.usabilitySmells.findIndex(smell => smell.title === title);
-            return this.usabilitySmells[index].refactoring;
-        },
-        getAsString(transitions) {
-            var transitionsString = '';
-            for (let i = 0; i < transitions.length; i++) {
-                transitionsString += transitions[i] + ', ';
-            }
-            transitionsString = transitionsString.slice(0, transitionsString.length - 2);
-            return transitionsString;
-        },
-        getTimeFromTo(stepsTimes, stepNum) {
-            var from = 0.0;
-            var to = 0.0;
-            for (let i = 0; i < stepNum; i++) {
-                if (i === 0) {
-                    to += stepsTimes[i];
-                } else {
-                    from += stepsTimes[i-1];
-                    to += stepsTimes[i];
-                }
-            }
-            return from.toFixed(2).toString() + ' - ' + to.toFixed(2).toString() + ' s';
-        },
         checkSmellPresence(smells) {
             var hasSmells = false;
             smells.forEach(smell => {
@@ -248,9 +198,30 @@ export default {
 <style lang="scss">
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .scenario-chart {
+    .scenario-result__chart {
         width: 80%;
         height: 20%;
         margin: 0 auto;
     }
+
+    .scenario-result__goms {
+        width: 80%;
+		margin-left: 10%;
+        vertical-align: middle;
+    }
+
+    .scenario-result__found-smells {
+        width: 85%;
+		margin-left: 10%;
+        vertical-align: middle;
+    }
+
+    .scenario-result__not-found-smells {
+        margin-left: 10%;
+        width: 80%;
+    }
+
+    .scenario-result__table {
+		border-spacing: 10px;
+	}
 </style>

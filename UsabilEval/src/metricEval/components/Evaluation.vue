@@ -9,7 +9,7 @@
             <div v-show="frames.length > 0">
                 <p class="type--pos-medium-normal">Wähle den/die Frame(s), der/die evaluiert werden soll(en).</p>
                 <Checkbox v-model="selectAllFrames">Alle anwählen/abwählen</Checkbox>
-                <div class="frames-list">
+                <div class="evaluation__frames-list">
                     <div v-for="(frame, index) in frames" :key="index">
                         <frame :frame="frame" @selected="setSelected($event)" />
                     </div>
@@ -23,7 +23,7 @@
                 </div>
             </div>
         </div>
-        <div v-show="showError" class="element-error-note">
+        <div v-show="showError" class="evaluation__error-note">
             <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
             <IconButton @click="closeError" :icon="'close'" />
         </div>
@@ -186,14 +186,14 @@ export default {
 <style lang="scss">
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .element-error-note {
+    .evaluation__error-note {
         display: flex;
         justify-content: space-between;
         background-color: rgba(255, 0, 0, 0.5);
         border-radius: 5px;
     }
 
-    .frames-list {
+    .evaluation__frames-list {
         width: 80%;
         margin-left: 20px;
         margin-top: 10px;

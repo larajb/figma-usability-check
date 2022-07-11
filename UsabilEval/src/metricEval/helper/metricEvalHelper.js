@@ -1,4 +1,3 @@
-import { getReactions } from "../../figmaAccess/nodeProperties";
 /**
  * This is a function to evaluate the color consistency above multiple frames in a document.
  * This function is applied to all frames together.
@@ -134,7 +133,7 @@ export const homepageReference = (selectedFrames, homepageId) => {
             if (frameNode.type === 'FRAME') {
                 const nodes = frameNode.findAll();
                 nodes.forEach(node => {
-                    var reactions = getReactions(node.id);
+                    var reactions = node.reactions;
                     if (reactions.length > 0) {
                         reactions.forEach(reaction => {
                             if (reaction.action !== null && reaction.action.destinationId === homepageId) {
@@ -171,7 +170,7 @@ export const orphanPages = (selectedFrames) => {
             if (frameNode2.type === 'FRAME') {
                 const nodes = frameNode2.findAll();
                 nodes.forEach(node => {
-                    var reactions = getReactions(node.id);
+                    var reactions = node.reactions;
                     if (reactions.length > 0) {
                         reactions.forEach(reaction => {
                             if (reaction.action !== null && reaction.action.destinationId === targetId) {
