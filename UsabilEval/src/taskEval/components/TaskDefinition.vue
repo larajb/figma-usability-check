@@ -7,14 +7,6 @@
                     <input id="taskname" class="input" type="text" placeholder="Aufgabe" v-model="tasknameInput">
                     <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Aufgabenname</span>
                 </div>
-                <div class="tooltip--bottom" style="width: 100%">
-                    <Select id="platform-select" :items="[
-                        { label: 'Desktop', key: 'desktop' },
-                        { label: 'Mobil', key: 'mobile' },
-                        { label: 'Desktop + Mobil', key: 'desktop+mobile' }
-                    ]" v-model="platformSelection" />
-                    <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Plattform</span>
-                </div>
             </div>
             <button class="button button--secondary" @click="addTask">Erstellen</button>
         </div>
@@ -35,12 +27,12 @@
                 <input v-show="typeSelection === 'input'" id="input-example" class="input" type="text" placeholder="Beispiel Eingabe" v-model="exampleInput">
                 <span class="type--pos-small-normal tooltiptext--bottom">Eingabe Beispiel für ein Interaktionselement des Typs 'Eingabe'</span>
             </div>
-            <div v-show="showError" class="element-error-note">
+            <div v-show="showError" class="task-definition__error-note">
                 <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
                 <IconButton @click="closeError" :icon="'close'" />
             </div>
         </div>
-        <div id="tasks" class="scrollable-task-list type--pos-medium-normal">
+        <div id="tasks" class="task-definition__scrollable-list type--pos-medium-normal">
             <task-list-entry v-for="(task, index) in tasks" :key="index" :taskname="task.taskname" :color="task.color" :steps="task.steps"
                 @addStepIndex="addTaskStepAtIndex($event)"
                 @deletedTask="deletedTask($event)"
@@ -72,7 +64,6 @@ export default {
             tasknameInput: '',
             exampleInput: '',
             typeSelection: '',
-            platformSelection: '',
             showError: false,
             errorMessage: '',
             alreadySet: false,
@@ -89,7 +80,6 @@ export default {
             }
         },
         taskToEdit() {
-            console.log('task to edit', this.taskToEdit);
             this.tasknameInput = this.taskToEdit;
         },
     },
@@ -102,6 +92,7 @@ export default {
                 this.$store.commit('tasks', this.tasks);
             }
         });
+        // this.setTaskStorage();
 
 		handleEvent('taskStepAdded', step => {
             this.addTaskStepToScreen(step);
@@ -295,13 +286,10 @@ export default {
                             var before = this.tasks[i].steps[j-2] ? this.tasks[i].steps[j-2] : null;
                             var current = this.tasks[i].steps[j];
                             var after = this.tasks[i].steps[j-1] ? this.tasks[i].steps[j-1] : null;
-                            // check if current connects to new after
                             dispatch('checkStepValidityAfter', { before: current, after: after });
                             handleEvent('validityAfter', validityAfter => {
                                 if (validityAfter) {
-                                    // check if current does not become new first
                                     if (j !== 1) {
-                                        // check if new before connects to current
                                         dispatch('checkStepValidityBefore', { before: before, after: current });
                                         handleEvent('validityBefore', validityBefore => {
                                             if (validityBefore) {
@@ -341,11 +329,9 @@ export default {
                             var current = this.tasks[i].steps[j];
                             var after = this.tasks[i].steps[j+2] ? this.tasks[i].steps[j+2] : null;
                             
-                            // check  if new before connects to current
                             dispatch('checkStepValidityBefore', { before: before, after: current });
                             handleEvent('validityBefore', validityBefore => {
                                 if (validityBefore) {
-                                    // check if current does not become new last
                                     if (j !== (this.tasks[i].steps.length - 2)) {
                                         dispatch('checkStepValidityAfter', { before: current, after: after });
                                         handleEvent('validityAfter', validityAfter => {
@@ -394,14 +380,6 @@ export default {
             this.showError = false;
             this.errorMessage = '';
         },
-        // setEditMode(args) {
-        //     this.editMode = args.value;
-        //     if (args.value === true) {
-        //         this.tasknameInput = args.taskname;
-        //     } else {
-        //         this.tasknameInput = '';
-        //     }
-        // },
         showWarning(warning) {
             this.showError = true;
             this.errorMessage = warning;
@@ -443,25 +421,17 @@ export default {
 		border-radius: 10px;
 	}
 
-    .scrollable-task-list {
+    .task-definition__scrollable-list {
+        max-width: 100%;
+        overflow-x: hidden;
         max-height: 55%;
         overflow-y: scroll;
     }
 
-    .element-error-note {
+    .task-definition__error-note {
         display: flex;
         justify-content: space-between;
         background-color: rgba(255, 0, 0, 0.5);
         border-radius: 5px;
     }
-
-	hr.style-one {
-		border: 0;
-		height: 1px;
-		background: #666;
-		background-image: -webkit-linear-gradient(left, #ccc, #666, #666, #ccc);
-		background-image: -moz-linear-gradient(left, #ccc, #666, #666, #ccc);
-		background-image: -ms-linear-gradient(left, #ccc, #666, #666, #ccc);
-		background-image: -o-linear-gradient(left, #ccc, #666, #666, #ccc);
-	}
 </style>

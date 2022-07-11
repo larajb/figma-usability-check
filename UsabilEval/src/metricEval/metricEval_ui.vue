@@ -10,13 +10,13 @@
 				<span class="type--pos-small-normal tooltiptext--bottom">Auswahl der Metriken für die Evaluation</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-evaluation" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': selectedMetrics.length === 0 }" @click="setCurrentPage('Evaluation')">Evaluation</div>
+				<div id="select-evaluation" style="margin-left: 5px; margin-right: 20px" class="type--pos-medium-normal" :class="{'metricEval-ui--disabled': selectedMetrics.length === 0 }" @click="setCurrentPage('Evaluation')">Evaluation</div>
 				<span class="type--pos-small-normal tooltiptext--bottom">Festlegung der Frames für die Evaluation</span>
 			</div>
 			<div class="tooltip--bottom">
-				<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'disabled': evaluationReady === false }" @click="setResultsPage">
+				<div id="select-ergebnisse" style="margin-right: 20px" class="type--pos-medium-normal" :class="{'metricEval-ui--disabled': evaluationReady === false }" @click="setResultsPage">
 					Ergebnisse
-					<div :class="{ 'notification': showNotification }"></div>
+					<div :class="{ 'metricEval-ui__notification': showNotification }"></div>
 				</div>
 				<span class="type--pos-small-normal tooltiptext--bottom">Darstellung der Evaluationsergebnisse</span>
 			</div>
@@ -29,10 +29,10 @@
 			<p class="type--pos-large-bold">
 				Metriken-Evaluation
 			</p>
-			<metric-selection v-show="currentPage === 'MetricsSelection'" :metrics="metrics" />
-			<evaluation v-show="currentPage === 'Evaluation'" @results="setResults($event)" />
-			<results v-show="currentPage === 'Results'" :results="results" />
-			<documentation v-show="currentPage === 'Documentation'" />
+			<metric-selection v-show="currentPage === 'MetricsSelection'"  class="scrollable" :metrics="metrics" />
+			<evaluation v-show="currentPage === 'Evaluation'"  class="scrollable" @results="setResults($event)" />
+			<results v-show="currentPage === 'Results'"  class="scrollable" :results="results" />
+			<documentation v-show="currentPage === 'Documentation'"  class="scrollable" />
 		</div>
 	</div>
 </template>
@@ -120,16 +120,20 @@ export default {
 	@import "../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 	@import "../tooltips.scss";
 
+	html, body {
+        overflow-y: hidden;
+    }
+
 	.metricEval-ui {
 		padding: 10px;
 	}
 
-	.disabled {
+	.metricEval-ui--disabled {
 		pointer-events: none;
 		opacity: 0.4;
 	}
 
-	.notification {
+	.metricEval-ui__notification {
 		width: 10px;
 		height: 10px;
 		border-radius: 50%;
@@ -137,5 +141,12 @@ export default {
 		position: absolute;
 		top: -5px;
 		right: 10px;
+	}
+
+	.scrollable {
+        max-width: 100%;
+        overflow-x: hidden;
+        max-height: 85%;
+        overflow-y: scroll;
 	}
 </style>

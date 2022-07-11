@@ -11,8 +11,8 @@ export const usabilitySmellsArray = [
     },
     {
         title: 'Entfernter Inhalt',
-        description: 'Auf diesem Navigationsweg wird ein Fenster schnell überschritten und dient nur der Navigation.',
-        refactoring: 'Ggf. könnten Verlinkungen zu entfernten Inhalten helfen.',
+        description: 'Auf diesem Navigationspfad wird ein Fenster schnell überschritten und nur zu Navigation verwendet.',
+        refactoring: 'Links zu entfernten Inhalten können helfen.',
     },
     {
         title: 'Langes Anvisieren',

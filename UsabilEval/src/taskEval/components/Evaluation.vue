@@ -23,7 +23,7 @@
                 <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Vergleichsaufgabe</span>
             </div>
             <div class="tooltip--bottom">
-                <button class="type--pos-small-normal button--link-look" @click="$store.commit('currentPage', 'TaskDefinition')">Aufgabe definieren</button>
+                <button class="type--pos-small-normal evaluation__button--link-look" @click="$store.commit('currentPage', 'TaskDefinition')">Aufgabe definieren</button>
                 <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Aufgabendefinition</span>
             </div>
         </div>
@@ -43,7 +43,7 @@
                 <span class="type--pos-small-normal tooltiptext--bottom">Auswahl Vergleichsszenario</span>
             </div>
             <div class="tooltip--bottom">
-                <button class="type--pos-small-normal button--link-look" @click="$store.commit('currentPage', 'ScenarioDefinition')">Szenario definieren</button>
+                <button class="type--pos-small-normal evaluation__button--link-look" @click="$store.commit('currentPage', 'ScenarioDefinition')">Szenario definieren</button>
                 <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Szenariendefinition</span>
             </div>
         </div>
@@ -119,8 +119,8 @@ export default {
         },
     },
     mounted() {
-        this.getTaskEvaluationHistory();
-        this.getScenarioEvaluationHistory();
+        // this.getTaskEvaluationHistory();
+        // this.getScenarioEvaluationHistory();
 
         // handleEvent('currentTaskEvaluationStorage', storage => {
         //     if (storage !== undefined) {
@@ -135,6 +135,8 @@ export default {
         //         this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
         //     }
         // });
+        dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
+        dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
 
         handleEvent('taskEvaluationResult', result => {
             this.setTaskEvaluationHistory(this.firstTask, result.goms, result.usabilitySmells);
@@ -384,7 +386,7 @@ export default {
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
     @import "../../../node_modules/figma-plugin-ds-vue/dist/figma-plugin-ds-vue.css";
 
-    .button--link-look {
+    .evaluation__button--link-look {
         background: none!important;
         border: none;
         padding: 0!important;

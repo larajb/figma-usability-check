@@ -4,7 +4,7 @@
             <Checkbox v-model="selected" @input="handleClick">{{ metric.title }}</Checkbox>
             <IconButton @click="isClicked = !isClicked" :icon="isClicked ? 'caret-down' : 'caret-right'" />
         </div>
-        <div v-if="isClicked" class="metric-info type--pos-small-normal">
+        <div v-if="isClicked" class="metric__info type--pos-small-normal">
             <p>{{ metric.description }}</p>
         </div>
     </div>
@@ -86,7 +86,7 @@ export default {
 		justify-content: space-between;
 	}
 
-	.metric-info {
+	.metric__info {
 		margin-left: 20px;
 	}
 </style>

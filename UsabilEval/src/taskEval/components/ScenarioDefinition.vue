@@ -18,15 +18,15 @@
                 <button class="button button--secondary" @click="addTask">Hinzufügen</button>
             </div>
             <div class="tooltip--bottom">
-                <button class="type--pos-small-normal button--link-look" @click="handleClick">Aufgabe definieren</button>
+                <button class="type--pos-small-normal scenario-definition__button--link-look" @click="handleClick">Aufgabe definieren</button>
                 <span class="type--pos-small-normal tooltiptext--bottom">Zurück zur Aufgabendefinition</span>
             </div>
         </div>
-        <div v-show="showError" class="element-error-note">
+        <div v-show="showError" class="scenario-definition__error-note">
             <p class="type--pos-medium-normal" style="color: #ffffff; margin-left: 5px">{{ errorMessage }}</p>
             <IconButton @click="closeError" :icon="'close'" />
         </div>
-        <div id="scenarios" class="scrollable-scenario-list type--pos-medium-normal">
+        <div id="scenarios" class="scenario-definition__scrollable-list type--pos-medium-normal">
             <scenario-list-entry v-for="(scenario, index) in scenarios" :key="index" :scenarioname="scenario.scenarioname" :tasks="scenario.tasks"
                 @deletedScenario="deletedScenario($event)"
                 @deletedTask="deletedTask($event)"
@@ -82,6 +82,7 @@ export default {
                 this.$store.commit('scenarios', this.scenarios);
             }
         });
+        // this.setScenarioStorage();
     },
     methods: {
         addScenario() {
@@ -174,25 +175,23 @@ export default {
 		justify-content: space-between;
 	}
 
-    .element-error-note {
+    .scenario-definition__error-note {
         display: flex;
         justify-content: space-between;
         background-color: rgba(255, 0, 0, 0.5);
         border-radius: 5px;
     }
 
-    .scrollable-scenario-list {
-        max-height: 50%;
+    .scenario-definition__scrollable-list {
+        max-height: 55%;
         overflow-y: scroll;
     }
 
-    .button--link-look {
+    .scenario-definition__button--link-look {
         background: none!important;
         border: none;
         padding: 0!important;
-        /*optional*/
         font-family: arial, sans-serif;
-        /*input has OS specific font-family*/
         color: #069;
         text-decoration: underline;
         cursor: pointer;

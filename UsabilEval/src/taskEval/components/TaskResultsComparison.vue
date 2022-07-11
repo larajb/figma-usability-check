@@ -2,8 +2,8 @@
     <div v-show="content !== undefined">
         <p class="type--pos-medium-bold">Vergleich: {{ content.taskname }}, {{ content.evaluationRuns[0].comparison.taskname }}</p>
         <p class="type--pos-small-normal">Ein Klick auf eine Aufgabe öffnet eine Detailansicht. Ein Klick auf den Hintergrund des Diagramms schließt die Detailansicht.</p>
-        <div id="goms" class="goms-result" v-if="content.evaluationRuns[0].goms !== null">
-            <bar-chart class="task-chart" :chart-data="chartData" :options="chartOptions" @clicked="handleClick($event)" />
+        <div id="goms" class="task-results-comparison__goms" v-if="content.evaluationRuns[0].goms !== null">
+            <bar-chart class="task-results-comparison__chart" :chart-data="chartData" :options="chartOptions" @clicked="handleClick($event)" />
             <table v-if="taskToShow === ''">
                 <tr>
                     <td align="top"><Icon icon="timer" /></td>
@@ -12,7 +12,7 @@
                 <tr>
                     <td align="top"></td>
                     <td align="top">
-                        <table class="table type--pos-medium-normal" style="margin-left: -11px">
+                        <table class="task-results-comparison__table type--pos-medium-normal" style="margin-left: -11px">
                             <tr>
                                 <td align="top">{{ content.taskname }}:</td>
                                 <td align="top">{{ content.evaluationRuns[0].goms.gomsTime.toFixed(2) }} s</td>
@@ -158,25 +158,19 @@ export default {
 <style lang="scss">
     @import "../../../node_modules/figma-plugin-ds/dist/figma-plugin-ds.css";
 
-    .result-colorsquare {
-		width: 15px;
-		height: 15px;
-		margin-right: 15px;
-		border-radius: 10px;
-	}
-
-    .goms-result {
+    .task-results-comparison__goms {
         width: 80%;
 		margin-left: 10%;
         vertical-align: middle;
     }
 
-    .table {
+    .task-results-comparison__table {
 		border-spacing: 10px;
 	}
 
-    .task-chart {
-        width: 100%;
-        height: 25%;
+    .task-results-comparison__chart {
+        width: 80%;
+        height: 20%;
+        margin: 0 auto;
     }
 </style>

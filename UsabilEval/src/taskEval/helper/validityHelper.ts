@@ -1,5 +1,5 @@
-import { getCurrentSelection } from "../../figmaAccess/fileContents";
-import { getHeight, getWidth, getParent, getFrame } from "../../figmaAccess/nodeProperties";
+import { getCurrentSelection } from "../../figmaAccess/fileContentGetters";
+import { getFrame } from "../../figmaAccess/fileContentGetters";
 
 /**
  * This is a function to check if the selected element is an annotation group.
@@ -22,7 +22,6 @@ export const checkForAnnotationGroup = () => {
  * @returns Boolean
  */
  export const checkValidity = (args) => {
-    // get frame of step before
     var beforeNode = null;
     var beforeFrame = null;
     if (args.before === null) {
@@ -33,7 +32,6 @@ export const checkForAnnotationGroup = () => {
         beforeFrame = getFrame(args.before.id);
     }
 
-    // get frame of step after
     var afterNode = null;
     var afterFrame = null;
     if (args.after === null) {
@@ -44,9 +42,8 @@ export const checkForAnnotationGroup = () => {
         afterFrame = getFrame(args.after.id);
     }
 
-    // compare frames
     if (beforeFrame.id !== afterFrame.id) {
-        var beforeNodeParent = getParent(beforeNode.id);
+        var beforeNodeParent = beforeNode.parent;
         if (beforeNodeParent.name.endsWith('Annotation')) {
             var element = beforeNodeParent.children[0];
             for (let i = 0; i < element.reactions.length; i++) {
@@ -75,8 +72,8 @@ export const checkForAnnotationGroup = () => {
  */
 export const checkButtonValidity = () => {
     var currentSelection = getCurrentSelection();
-    var width = getWidth(currentSelection.id);
-    var height = getHeight(currentSelection.id);
+    var width = currentSelection.width;
+    var height = currentSelection.height;
     if ((width >= 44) && (height >= 44)) {
         return true
     }
@@ -89,7 +86,7 @@ export const checkButtonValidity = () => {
  */
 export const checkInputExample = () => {
     var currentSelection = getCurrentSelection();
-    var selectionParent = getParent(currentSelection.id);
+    var selectionParent = currentSelection.parent;
     if (selectionParent.name.endsWith('Annotation')) {
         for (let i = 0; i < selectionParent.children.length; i++) {
             if (selectionParent.children[i].name.endsWith('Eingabebeispiel')) {
@@ -107,7 +104,7 @@ export const checkInputExample = () => {
  */
 export const checkInputValidity = async (input) => {
     var selection = getCurrentSelection();
-    var selectionWidth = getWidth(selection.id);
+    var selectionWidth = selection.width;
     var text = figma.createText();
     var textWidth = null;
     await loadingFont().then(() => {
@@ -125,7 +122,8 @@ export const checkInputValidity = async (input) => {
 }
 
 /**
- * This is a function to check the validity of a link that is currently selected. A text link should not wrap to a second line (Research-Based Web Design and Usability Guidelines 10.11).
+ * This is a function to check the validity of a link that is currently selected.
+ * A text link should not wrap to a second line (Research-Based Web Design and Usability Guidelines 10.11).
  * @returns Boolean
  */
 export const checkLinkValidity = async () => {
@@ -138,7 +136,7 @@ export const checkLinkValidity = async () => {
         isImageOrShape = true;
     }
     if (isText) {
-        var selectionHeight = getHeight(selection.id);
+        var selectionHeight = selection.height;
         var fontSize = 16;
         if (selection.type === 'TEXT') {
             fontSize = selection.fontSize;
@@ -157,8 +155,8 @@ export const checkLinkValidity = async () => {
         }
     }
     if (isImageOrShape) {
-        var width = getWidth(selection.id);
-        var height = getHeight(selection.id);
+        var width = selection.width;
+        var height = selection.height;
         if ((width >= 44) && (height >= 44)) {
             return true
         }
