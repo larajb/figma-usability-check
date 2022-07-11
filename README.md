@@ -10,8 +10,11 @@
 
 ## Öffnen des Plugins (Open the plugin)
 
-Möglichkeit 1: Im Figma-Editor über "Dateimenü" > "Plugins" > "Usability Evaluation" > "Startseite" / "Metriken-Evaluation" / "Aufgaben-Evaluation" (Option 1: In the Figma editor via "File menu" > "Plugins" > "Usability Evaluation" > "Home" / "Metrics Evaluation" / "Task Evaluation".)
+Möglichkeit 1: Im Figma-Editor über "Dateimenü" > "Plugins" > "Usability Evaluation" > "Startseite" / "Metriken-Evaluation" / "Aufgaben-Evaluation"  
+(Option 1: In the Figma editor via "File menu" > "Plugins" > "Usability Evaluation" > "Home" / "Metrics Evaluation" / "Task Evaluation".)
 
-Möglichkeit 2: Über Rechtsklick > "Plugins" > "Usability Evaluation" > "Startseite" / "Metriken-Evaluation" / "Aufgaben-Evaluation" (Option 2: Right-click > "Plugins" > "Usability Evaluation" > "Home" / "Metrics Evaluation" / "Task Evaluation".)  
+Möglichkeit 2: Über Rechtsklick > "Plugins" > "Usability Evaluation" > "Startseite" / "Metriken-Evaluation" / "Aufgaben-Evaluation"  
+(Option 2: Right-click > "Plugins" > "Usability Evaluation" > "Home" / "Metrics Evaluation" / "Task Evaluation".)  
 
-Möglichkeit 3: Über STRG + P Plugin-Namen suchen (Option 3: Search plugin name via CTRL + P)
+Möglichkeit 3: Über STRG + P Plugin-Namen suchen  
+(Option 3: Search plugin name via CTRL + P)
