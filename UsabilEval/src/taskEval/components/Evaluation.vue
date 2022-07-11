@@ -119,24 +119,24 @@ export default {
         },
     },
     mounted() {
-        // this.getTaskEvaluationHistory();
-        // this.getScenarioEvaluationHistory();
+        this.getTaskEvaluationHistory();
+        this.getScenarioEvaluationHistory();
 
-        // handleEvent('currentTaskEvaluationStorage', storage => {
-        //     if (storage !== undefined) {
-        //         this.taskEvaluationHistory = storage;
-        //         this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
-        //     }
-        // });
+        handleEvent('currentTaskEvaluationStorage', storage => {
+            if (storage !== undefined) {
+                this.taskEvaluationHistory = storage;
+                this.$store.commit('taskEvaluationHistory', this.taskEvaluationHistory);
+            }
+        });
 
-        // handleEvent('currentScenarioEvaluationStorage', storage => {
-        //     if (storage !== undefined) {
-        //         this.scenarioEvaluationHistory = storage;
-        //         this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
-        //     }
-        // });
-        dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
-        dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
+        handleEvent('currentScenarioEvaluationStorage', storage => {
+            if (storage !== undefined) {
+                this.scenarioEvaluationHistory = storage;
+                this.$store.commit('scenarioEvaluationHistory', this.scenarioEvaluationHistory);
+            }
+        });
+        // dispatch('setTaskEvaluationStorage', this.taskEvaluationHistory);
+        // dispatch('setScenarioEvaluationStorage', this.scenarioEvaluationHistory);
 
         handleEvent('taskEvaluationResult', result => {
             this.setTaskEvaluationHistory(this.firstTask, result.goms, result.usabilitySmells);
