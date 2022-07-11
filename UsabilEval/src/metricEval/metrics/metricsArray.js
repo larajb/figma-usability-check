@@ -1,0 +1,42 @@
+export const metricsArray = [
+    {
+        title: 'Farbkonsistenz',
+        description: 'Die Farbkonsistenz umfasst den Prozentsatz der vordefinierten Farben im Verhältnis zur Gesamtzahl der verwendeten Farben. Im Idealfall sind nur die vordefinierten Farben enthalten. Zurzeit können lediglich lokale Styles (innerhalb dieses Entwurfs) zur Evaluation herangezogen werden.',
+        resultSentenceSingle: 'Eine Farbe, die im Entwurf verwendet wird, gehört nicht zu den vordefinierten Farben.',
+        resultSentenceMultiple: 'Einige Farben, die im Entwurf verwendet werden, gehören nicht zu den vordefinierten Farben.',
+        thresholds: { green: { min: 100, max: 100 }, yellow: { min: 50, max: 99 }, red: { min: 0, max: 49 } },
+        multipleFrames: false,
+    },
+    {
+        title: 'Schriftkonsistenz',
+        description: 'Die Schriftkonsistenz umfasst den Prozentsatz der vordefinierten Schriftformate im Verhältnis zur Gesamtzahl der verwendeten Schriftformate. Ein Schriftformat kann die Schriftfamilie, die Größe, den Stil, die Farbe und andere Schriftmerkmale wie den Zeichenabstand umfassen. Es sollten nur (einige wenige) vordefinierte Schriftformate verwendet werden. Zurzeit können lediglich lokale Styles (innerhalb dieses Entwurfs) zur Evaluation herangezogen werden.',
+        resultSentenceSingle: 'Ein Schriftformat, das im Entwurf verwendet wird, gehört nicht zu den vordefinierten Schriftformaten.',
+        resultSentenceMultiple: 'Einige Schriftformate, die im Entwurf verwendet werden, gehören nicht zu den vordefinierten Schriftformaten.',
+        thresholds: { green: { min: 100, max: 100 }, yellow: { min: 50, max: 99 }, red: { min: 0, max: 49 } },
+        multipleFrames: false,
+    },
+    {
+        title: 'Verweis auf Startseite',
+        description: 'Bei einer Webseite mit mehr als einer Seite, sollten alle Seiten einen Link zurück zur Homepage/Startseite haben. Lediglich die Startseite/Homepage selbst muss nicht mit sich selbst verlinkt sein. ',
+        resultSentenceSingle: 'Eine Seite besitzt keine Verlinkung auf die Startseite.',
+        resultSentenceMultiple: 'Einige Seiten besitzen keine Verlinkungen auf die Startseite.',
+        thresholds: { green: { min: 1, max: 1 }, yellow: { min: 0.5, max: 0.99 }, red: { min: 0, max: 0.49 } },
+        multipleFrames: true,
+    },
+    {
+        title: 'Verwaiste Seiten',
+        description: 'Verwaiste Seiten sind Teil einer Website, aber keine der anderen Seiten der Website verweist auf sie, so dass sie nicht über einen internen Link erreicht werden können. Sie verschlechtern die Navigierbarkeit einer Webseite und sollten daher vermieden werden.',
+        resultSentenceSingle: 'Eine Seite ist eine verwaiste Seite und kann innerhalb der Anwendung nicht erreicht werden.',
+        resultSentenceMultiple: 'Einige Seiten sind verwaiste Seiten und können innerhalb der Anwendung nicht erreicht werden.',
+        thresholds: { green: { min: 0, max: 0 }, yellow: { min: 0.1, max: 0.5 }, red: { min: 0.51, max: 1 } },
+        multipleFrames: true,
+    },
+    {
+        title: 'Schriftgröße',
+        description: 'Auf Webseiten sollte mindestens eine Schriftgröße von 12pt verwendet werden.',
+        resultSentenceSingle: 'Ein Textfeld besitzt eine Schriftgröße, die kleiner als 12pt ist.',
+        resultSentenceMultiple: 'Einige Textfelder besitzen eine Schriftgröße, die kleiner als 12pt ist.',
+        thresholds: null,
+        multipleFrames: false,
+    },
+];
