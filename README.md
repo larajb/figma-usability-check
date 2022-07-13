@@ -8,7 +8,7 @@
 4. Die Datei manifest.json im Ordner "UsabilEval" auswählen.
 5. Das Plugin kann nun im Figma-Editor verwendet werden.
 
-## Öffnen des Plugins (Open the plugin)
+## Öffnen des Plugins
 
 Möglichkeit 1: Im Figma-Editor über "Dateimenü" > "Plugins" > "Usability Evaluation" > "Startseite" / "Metriken-Evaluation" / "Aufgaben-Evaluation"
 
@@ -28,7 +28,7 @@ Möglichkeit 3: Über STRG + P Plugin-Namen suchen
 4. Select the manifest.json file in the "UsabilEval" folder.
 5. The plugin can now be used in the Figma editor.
 
-## Öffnen des Plugins (Open the plugin)
+## Open the plugin
 
 Option 1: In the Figma editor via "File menu" > "Plugins" > "Usability Evaluation" > "Home" / "Metrics Evaluation" / "Task Evaluation".
 
